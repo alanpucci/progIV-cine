@@ -3,6 +3,20 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 0.1b] - 2026-09-15
+
+### Added
+- `CLAUDE.md`: instrucciones de proyecto que se cargan automáticamente en
+  cada sesión (rol de ingeniero senior Angular, decisiones de arquitectura ya
+  tomadas, convenciones de repo, buenas prácticas Angular específicas y
+  recomendaciones de eficiencia de sesión).
+- `docs/ROADMAP.md` y `docs/ROADMAP.pdf`: roadmap completo del proyecto por
+  fases, con estado por sub-tarea, pensado para actualizarse sesión a sesión.
+- `.claude/skills/cerrar-tarea/`: checklist para cerrar una sub-tarea/fase
+  (changelog, readme, roadmap, commit sin atribución, PR con formato fijo).
+- `.claude/skills/actualizar-roadmap/`: procedimiento para regenerar
+  `docs/ROADMAP.pdf` a partir de `docs/ROADMAP.md`.
+
 ## [Fase 0.1] - 2026-09-15
 
 ### Added
