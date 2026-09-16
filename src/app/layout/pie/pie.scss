@@ -1,0 +1,87 @@
+.pie {
+  position: relative;
+  margin-top: var(--espacio-2xl);
+  padding: var(--espacio-xl) var(--espacio-xl) var(--espacio-lg);
+  background: var(--color-fondo-alterno);
+  border-top: 1px solid var(--color-borde);
+
+  // Tira de perforaciones de fílmico como remate visual del pie.
+  &::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background-image: repeating-radial-gradient(
+      circle,
+      var(--color-borde) 0 2px,
+      transparent 2.5px 18px
+    );
+    opacity: 0.9;
+  }
+}
+
+.pie__contenido {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--espacio-xl);
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.pie__titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-texto-primario);
+
+  strong {
+    color: var(--color-acento-secundario);
+    font-weight: inherit;
+  }
+}
+
+.pie__lema {
+  margin: var(--espacio-xs) 0 0;
+  color: var(--color-texto-silenciado);
+  font-size: 0.9rem;
+}
+
+.pie__enlaces {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+}
+
+.pie__enlaces-titulo {
+  color: var(--color-texto-silenciado);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--espacio-xs);
+}
+
+.pie__enlaces a {
+  color: var(--color-texto-secundario);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color var(--transicion-base);
+
+  &:hover,
+  &.activo {
+    color: var(--color-acento-secundario);
+  }
+}
+
+.pie__copy {
+  max-width: 72rem;
+  margin: var(--espacio-lg) auto 0;
+  padding-top: var(--espacio-md);
+  border-top: 1px solid var(--color-borde);
+  color: var(--color-texto-silenciado);
+  font-size: 0.8rem;
+  text-align: center;
+}
