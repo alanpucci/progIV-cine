@@ -36,10 +36,11 @@ cine), nunca un look de librería reconocible a simple vista.
   (Added/Changed/Fixed) antes de darla por terminada.
 - **`README.md`**: actualizar cuando una fase introduce una decisión de
   arquitectura nueva — no esperar al final del proyecto.
-- **`docs/ROADMAP.md`** y **`docs/ROADMAP.pdf`**: actualizar el estado de las
-  fases/sub-tareas (✅ Hecho / 🔄 En progreso / ⬜ Pendiente) a medida que se
-  completan, y regenerar el PDF cuando cambie el contenido (usar el skill
-  `actualizar-roadmap`).
+- **`docs/ROADMAP.md`** y **`docs/ROADMAP.pdf`**: **preguntar antes de
+  tocarlos**, ya sea por un cambio de estado o al armar un PR. Nunca
+  modificarlos automáticamente — no siempre hace falta. Si la respuesta es
+  sí, actualizar el estado de las fases/sub-tareas (✅ Hecho / 🔄 En progreso
+  / ⬜ Pendiente) y regenerar el PDF (usar el skill `actualizar-roadmap`).
 - **Commits y PRs**: nunca incluir líneas de atribución al agente (ni
   `Co-Authored-By: Claude`, ni "Generated with Claude Code" ni similares).
   Toda descripción de PR debe tener, en este orden: `## Objetivo inicial`,
