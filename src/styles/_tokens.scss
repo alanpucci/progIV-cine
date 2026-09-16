@@ -1,0 +1,58 @@
+// Design tokens del sistema visual: paleta oscura tipo sala de cine
+// (proyección, cortina de terciopelo, luces de marquesina). Se exponen como
+// custom properties de CSS (no variables SCSS) para que cualquier estilo de
+// componente los consuma directo con var(--token), sin tener que @use este
+// archivo en cada .scss.
+:root {
+  // Superficies
+  --color-fondo: #0b0b12;
+  --color-fondo-alterno: #131320;
+  --color-superficie: #1b1b2a;
+  --color-superficie-elevada: #242438;
+  --color-borde: #2f2f45;
+
+  // Texto
+  --color-texto-primario: #f3efe6;
+  --color-texto-secundario: #a9a6bb;
+  --color-texto-silenciado: #6f6c85;
+
+  // Acentos (cortina roja + luces doradas de marquesina)
+  --color-acento: #c4283a;
+  --color-acento-hover: #e0364a;
+  --color-acento-texto: #fff5f2;
+  --color-acento-secundario: #d4af37;
+  --color-acento-secundario-hover: #e6c34f;
+
+  // Estado
+  --color-exito: #3f9142;
+  --color-error: #d64545;
+  --color-advertencia: #d4af37;
+
+  // Tipografía
+  --fuente-titulo: "Bebas Neue", "Arial Narrow", sans-serif;
+  --fuente-base: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  // Espaciado
+  --espacio-xs: 0.25rem;
+  --espacio-sm: 0.5rem;
+  --espacio-md: 1rem;
+  --espacio-lg: 1.5rem;
+  --espacio-xl: 2.5rem;
+  --espacio-2xl: 4rem;
+
+  // Bordes redondeados
+  --radio-sm: 4px;
+  --radio-md: 8px;
+  --radio-lg: 16px;
+  --radio-completo: 999px;
+
+  // Sombras (pensadas para fondos oscuros)
+  --sombra-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --sombra-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --sombra-elevada: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --sombra-foco: 0 0 0 3px rgba(196, 40, 58, 0.45);
+
+  // Transiciones
+  --transicion-rapida: 120ms ease;
+  --transicion-base: 220ms ease;
+}

@@ -3,6 +3,32 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 0.4] - 2026-09-16
+
+### Added
+- `src/styles/_tokens.scss`: design tokens del sistema visual como custom
+  properties de CSS en `:root` — paleta oscura tipo sala de cine (fondo,
+  superficies, acento rojo cortina, acento secundario dorado marquesina),
+  tipografía (`Bebas Neue` para títulos, `Inter` para texto, cargadas desde
+  Google Fonts en `index.html`), escala de espaciado, radios, sombras y
+  transiciones.
+- `shared/componentes/boton/` (`Boton`): botón propio con variantes
+  `primario`/`secundario`/`fantasma`, tamaños `chico`/`mediano`/`grande` e
+  input `deshabilitado`, usando `input()` de signals.
+- `shared/componentes/tarjeta/` (`Tarjeta`): contenedor de tarjeta con input
+  `interactiva` para efecto hover-lift, pensado para reusarse en catálogo,
+  candy bar, etc.
+
+### Changed
+- `src/styles.css` → `src/styles.scss`: entrypoint global de estilos pasa a
+  SCSS, importa los tokens y aplica un reset base mínimo (box-sizing,
+  fondo/color/tipografía del body). El fondo temático completo con motivos de
+  cine se resuelve en la Fase 0.5 (shell de layout).
+- `angular.json`: `@schematics/angular:component` genera con `style: scss`
+  y `skipTests: true` por defecto (y `skipTests: true` en
+  `@schematics/angular:service`), así `ng generate` ya no necesita pasar
+  esos flags a mano en cada componente/servicio nuevo.
+
 ## [Fase 0.3] - 2026-09-16
 
 ### Added

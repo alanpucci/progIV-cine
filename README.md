@@ -129,9 +129,20 @@ de integridad.
 ## Diseño visual
 
 Paleta oscura/nocturna con motivos de cine (proyección, cinta de película,
-marquesina), definida como design tokens en SCSS propios — sin librería de
-componentes de por medio, para lograr una identidad visual propia en vez de
-una interfaz genérica.
+marquesina) — sin librería de componentes de por medio, para lograr una
+identidad visual propia en vez de una interfaz genérica.
+
+Los tokens (`src/styles/_tokens.scss`) se definen como **custom properties de
+CSS** en `:root` (`--color-acento`, `--espacio-md`, etc.), no como variables
+SCSS (`$color-acento`). La ventaja frente a variables SCSS es que quedan
+disponibles en runtime dentro de cualquier hoja de estilos del proyecto sin
+necesidad de `@use` en cada archivo — cualquier `.scss` de un componente usa
+`var(--token)` directo. Tipografía: `Bebas Neue` (títulos, estilo marquesina)
++ `Inter` (texto), cargadas desde Google Fonts en `index.html`.
+
+Sobre esos tokens se construyen primitivas de UI propias en `shared/componentes/`
+(`Boton`, `Tarjeta`, …), consumidas por las features en vez de repetir estilos
+sueltos.
 
 ## Desarrollo
 
