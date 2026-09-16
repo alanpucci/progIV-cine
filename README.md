@@ -30,10 +30,10 @@ src/app/
 ```
 
 Cada carpeta dentro de `features/` corresponde a un módulo funcional del
-análisis (catálogo, salas y butacas, checkout, fidelización, tickets,
-cancelaciones, próximamente, perfil, empleado, admin) y agrupa **todo** lo que
-esa feature necesita: sus componentes, sus servicios de dominio, sus modelos y
-sus rutas.
+análisis (`catalogo`, `salas-butacas`, `compra`, `fidelizacion`, `entradas`,
+`cancelaciones`, `proximamente`, `perfil`, `empleado`, `administracion`) y
+agrupa **todo** lo que esa feature necesita: sus componentes, sus servicios de
+dominio, sus modelos y sus rutas.
 
 ### Por qué organizar por *feature* y no por *tipo técnico*
 
@@ -41,11 +41,12 @@ Una alternativa común es tener carpetas globales `/components`, `/services`,
 `/pipes`, `/models` en la raíz de `src/app`. Deliberadamente **no** se eligió
 ese esquema, por tres razones concretas:
 
-1. **Lo que cambia junto, vive junto.** Cuando se trabaja en el checkout, todo
+1. **Lo que cambia junto, vive junto.** Cuando se trabaja en la compra, todo
    lo relevante (el carrito, el formulario de cupón, el servicio de ventas, el
-   modelo `Venta`) está en una sola carpeta. Con carpetas por tipo técnico, el
-   mismo trabajo obliga a saltar entre `/components/checkout-cart`,
-   `/services/ventas.service.ts`, `/models/venta.model.ts`, etc.
+   modelo `Venta`) está en una sola carpeta (`features/compra/`). Con carpetas
+   por tipo técnico, el mismo trabajo obliga a saltar entre
+   `/components/carrito-compra`, `/services/ventas.service.ts`,
+   `/models/venta.model.ts`, etc.
 2. **Lazy loading real y aislado.** Angular puede cargar bajo demanda
    (`loadComponent`/`loadChildren`) una carpeta de feature completa. Con
    carpetas por tipo técnico, el code-splitting por dominio es mucho más
@@ -68,7 +69,7 @@ feature, vive en esa feature; si lo usan dos o más, sube a `core`/`shared`**.
 Angular 22 genera standalone components por defecto, y es el punto de partida
 en todo el proyecto. Sin embargo, no se descarta usar `NgModule` cuando una
 feature concentra muchos componentes/pipes/directivas fuertemente
-relacionados entre sí (por ejemplo `checkout/` o `admin/`, que van a tener
+relacionados entre sí (por ejemplo `compra/` o `administracion/`, que van a tener
 varios subcomponentes que solo tienen sentido juntos). En esos casos, agrupar
 en un módulo de feature evita repetir la misma lista de imports en cada
 componente standalone del dominio. La decisión se toma **feature por
