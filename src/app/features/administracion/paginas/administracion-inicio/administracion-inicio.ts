@@ -1,13 +1,9 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
   imports: [],
-  selector: 'app-administracion-inicio',
-  template: `
-    <section class="marcador-de-posicion">
-      <h1>Panel de administración</h1>
-      <p>Pantalla en construcción — se implementa en la Fase 7 del roadmap.</p>
-    </section>
-  `,
+  selector: "app-administracion-inicio",
+  styleUrl: "./administracion-inicio.css",
+  templateUrl: "./administracion-inicio.html",
 })
 export class AdministracionInicio {}

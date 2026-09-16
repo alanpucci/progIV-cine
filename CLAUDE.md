@@ -101,6 +101,10 @@ menciona explícitamente y se explica por qué, no se asume.
 - **No generar tests unitarios** (`*.spec.ts`) salvo que se pida
   explícitamente. Al crear componentes con `ng generate`, usar
   `--skip-tests`.
+- **Componentes siempre en 3 archivos separados** (`.ts` + `.html` + `.css`),
+  nunca template/estilos inline. Al usar `ng generate component`, pasar
+  `--style=css` (o `scss` cuando exista el design system) y no pasar
+  `--inline-template` ni `--inline-style`.
 
 ## Ahorro de tokens / eficiencia de sesión
 
