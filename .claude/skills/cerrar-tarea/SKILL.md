@@ -16,22 +16,22 @@ checklist en orden. No saltear pasos aunque parezcan triviales.
    patrón, nueva convención). Si sí, actualizar la sección correspondiente. Si
    no hubo cambios de arquitectura, no tocar el README solo por tocarlo.
 
-3. **`docs/ROADMAP.md`**: actualizar el estado de la sub-tarea/fase
-   correspondiente (⬜ Pendiente → 🔄 En progreso → ✅ Hecho) y cualquier
-   detalle del plan que haya cambiado en el camino (alcance, decisiones,
-   puntos abiertos resueltos).
+3. **`docs/ROADMAP.md`** / **`docs/ROADMAP.pdf`**: **preguntar primero** si
+   corresponde actualizarlos (no siempre hace falta). Si el usuario confirma,
+   actualizar el estado de la sub-tarea/fase (⬜ Pendiente → 🔄 En progreso →
+   ✅ Hecho) y cualquier detalle del plan que haya cambiado en el camino
+   (alcance, decisiones, puntos abiertos resueltos), y regenerar el PDF — ver
+   el skill `actualizar-roadmap` para el procedimiento exacto (HTML con la
+   paleta del proyecto + Chrome headless). Si el usuario dice que no hace
+   falta, seguir sin tocarlos.
 
-4. **`docs/ROADMAP.pdf`**: si `docs/ROADMAP.md` cambió en el paso anterior,
-   regenerar el PDF. Ver el skill `actualizar-roadmap` para el procedimiento
-   exacto (HTML con la paleta del proyecto + Chrome headless).
-
-5. **Commit**: crear una rama con nombre descriptivo en inglés o español
+4. **Commit**: crear una rama con nombre descriptivo en inglés o español
    consistente con el historial (`feature/...`, `fix/...`, `chore/...`,
    `docs/...`), y commitear con un mensaje corto y claro. **Nunca** incluir
    líneas de atribución al agente (ni `Co-Authored-By: Claude`, ni "Generated
    with Claude Code", ni variantes).
 
-6. **Push + PR**: pushear la rama. Si `gh` está disponible, crear el PR con
+5. **Push + PR**: pushear la rama. Si `gh` está disponible, crear el PR con
    `gh pr create`. Si no está instalado, generar un link de GitHub
    `compare/<rama>?quick_pull=1&title=...&body=...` con título y descripción
    pre-cargados (usar Python `urllib.parse.urlencode` para armar la URL) y
@@ -47,6 +47,6 @@ checklist en orden. No saltear pasos aunque parezcan triviales.
    Un checklist de plan de pruebas al final es un plus, no reemplaza las tres
    secciones anteriores.
 
-7. Push y creación del PR se confirman con el usuario antes de ejecutarse,
+6. Push y creación del PR se confirman con el usuario antes de ejecutarse,
    salvo que ya haya sido pedido explícitamente en el mismo mensaje que
    disparó este skill.
