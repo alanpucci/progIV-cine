@@ -68,8 +68,8 @@ Leyenda de estado: ✅ Hecho · 🔄 En progreso · ⬜ Pendiente
 |---|---|---|
 | 0.1 | Limpieza de repo y documentación base (README + CHANGELOG) | ✅ |
 | 0.2 | Estructura de carpetas (`features/*` + rutas lazy placeholder) | ✅ |
-| 0.3 | Supabase: cliente, `environment.ts`, `SupabaseService` | ⬜ |
-| 0.4 | Design system base: variables SCSS + componentes `Button`/`Card` | ⬜ |
+| 0.3 | Supabase: cliente, `environment.ts`, `SupabaseService` | ✅ |
+| 0.4 | Design system base: variables SCSS + componentes `Button`/`Card` | ✅ |
 | 0.5 | Shell de layout: header, footer, fondo temático | ⬜ |
 | 0.6 | Esquema SQL inicial en Supabase (tablas base + RLS) | ⬜ |
 | 0.7 | Seed de datos de demo | ⬜ |
@@ -132,7 +132,11 @@ responsive final, despliegue a Vercel, README de arquitectura (RNF-008).
 
 ## Puntos abiertos (se resuelven al llegar a la fase correspondiente)
 
-- **Edad en compra anónima** (Fase 4): probablemente auto-declaración/checkbox.
+- ~~**Edad en compra anónima** (Fase 4)~~ — **resuelto**: el checkout anónimo
+  pide fecha de nacimiento y se valida igual que con un perfil registrado
+  (ver `docs/01_Analisis_Funcional_Cine.pdf`, sección 11, y
+  `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`, tabla `ventas`, columna
+  `fecha_nacimiento_comprador`).
 - **Canal de notificaciones de estreno** (Fase 10): arrancar in-app, evaluar
   email después.
 - **Borrado físico vs soft-delete** (Fase 7): se propone soft-delete

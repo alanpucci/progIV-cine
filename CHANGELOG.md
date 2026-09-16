@@ -3,6 +3,34 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Docs: revisión pre-Fase 0.5] - 2026-09-16
+
+### Changed
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: revisado contra el intercambio
+  de emails original antes de crear las tablas en Supabase. Se agrega la
+  tabla `reservas_butaca` (bloqueo temporal en tiempo real mientras se
+  seleccionan butacas, vía Supabase Realtime), `ventas.candy_entregado_at`
+  (retiro de Candy como redención independiente de la validación de la
+  entrada), `ventas.fecha_nacimiento_comprador` (valida edad en compra
+  anónima), `perfiles.puntos_saldo` cacheado (simetría con `credito_saldo`) y
+  `usos_qr.entrada_id` (FK de trazabilidad). Se documentan además las reglas
+  SQL concretas: exclusion constraint para no solapar funciones por sala,
+  CHECK de coherencia por `tipo_item` e índice único parcial en
+  `venta_items` para no vender la misma butaca dos veces.
+- `docs/01_Analisis_Funcional_Cine.pdf`: la sección 11 pasa la ambigüedad de
+  "compra anónima + restricción de edad" de abierta a resuelta, con la
+  decisión tomada y su referencia cruzada al modelo de datos.
+- `docs/02_Requisitos_y_Casos_de_Uso_Cine.pdf`: RF-026, RN-004 y CU-26
+  aclaran cómo se valida la edad cuando la compra es anónima.
+- `CLAUDE.md`: nueva regla — `docs/01`, `docs/02` y `docs/03` son documentos
+  vivos que pueden actualizarse durante el desarrollo si surge una decisión u
+  obstáculo que los vuelva inexactos, a diferencia de `docs/ROADMAP.md`, que
+  sigue requiriendo confirmación previa para cualquier cambio.
+- `docs/ROADMAP.md` / `docs/ROADMAP.pdf`: se corrige el estado de 0.3 y 0.4 a
+  ✅ Hecho (ya estaban mergeadas por PRs anteriores; el checkbox había
+  quedado desactualizado) y se marca como resuelto el punto abierto de "edad
+  en compra anónima", con referencia a la decisión tomada en esta entrega.
+
 ## [Fase 0.4] - 2026-09-16
 
 ### Added
