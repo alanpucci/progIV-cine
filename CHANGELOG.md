@@ -3,6 +3,30 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 0.3] - 2026-09-16
+
+### Added
+- `@supabase/supabase-js` como dependencia y `core/supabase.service.ts`
+  (`SupabaseService`, `providedIn: 'root'`) que expone el cliente de Supabase
+  ya inicializado — punto único de acceso, ningún componente lo llama
+  directo.
+- `scripts/generar-entorno.js`: genera `src/environments/environment.ts` a
+  partir de las variables `SUPABASE_URL`/`SUPABASE_ANON_KEY` (tomadas de
+  `.env` en local o de las variables del proyecto en Vercel en despliegue).
+  Se ejecuta solo con los hooks `prestart`/`prebuild` de `package.json`, antes
+  de `ng serve`/`ng build`.
+- `.env.example` con los nombres de variable esperados, para que cada quien
+  arme su propio `.env` local con las credenciales de su proyecto de
+  Supabase.
+
+### Changed
+- `.gitignore`: se agrega `src/environments/environment.ts` a los archivos
+  ignorados — es generado por `scripts/generar-entorno.js` y nunca debe
+  commitearse (contiene la URL y la clave de Supabase).
+- `README.md`: sección "Acceso a datos" documenta el mecanismo de
+  credenciales por variables de entorno; "Desarrollo" agrega el paso de
+  copiar `.env.example` a `.env`.
+
 ## [Fase 0.2b] - 2026-09-16
 
 ### Added

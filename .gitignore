@@ -16,6 +16,9 @@
 /.env.*
 !/.env.example
 
+# Generado por scripts/generar-entorno.js a partir de .env — nunca se commitea
+/src/environments/environment.ts
+
 # Angular CLI and build artefacts
 /.angular-cli.json
 /.ng/
