@@ -1,0 +1,7 @@
+<button
+  [type]="tipo()"
+  class="boton boton--{{ variante() }} boton--{{ tamano() }}"
+  [disabled]="deshabilitado()"
+>
+  <ng-content />
+</button>

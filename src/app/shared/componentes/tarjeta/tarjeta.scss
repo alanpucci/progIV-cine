@@ -1,0 +1,21 @@
+.tarjeta {
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-md);
+  padding: var(--espacio-lg);
+  transition:
+    transform var(--transicion-base),
+    box-shadow var(--transicion-base),
+    border-color var(--transicion-base);
+}
+
+.tarjeta--interactiva {
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sombra-elevada);
+    border-color: var(--color-acento-secundario);
+  }
+}
