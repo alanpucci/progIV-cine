@@ -18,6 +18,15 @@ cine), nunca un look de librería reconocible a simple vista.
   está destilado en `README.md` y `docs/ROADMAP.md` — no hace falta pedirlo ni
   releerlo de nuevo, salvo que se necesite un detalle muy puntual que no esté
   resumido ahí.
+- Los documentos `docs/01_Analisis_Funcional_Cine.pdf`,
+  `docs/02_Requisitos_y_Casos_de_Uso_Cine.pdf` y
+  `docs/03_Modelo_de_Datos_Supabase_Cine.pdf` **no son inmutables**: son vivos
+  y pueden actualizarse durante el desarrollo si surge una decisión, un
+  obstáculo o una ambigüedad que los vuelva inexactos (a diferencia de
+  `docs/ROADMAP.md`, que sí requiere preguntar antes de tocarlo). Cuando se
+  resuelva algo que estos documentos daban como pendiente o ambiguo, avisar y
+  actualizar el documento afectado en la misma conversación en vez de dejarlo
+  desactualizado.
 - Las decisiones de arquitectura de fondo ya están tomadas (ver tabla en
   `README.md`): SCSS propio sin Angular Material ni Tailwind, pagos
   simulados/mock, despliegue en Vercel, standalone components + NgModules
