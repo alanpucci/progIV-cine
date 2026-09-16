@@ -3,6 +3,35 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 0.6] - 2026-09-16
+
+### Added
+- `supabase/migrations/20260916120000_esquema_inicial.sql`: esquema SQL
+  inicial completo (26 tablas de negocio) a partir del modelo de datos
+  revisado — usuarios/perfiles, catálogo (películas/géneros/reseñas),
+  salas/butacas/reservas temporales, funciones (con exclusion constraint
+  anti-solapamiento), candy bar/combos, cupones, venta/venta_items/pagos
+  (con CHECK de coherencia por `tipo_item` e índice único parcial anti doble
+  venta de butaca), entradas/usos_qr, fidelización (recompensas/canjes/
+  ledgers de puntos y crédito con saldo cacheado por trigger) y
+  alertas/notificaciones/auditoría. Incluye triggers de negocio: alta
+  automática de `perfiles` al registrarse, protección de `rol`/saldos contra
+  auto-edición, cálculo de `funciones.fin` por duración de película y
+  propagación de cancelación de venta a sus items.
+- `supabase/migrations/20260916120100_rls_politicas.sql`: Row Level Security
+  habilitada en las 26 tablas — catálogo de lectura pública/ABM admin, datos
+  personales visibles solo por su dueño (o admin/empleado según rol), y
+  tablas transaccionales sensibles sin escritura de cliente (reservada a RPC
+  `security definer` de fases futuras).
+
+### Changed
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: versión 3. Se agrega
+  `ventas.cupon_id` (nullable) para formalizar la relación cupones→ventas que
+  el diagrama conceptual ya daba por hecha pero nunca estaba modelada como
+  columna. Nuevo punto resuelto en la sección 7.
+- `README.md`: nueva sección "Esquema SQL versionado y RLS" documentando la
+  convención de migraciones y el criterio de seguridad por tabla.
+
 ## [Fase 0.5] - 2026-09-16
 
 ### Added
