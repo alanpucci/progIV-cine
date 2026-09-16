@@ -28,11 +28,14 @@ El usuario pidió explícitamente:
 | Estilo visual | SCSS propio con design tokens (paleta oscura tipo sala de cine). Sin Angular Material ni Tailwind. |
 | Pagos | Checkout con pasarela **simulada** (mock), persistida igual en la tabla `pagos` como aprobada. |
 | Despliegue | Vercel |
-| Componentes | Standalone por defecto, combinado con NgModules por feature cuando conviene (decisión caso a caso, no global). |
+| Componentes | Standalone por defecto. `compra` y `administracion` usan NgModule clásico (más componentes relacionados + valor pedagógico de la materia); el resto sigue standalone. |
 | Manejo de estado | Signals de Angular + servicios inyectables. Sin NgRx. |
 | Acceso a datos | `SupabaseService` central + servicios de dominio por feature. Nunca Supabase directo desde un componente. |
 | Concurrencia de butacas | Validación de disponibilidad vía transacción/RPC en Postgres, no solo en el frontend. |
 | Commits / PRs | Sin líneas de atribución al agente. Toda PR incluye Objetivo inicial / Qué se terminó haciendo / Resumen de cambios. |
+| Idioma del código | Todo en español (componentes, servicios, rutas, variables) salvo API de Angular/TS/RxJS y vocabulario técnico de arquitectura (`core`, `shared`, `features`, `layout`). |
+| Tests unitarios | No se generan salvo pedido explícito. |
+| Archivos de componente | Siempre 3 separados (`.ts`/`.html`/`.css`), nunca template/estilos inline. |
 
 ## Estructura de carpetas
 
@@ -44,14 +47,14 @@ src/app/
   features/
     catalogo/        # M02 - listado, detalle, búsqueda/filtro, reseñas
     salas-butacas/   # M03/M04 - mapa de butacas, selección, disponibilidad
-    checkout/        # M05/M06/M07 - carrito, candy/combos, cupones, pago mock
+    compra/          # M05/M06/M07 - carrito, candy/combos, cupones, pago mock (NgModule)
     fidelizacion/    # M08 - puntos, crédito, canjes
-    tickets/         # M09 - ticket PDF + QR (vista cliente)
+    entradas/        # M09 - ticket PDF + QR (vista cliente)
     cancelaciones/   # M10
     proximamente/    # M11 - estrenos, alertas
     perfil/          # M01 - registro, login, datos del cliente, Mis películas
     empleado/        # validación QR/código manual
-    admin/           # M12/M13 + ABM de todo lo anterior
+    administracion/  # M12/M13 + ABM de todo lo anterior (NgModule)
   app.routes.ts      # composición de rutas lazy por feature
 ```
 
@@ -64,15 +67,17 @@ Leyenda de estado: ✅ Hecho · 🔄 En progreso · ⬜ Pendiente
 | # | Sub-tarea | Estado |
 |---|---|---|
 | 0.1 | Limpieza de repo y documentación base (README + CHANGELOG) | ✅ |
-| 0.2 | Estructura de carpetas (`core/shared/layout/features`) + rutas lazy placeholder | ⬜ |
+| 0.2 | Estructura de carpetas (`features/*` + rutas lazy placeholder) | ✅ |
 | 0.3 | Supabase: cliente, `environment.ts`, `SupabaseService` | ⬜ |
 | 0.4 | Design system base: variables SCSS + componentes `Button`/`Card` | ⬜ |
 | 0.5 | Shell de layout: header, footer, fondo temático | ⬜ |
 | 0.6 | Esquema SQL inicial en Supabase (tablas base + RLS) | ⬜ |
 | 0.7 | Seed de datos de demo | ⬜ |
 
-**Verificación**: `ng serve` levanta la app, se navega entre rutas placeholder,
-header/footer con la nueva paleta, lectura exitosa a Supabase desde el browser.
+**Verificación 0.2 (hecha)**: `ng build` genera un chunk lazy por feature,
+`ng serve` levanta la app y navega entre las 10 páginas placeholder vía la
+navegación provisoria. `core/`/`shared/`/`layout/` se crean recién en 0.3/0.4/0.5,
+cuando tengan contenido real (git no versiona carpetas vacías).
 
 ### Fase 1 — Catálogo público (M02) ⬜
 Listado de películas (poster, nombre, duración, clasificación), detalle
@@ -88,18 +93,18 @@ Registro (mail, nombre, apellido, fecha nacimiento, tipo de sangre, color de
 ojos, vacaciones anuales), login/logout, perfil (datos, puntos, crédito,
 historiales) — sin romper la navegación de invitado.
 
-### Fase 4 — Checkout: entradas + Candy/combos + cupones (M05/M06/M07) ⬜
+### Fase 4 — Compra: entradas + Candy/combos + cupones (M05/M06/M07) ⬜
 Carrito (entradas + productos + combos), cupón, compra anónima vs registrada,
 validación de edad (RN04), pantalla de pago simulada, persistencia de venta.
 
-### Fase 5 — Tickets y QR (M09) ⬜
-PDF de entrada + QR, pantalla "Mis compras/tickets".
+### Fase 5 — Entradas y QR (M09) ⬜
+PDF de entrada + QR, pantalla "Mis entradas".
 
 ### Fase 6 — Panel de empleado: validación (M09 operación) ⬜
 Escaneo/ingreso manual de código, validación de entrada y retiro de Candy,
 invalidación de QR usado.
 
-### Fase 7 — Panel de administrador: ABM base (M03/M04/M06/M07 admin) ⬜
+### Fase 7 — Panel de administración: ABM base (M03/M04/M06/M07 admin) ⬜
 CRUD de películas, salas/butacas, funciones (asignación automática de sala +
 RN01/RN02/RN03), productos/categorías, combos, cupones y preventa.
 

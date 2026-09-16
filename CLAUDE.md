@@ -49,12 +49,43 @@ cine), nunca un look de librería reconocible a simple vista.
 - Push y creación de PR se confirman con el usuario antes de ejecutarse, salvo
   que ya lo haya pedido explícitamente en el mismo mensaje.
 
+## Idioma del código
+
+Todo el código de este proyecto se escribe **en español**: nombres de
+componentes, servicios, clases, métodos, atributos, variables, inputs/outputs,
+signals, segmentos de rutas (URLs), nombres de archivos y carpetas de
+*dominio* (features y lo que hay dentro de ellas). Ejemplos: `CatalogoInicio`
+(no `CatalogoHome`), `obtenerPeliculasDestacadas()` (no
+`getFeaturedMovies()`), ruta `/administracion` (no `/admin`), carpeta
+`features/compra/` (no `features/checkout/`).
+
+Excepciones (se mantienen en inglés porque son vocabulario de la plataforma,
+no del dominio):
+- Palabras reservadas y API de Angular/TypeScript/RxJS (`Component`,
+  `Injectable`, `OnInit`, `Input`, `Output`, `Observable`, `signal`, etc.) y
+  sus convenciones de sufijo (`*.routes.ts`, `*.service.ts`, `*.module.ts` /
+  clase `XxxModule` si se usa).
+- Nombres de tablas/columnas de Supabase, que ya están fijados en español en
+  el modelo de datos (`peliculas`, `ventas`, `entradas`, etc.) — ahí no aplica
+  ninguna excepción, ya vienen bien.
+- Carpetas de arquitectura que son vocabulario técnico estándar de la
+  industria, no del dominio del cine: `core/`, `shared/`, `features/`,
+  `layout/`, `src/`, `assets/`, `environments/`. Estas quedan como están
+  porque son equivalentes a "component"/"service" — término técnico, no
+  concepto de negocio.
+
+Si en algún punto conviene una excepción puntual además de estas, se
+menciona explícitamente y se explica por qué, no se asume.
+
 ## Buenas prácticas Angular específicas de este proyecto
 
-- Standalone components por defecto; agrupar en `NgModule` una feature
-  concreta solo si concentra muchos componentes/pipes/directivas fuertemente
-  relacionados (decisión caso a caso — documentar el motivo en el PR si se
-  hace).
+- Standalone components por defecto. Dos features usan `NgModule` clásico a
+  propósito — **`administracion`** y **`compra`** — porque van a concentrar
+  varios componentes/formularios relacionados y porque el usuario quería
+  aplicar el patrón visto en la facultad; el resto de las features sigue
+  standalone. No convertir más features a NgModule sin que se pida. Un
+  componente declarado en un NgModule necesita `standalone: false` explícito
+  en el decorator (Angular 22 asume standalone por defecto).
 - Estado con signals de Angular + servicios inyectables. Sin NgRx.
 - Ningún componente llama a Supabase directo: siempre a través de un servicio
   de dominio que usa `SupabaseService` (en `core/`).
@@ -64,8 +95,20 @@ cine), nunca un look de librería reconocible a simple vista.
 - Estructura por *feature* (`features/<dominio>/`), no por tipo técnico
   (`/components`, `/services` planos a nivel raíz) — justificación completa en
   `README.md`.
-- Preferir `OnPush` change detection y signals/`async` pipe sobre subscribes
-  manuales sin unsubscribe.
+- El proyecto es **zoneless** (sin `zone.js`, confirmado en `package.json`):
+  la detección de cambios depende de signals, no de que Zone.js parchee APIs
+  async. Cualquier estado que deba reflejarse en la UI tiene que ser un
+  signal (o derivarse de uno con `computed`) — mutar una variable plana o
+  hacer un `subscribe()` sin volcar el valor a un signal no va a actualizar
+  la vista.
+- Preferir signals/`async` pipe sobre subscribes manuales sin unsubscribe.
+- **No generar tests unitarios** (`*.spec.ts`) salvo que se pida
+  explícitamente. Al crear componentes con `ng generate`, usar
+  `--skip-tests`.
+- **Componentes siempre en 3 archivos separados** (`.ts` + `.html` + `.css`),
+  nunca template/estilos inline. Al usar `ng generate component`, pasar
+  `--style=css` (o `scss` cuando exista el design system) y no pasar
+  `--inline-template` ni `--inline-style`.
 
 ## Ahorro de tokens / eficiencia de sesión
 
