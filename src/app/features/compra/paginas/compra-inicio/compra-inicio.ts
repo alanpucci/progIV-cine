@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 
 @Component({
-  imports: [],
+  standalone: false,
   selector: "app-compra-inicio",
   styleUrl: "./compra-inicio.css",
   templateUrl: "./compra-inicio.html",

@@ -63,7 +63,8 @@ Excepciones (se mantienen en inglés porque son vocabulario de la plataforma,
 no del dominio):
 - Palabras reservadas y API de Angular/TypeScript/RxJS (`Component`,
   `Injectable`, `OnInit`, `Input`, `Output`, `Observable`, `signal`, etc.) y
-  sus convenciones de sufijo (`*.routes.ts`, `*.service.ts` si se usa).
+  sus convenciones de sufijo (`*.routes.ts`, `*.service.ts`, `*.module.ts` /
+  clase `XxxModule` si se usa).
 - Nombres de tablas/columnas de Supabase, que ya están fijados en español en
   el modelo de datos (`peliculas`, `ventas`, `entradas`, etc.) — ahí no aplica
   ninguna excepción, ya vienen bien.
@@ -78,10 +79,13 @@ menciona explícitamente y se explica por qué, no se asume.
 
 ## Buenas prácticas Angular específicas de este proyecto
 
-- Standalone components por defecto; agrupar en `NgModule` una feature
-  concreta solo si concentra muchos componentes/pipes/directivas fuertemente
-  relacionados (decisión caso a caso — documentar el motivo en el PR si se
-  hace).
+- Standalone components por defecto. Dos features usan `NgModule` clásico a
+  propósito — **`administracion`** y **`compra`** — porque van a concentrar
+  varios componentes/formularios relacionados y porque el usuario quería
+  aplicar el patrón visto en la facultad; el resto de las features sigue
+  standalone. No convertir más features a NgModule sin que se pida. Un
+  componente declarado en un NgModule necesita `standalone: false` explícito
+  en el decorator (Angular 22 asume standalone por defecto).
 - Estado con signals de Angular + servicios inyectables. Sin NgRx.
 - Ningún componente llama a Supabase directo: siempre a través de un servicio
   de dominio que usa `SupabaseService` (en `core/`).

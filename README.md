@@ -7,9 +7,15 @@ y productos (de forma anónima o registrada); y validar los consumos de forma
 presencial mediante QR.
 
 El análisis funcional completo (requisitos, casos de uso, reglas de negocio y
-modelo de datos) es la fuente de verdad sobre **qué** hace el sistema. Este
-README documenta el **cómo**: arquitectura técnica, decisiones de diseño y el
-porqué de cada una.
+modelo de datos), en `docs/`, es la fuente de verdad sobre **qué** hace el
+sistema:
+
+- [`docs/01_Analisis_Funcional_Cine.pdf`](docs/01_Analisis_Funcional_Cine.pdf)
+- [`docs/02_Requisitos_y_Casos_de_Uso_Cine.pdf`](docs/02_Requisitos_y_Casos_de_Uso_Cine.pdf)
+- [`docs/03_Modelo_de_Datos_Supabase_Cine.pdf`](docs/03_Modelo_de_Datos_Supabase_Cine.pdf)
+
+Este README documenta el **cómo**: arquitectura técnica, decisiones de diseño
+y el porqué de cada una.
 
 ## Stack
 
@@ -67,14 +73,26 @@ feature, vive en esa feature; si lo usan dos o más, sube a `core`/`shared`**.
 ### Standalone components y NgModules, combinados a propósito
 
 Angular 22 genera standalone components por defecto, y es el punto de partida
-en todo el proyecto. Sin embargo, no se descarta usar `NgModule` cuando una
-feature concentra muchos componentes/pipes/directivas fuertemente
-relacionados entre sí (por ejemplo `compra/` o `administracion/`, que van a tener
-varios subcomponentes que solo tienen sentido juntos). En esos casos, agrupar
-en un módulo de feature evita repetir la misma lista de imports en cada
-componente standalone del dominio. La decisión se toma **feature por
-feature**, según cuánto se beneficie esa carpeta en particular — no es una
-regla global de "todo módulo" ni "todo standalone".
+en la mayoría de las features. Dos features son la excepción deliberada:
+**`compra/`** y **`administracion/`** usan `NgModule` clásico
+(`declarations` + `RouterModule.forChild`), mientras que las otras ocho
+features siguen siendo standalone con `loadComponent`.
+
+La razón es doble:
+1. Son las dos features que más componentes relacionados van a acumular
+   (compra: selección de butacas, candy/combos, cupón, pago, confirmación;
+   administración: un CRUD por cada entidad configurable del cine), así que
+   es donde un módulo de feature tiene sentido real.
+2. Es una decisión también pedagógica: el TP es para una materia que enseña
+   NgModule, y tiene valor demostrar que se entiende cuándo aplicar cada
+   paradigma en vez de usar uno solo en todo el proyecto por default.
+
+Importante para quien lea el código: en Angular 22 los componentes son
+standalone por defecto, así que un componente declarado en un NgModule
+necesita `standalone: false` explícito en su decorator — si no, el compilador
+rechaza declararlo en `declarations`. No se convierten más features a
+NgModule sin una razón puntual — la regla no es "todo módulo" ni "todo
+standalone", es esta elección concreta y acotada.
 
 ### Manejo de estado: signals + servicios (sin NgRx)
 

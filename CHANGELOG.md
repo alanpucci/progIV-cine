@@ -3,6 +3,26 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 0.2b] - 2026-09-16
+
+### Added
+- `features/administracion/administracion.module.ts` y
+  `features/compra/compra.module.ts`: estas dos features usan NgModule
+  clásico en vez de standalone (declarations + `RouterModule.forChild`),
+  decisión documentada en `README.md` — combina beneficio real (son las
+  features con más componentes relacionados a futuro) con valor pedagógico
+  para el TP.
+
+### Changed
+- Los 10 componentes placeholder pasan de template/estilo inline a archivos
+  separados (`.ts`/`.html`/`.css`), documentado como convención fija en
+  `CLAUDE.md`.
+- `AdministracionInicio` y `CompraInicio` pasan a `standalone: false` para
+  poder declararse en su NgModule.
+- `app.routes.ts`: las rutas de `compra` y `administracion` cargan su
+  `*.module.ts` con `loadChildren`; el resto sigue cargando su `*.routes.ts`
+  standalone sin cambios.
+
 ## [Fase 0.2] - 2026-09-16
 
 ### Added

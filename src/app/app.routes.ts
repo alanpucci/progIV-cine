@@ -12,7 +12,7 @@ export const routes: Routes = [
   },
   {
     path: 'compra',
-    loadChildren: () => import('./features/compra/compra.routes').then((m) => m.RUTAS_COMPRA),
+    loadChildren: () => import('./features/compra/compra.module').then((m) => m.CompraModule),
   },
   {
     path: 'fidelizacion',
@@ -44,7 +44,7 @@ export const routes: Routes = [
   {
     path: 'administracion',
     loadChildren: () =>
-      import('./features/administracion/administracion.routes').then((m) => m.RUTAS_ADMINISTRACION),
+      import('./features/administracion/administracion.module').then((m) => m.AdministracionModule),
   },
   {
     path: '**',

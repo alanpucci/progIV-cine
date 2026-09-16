@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 
 @Component({
-  imports: [],
+  standalone: false,
   selector: "app-administracion-inicio",
   styleUrl: "./administracion-inicio.css",
   templateUrl: "./administracion-inicio.html",

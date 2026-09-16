@@ -28,13 +28,14 @@ El usuario pidió explícitamente:
 | Estilo visual | SCSS propio con design tokens (paleta oscura tipo sala de cine). Sin Angular Material ni Tailwind. |
 | Pagos | Checkout con pasarela **simulada** (mock), persistida igual en la tabla `pagos` como aprobada. |
 | Despliegue | Vercel |
-| Componentes | Standalone por defecto, combinado con NgModules por feature cuando conviene (decisión caso a caso, no global). |
+| Componentes | Standalone por defecto. `compra` y `administracion` usan NgModule clásico (más componentes relacionados + valor pedagógico de la materia); el resto sigue standalone. |
 | Manejo de estado | Signals de Angular + servicios inyectables. Sin NgRx. |
 | Acceso a datos | `SupabaseService` central + servicios de dominio por feature. Nunca Supabase directo desde un componente. |
 | Concurrencia de butacas | Validación de disponibilidad vía transacción/RPC en Postgres, no solo en el frontend. |
 | Commits / PRs | Sin líneas de atribución al agente. Toda PR incluye Objetivo inicial / Qué se terminó haciendo / Resumen de cambios. |
 | Idioma del código | Todo en español (componentes, servicios, rutas, variables) salvo API de Angular/TS/RxJS y vocabulario técnico de arquitectura (`core`, `shared`, `features`, `layout`). |
 | Tests unitarios | No se generan salvo pedido explícito. |
+| Archivos de componente | Siempre 3 separados (`.ts`/`.html`/`.css`), nunca template/estilos inline. |
 
 ## Estructura de carpetas
 
@@ -46,14 +47,14 @@ src/app/
   features/
     catalogo/        # M02 - listado, detalle, búsqueda/filtro, reseñas
     salas-butacas/   # M03/M04 - mapa de butacas, selección, disponibilidad
-    compra/          # M05/M06/M07 - carrito, candy/combos, cupones, pago mock
+    compra/          # M05/M06/M07 - carrito, candy/combos, cupones, pago mock (NgModule)
     fidelizacion/    # M08 - puntos, crédito, canjes
     entradas/        # M09 - ticket PDF + QR (vista cliente)
     cancelaciones/   # M10
     proximamente/    # M11 - estrenos, alertas
     perfil/          # M01 - registro, login, datos del cliente, Mis películas
     empleado/        # validación QR/código manual
-    administracion/  # M12/M13 + ABM de todo lo anterior
+    administracion/  # M12/M13 + ABM de todo lo anterior (NgModule)
   app.routes.ts      # composición de rutas lazy por feature
 ```
 
