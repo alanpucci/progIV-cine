@@ -112,6 +112,12 @@ se construyen servicios de dominio (`PeliculasService`, `FuncionesService`,
 `VentasService`, etc.) que los componentes consumen. Esto mantiene las queries
 concentradas, testeables y reemplazables sin tocar la capa de presentación.
 
+Las credenciales de Supabase (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) no se
+commitean: viven en un `.env` local (ver `.env.example`) o en las variables de
+entorno del proyecto en Vercel, y `scripts/generar-entorno.js` genera
+`src/environments/environment.ts` (gitignored) a partir de ellas antes de
+`ng serve`/`ng build` (hooks `prestart`/`prebuild` en `package.json`).
+
 ### Concurrencia y validación de negocio en el backend
 
 Reglas críticas como "no vender la misma butaca dos veces" o "no solapar
@@ -131,8 +137,9 @@ una interfaz genérica.
 
 ```bash
 npm install
-npm start      # ng serve
-npm test       # vitest
+cp .env.example .env   # completar SUPABASE_URL y SUPABASE_ANON_KEY
+npm start              # ng serve (genera environment.ts antes de levantar)
+npm test               # vitest
 ```
 
 ## Estado del proyecto

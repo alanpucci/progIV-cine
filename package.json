@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "prestart": "node scripts/generar-entorno.js",
     "start": "ng serve",
+    "prebuild": "node scripts/generar-entorno.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -17,6 +19,7 @@
     "@angular/forms": "^22.1.0",
     "@angular/platform-browser": "^22.1.0",
     "@angular/router": "^22.1.0",
+    "@supabase/supabase-js": "^2.116.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
