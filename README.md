@@ -126,6 +126,46 @@ funciones/RPC en PostgreSQL (Supabase) dentro de una transacción, de modo que
 el estado visual del cliente sea una ayuda a la UX pero nunca la única barrera
 de integridad.
 
+### Esquema SQL versionado y RLS (Fase 0.6)
+
+El esquema completo (26 tablas de negocio) vive como migraciones SQL
+versionadas en `supabase/migrations/` (`<timestamp>_<nombre>.sql`, convención
+del CLI de Supabase), no como algo creado a mano desde el dashboard. Cada
+migración se aplica una sola vez y en orden; no se edita una ya aplicada, se
+agrega una nueva.
+
+Row Level Security está habilitada en las 26 tablas desde el arranque, con un
+criterio parejo:
+
+- **Catálogo** (películas, funciones, productos, combos, etc.): lectura
+  abierta a `anon`/`authenticated` de lo publicado/activo; alta/edición
+  reservada a `rol = 'admin'` vía un helper `rol_actual()` (`security
+  definer`, evita recursión al consultar `perfiles` desde su propia política).
+- **Datos personales** (ventas, entradas, pagos, ledgers de puntos/crédito,
+  notificaciones): cada usuario lee solo lo propio (`usuario_id = auth.uid()`
+  o join hasta `ventas`); `admin`/`empleado` ven todo lo que les corresponde
+  por rol.
+- **Tablas transaccionales sensibles** (`ventas`, `venta_items`, `entradas`,
+  `pagos`, `reservas_butaca`, `movimientos_puntos`, `movimientos_credito`,
+  `usos_qr`, `logs_actividad`): sin políticas de escritura para el cliente en
+  esta fase. Se escriben desde funciones RPC `security definer` que se
+  agregan fase a fase (bloqueo de butacas en la Fase 2, compra en la Fase 4,
+  validación de QR en la Fase 6, cancelación en la Fase 9) — esas funciones
+  corren con privilegios propios y no dependen de RLS, así que la ausencia de
+  política de escritura ahí es intencional, no un olvido.
+- `perfiles.rol`, `credito_saldo` y `puntos_saldo` están protegidos además
+  por un trigger (no solo por RLS): ni siquiera con una política de UPDATE
+  "propio" un usuario puede autopromoverse a admin o cargarse saldo, porque
+  el trigger rechaza el cambio si quien lo hace no es admin.
+- El alta de `perfiles` es automática: un trigger sobre `auth.users` crea la
+  fila de negocio al registrarse, tomando nombre/apellido/fecha de nacimiento
+  del `raw_user_meta_data` que mande el formulario de registro (Fase 3).
+
+Las migraciones no se aplican solas contra el proyecto de Supabase real desde
+acá: se corren con `supabase db push` (requiere `supabase link` con
+credenciales propias del proyecto) o pegando el contenido de cada archivo, en
+orden, en el SQL Editor del dashboard.
+
 ## Diseño visual
 
 Paleta oscura/nocturna con motivos de cine (proyección, cinta de película,
