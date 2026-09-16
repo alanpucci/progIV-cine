@@ -1,0 +1,60 @@
+<header class="encabezado">
+  <a class="encabezado__marca" routerLink="/" (click)="cerrarMenu()">
+    <svg class="encabezado__logo" viewBox="0 0 32 32" aria-hidden="true">
+      <circle class="encabezado__logo-aro" cx="16" cy="16" r="13" />
+      <circle class="encabezado__logo-eje" cx="16" cy="16" r="3.5" />
+      <circle class="encabezado__logo-perforacion" cx="16" cy="4.5" r="2" />
+      <circle class="encabezado__logo-perforacion" cx="16" cy="27.5" r="2" />
+      <circle class="encabezado__logo-perforacion" cx="4.5" cy="16" r="2" />
+      <circle class="encabezado__logo-perforacion" cx="27.5" cy="16" r="2" />
+      <circle class="encabezado__logo-perforacion" cx="7.7" cy="7.7" r="2" />
+      <circle class="encabezado__logo-perforacion" cx="24.3" cy="24.3" r="2" />
+      <circle class="encabezado__logo-perforacion" cx="7.7" cy="24.3" r="2" />
+      <circle class="encabezado__logo-perforacion" cx="24.3" cy="7.7" r="2" />
+    </svg>
+    <span class="encabezado__titulo">Cine<strong>ProgIV</strong></span>
+  </a>
+
+  <nav class="encabezado__nav">
+    <a
+      routerLink="/"
+      routerLinkActive="activo"
+      [routerLinkActiveOptions]="{ exact: true }"
+      >Catálogo</a
+    >
+    <a routerLink="/proximamente" routerLinkActive="activo">Próximamente</a>
+    <a routerLink="/fidelizacion" routerLinkActive="activo">Fidelización</a>
+    <a routerLink="/entradas" routerLinkActive="activo">Mis entradas</a>
+    <a routerLink="/perfil" routerLinkActive="activo">Perfil</a>
+  </nav>
+
+  <button
+    type="button"
+    class="encabezado__alternador"
+    [class.encabezado__alternador--abierto]="menuAbierto()"
+    [attr.aria-expanded]="menuAbierto()"
+    aria-controls="encabezado-nav-movil"
+    aria-label="Abrir menú de navegación"
+    (click)="alternarMenu()"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</header>
+
+@if (menuAbierto()) {
+  <nav id="encabezado-nav-movil" class="encabezado__nav-movil">
+    <a
+      routerLink="/"
+      routerLinkActive="activo"
+      [routerLinkActiveOptions]="{ exact: true }"
+      (click)="cerrarMenu()"
+      >Catálogo</a
+    >
+    <a routerLink="/proximamente" routerLinkActive="activo" (click)="cerrarMenu()">Próximamente</a>
+    <a routerLink="/fidelizacion" routerLinkActive="activo" (click)="cerrarMenu()">Fidelización</a>
+    <a routerLink="/entradas" routerLinkActive="activo" (click)="cerrarMenu()">Mis entradas</a>
+    <a routerLink="/perfil" routerLinkActive="activo" (click)="cerrarMenu()">Perfil</a>
+  </nav>
+}

@@ -3,6 +3,26 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 0.5] - 2026-09-16
+
+### Added
+- `src/app/layout/encabezado/`: header sticky con logo propio (rollo de
+  fílmico en SVG), nav pública (Catálogo, Próximamente, Fidelización, Mis
+  entradas, Perfil) con indicador de link activo y menú hamburguesa
+  responsive (<860px). Guirnalda de luces de marquesina como remate inferior.
+- `src/app/layout/pie/`: footer con marca, enlace a Cancelaciones (acción del
+  cliente sobre su propia compra) y perforaciones de fílmico como motivo
+  visual. Los accesos de staff (Panel de empleado, Administración) quedan
+  sin botón visible por ahora — las rutas siguen existiendo, el foco de esta
+  etapa es la experiencia del cliente.
+- `src/app/layout/estructura/`: componente que compone encabezado +
+  `router-outlet` + pie, y aporta el fondo temático (halo de proyector fijo
+  y cintas de perforaciones fílmicas a los costados en pantallas ≥1400px).
+
+### Changed
+- `src/app/app.ts` / `app.html` / `app.css`: se reemplaza la navegación
+  provisoria de la Fase 0 por `<app-estructura />`.
+
 ## [Docs: revisión pre-Fase 0.5] - 2026-09-16
 
 ### Changed

@@ -1,0 +1,50 @@
+.estructura {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  isolation: isolate;
+
+  // Fondo temático: haz de proyector sobre la sala, sutil y fijo.
+  &::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgb(212 175 55 / 8%), transparent 70%),
+      radial-gradient(ellipse 80% 60% at 50% 100%, rgb(196 40 58 / 10%), transparent 70%),
+      var(--color-fondo);
+  }
+
+  // Cintas de fílmico perforado enmarcando la pantalla en escritorios anchos.
+  &::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    background-repeat: repeat-y;
+    background-position:
+      calc(50% - 44rem) 0,
+      calc(50% + 44rem) 0;
+    background-size: 1.2rem 2.4rem;
+    background-image:
+      repeating-radial-gradient(circle, var(--color-borde) 0 2px, transparent 2.5px 100%),
+      repeating-radial-gradient(circle, var(--color-borde) 0 2px, transparent 2.5px 100%);
+    opacity: 0.35;
+    display: none;
+  }
+}
+
+@media (min-width: 1400px) {
+  .estructura::after {
+    display: block;
+  }
+}
+
+.estructura__contenido {
+  flex: 1;
+}
