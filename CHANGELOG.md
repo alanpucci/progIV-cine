@@ -44,6 +44,20 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   Verificado corriendo el script completo contra el proyecto real: las 26
   tablas y las políticas RLS quedaron creadas sin errores.
 
+## [Fase 0.7] - 2026-09-17
+
+### Added
+- `supabase/migrations/20260917120000_seed_datos_demo.sql`: datos de demo
+  para poder desarrollar y probar el Catálogo (Fase 1) y Salas/butacas
+  (Fase 2) contra datos reales — 10 géneros, 12 películas (con relación a
+  géneros, una sin publicar y una en preventa), 4 salas con sus butacas
+  (normal/accesible/VIP, dos con recargo), 36 funciones distribuidas en 3
+  días sin solapamientos, y candy bar/combos/cupones (4 categorías de
+  producto, 10 productos, 3 combos con sus items, 3 cupones). Reseñas y
+  ventas quedan fuera a propósito: dependen de usuarios reales
+  (`auth.users`), que todavía no existen hasta que se implemente el
+  registro (Fase 3).
+
 ## [Fase 0.5] - 2026-09-16
 
 ### Added
