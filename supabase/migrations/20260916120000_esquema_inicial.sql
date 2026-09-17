@@ -228,11 +228,29 @@ create trigger trg_funciones_calcular_fin
 
 -- Regla 5.2 del modelo de datos: no solapar horarios en la misma sala
 -- (margen de 30 minutos entre funciones).
+--
+-- `timestamptz + interval` es STABLE (no IMMUTABLE) en Postgres en general,
+-- porque un intervalo con componentes de mes/día puede depender del huso
+-- horario de sesión (DST). Acá el margen es siempre fijo en minutos, sin esa
+-- ambigüedad, así que envolver el cálculo en esta función y declararla
+-- IMMUTABLE es seguro y es el workaround estándar para poder usarla en un
+-- índice (obligatorio para `exclude using gist`).
+create or replace function public.rango_funcion_con_margen(
+  p_inicio timestamptz,
+  p_fin timestamptz
+)
+returns tstzrange
+language sql
+immutable
+as $$
+  select tstzrange(p_inicio, p_fin + interval '30 minutes');
+$$;
+
 alter table public.funciones
   add constraint sin_solapamiento_por_sala
   exclude using gist (
     sala_id with =,
-    tstzrange(inicio, fin + interval '30 minutes') with &&
+    public.rango_funcion_con_margen(inicio, fin) with &&
   );
 
 -- Bloqueo temporal de butacas en selección (tiempo real vía Supabase

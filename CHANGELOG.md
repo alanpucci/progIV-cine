@@ -32,6 +32,18 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
 - `README.md`: nueva sección "Esquema SQL versionado y RLS" documentando la
   convención de migraciones y el criterio de seguridad por tabla.
 
+### Fixed
+- `supabase/migrations/20260916120000_esquema_inicial.sql`: la exclusion
+  constraint `sin_solapamiento_por_sala` fallaba al correrla contra Supabase
+  (`functions in index expression must be marked IMMUTABLE`) porque
+  `timestamptz + interval` es `STABLE`, no `IMMUTABLE`, y Postgres exige
+  IMMUTABLE en expresiones de índice. Se resuelve envolviendo el cálculo del
+  margen de 30 minutos en `public.rango_funcion_con_margen(inicio, fin)`, una
+  función SQL declarada `immutable` (seguro en este caso puntual porque el
+  margen es fijo en minutos, sin componentes de mes/día sujetos a DST).
+  Verificado corriendo el script completo contra el proyecto real: las 26
+  tablas y las políticas RLS quedaron creadas sin errores.
+
 ## [Fase 0.5] - 2026-09-16
 
 ### Added
