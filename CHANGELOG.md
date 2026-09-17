@@ -3,6 +3,25 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 1.1] - 2026-09-17
+
+### Added
+- `src/app/core/modelos/pelicula.model.ts`: modelos de dominio del catálogo
+  (`Genero`, `PeliculaResumen`, `FuncionDisponible`, `ResenaPelicula`,
+  `PeliculaDetalle`, `PeliculaDestacada`).
+- `src/app/core/servicios/peliculas.service.ts`: `PeliculasService` con
+  `obtenerListado()`, `obtenerDetalle(id)` (funciones programadas a futuro,
+  reseñas y promedio de estrellas) y `obtenerDestacadas(cantidad)` para el
+  destacado "3 más vendidas" de la home.
+- `supabase/migrations/20260917130000_rpc_peliculas_destacadas.sql`: función
+  `obtener_peliculas_mas_vendidas` (`security definer`, lectura agregada) para
+  poder rankear películas por entradas vendidas sin exponer filas de venta
+  individuales a un visitante anónimo. `obtenerDestacadas()` cae a estrenos
+  recientes cuando todavía no hay ventas (normal antes de la Fase 4).
+
+### Changed
+- `README.md`: nueva sub-sección "RPC pública para datos agregados (Fase 1)".
+
 ## [Fase 0.6] - 2026-09-16
 
 ### Added

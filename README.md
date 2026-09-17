@@ -166,6 +166,17 @@ acá: se corren con `supabase db push` (requiere `supabase link` con
 credenciales propias del proyecto) o pegando el contenido de cada archivo, en
 orden, en el SQL Editor del dashboard.
 
+### RPC pública para datos agregados (Fase 1)
+
+El destacado "3 más vendidas" del catálogo necesita un ranking de películas
+por entradas vendidas, pero `ventas`/`venta_items` son datos personales (cada
+usuario lee solo lo propio). En vez de relajar esa política, se agregó
+`obtener_peliculas_mas_vendidas(cantidad)`: una función `security definer`
+que devuelve únicamente `pelicula_id` + conteo agregado, sin exponer ninguna
+fila de venta individual, con `grant execute` a `anon`/`authenticated`. Es el
+mismo patrón de RPC ya usado para escritura en tablas transaccionales, aplicado
+acá a una lectura agregada en vez de a una escritura.
+
 ## Diseño visual
 
 Paleta oscura/nocturna con motivos de cine (proyección, cinta de película,

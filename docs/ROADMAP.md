@@ -79,10 +79,17 @@ Leyenda de estado: ✅ Hecho · 🔄 En progreso · ⬜ Pendiente
 navegación provisoria. `core/`/`shared/`/`layout/` se crean recién en 0.3/0.4/0.5,
 cuando tengan contenido real (git no versiona carpetas vacías).
 
-### Fase 1 — Catálogo público (M02) ⬜
+### Fase 1 — Catálogo público (M02) 🔄
 Listado de películas (poster, nombre, duración, clasificación), detalle
 (sinopsis, géneros, reseñas con estrellas y promedio, funciones disponibles),
 buscador + filtro múltiple por género, destacado "3 más vendidas" en home.
+
+| # | Sub-tarea | Estado |
+|---|---|---|
+| 1.1 | Capa de datos: modelos + `PeliculasService` (listado/detalle/destacadas) + RPC agregada de "más vendidas" | ✅ |
+| 1.2 | Página de listado (home): grilla de películas + destacado "3 más vendidas" | ⬜ |
+| 1.3 | Buscador + filtro múltiple por género | ⬜ |
+| 1.4 | Página de detalle de película (sinopsis, géneros, funciones disponibles, reseñas + promedio) | ⬜ |
 
 ### Fase 2 — Salas, butacas y funciones (M03/M04) ⬜
 Mapa visual de butacas (normal/accesible/VIP con diferenciación de color
