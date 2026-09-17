@@ -62,7 +62,7 @@ src/app/
 
 Leyenda de estado: ✅ Hecho · 🔄 En progreso · ⬜ Pendiente
 
-### Fase 0 — Fundaciones del proyecto 🔄
+### Fase 0 — Fundaciones del proyecto ✅
 
 | # | Sub-tarea | Estado |
 |---|---|---|
@@ -70,9 +70,9 @@ Leyenda de estado: ✅ Hecho · 🔄 En progreso · ⬜ Pendiente
 | 0.2 | Estructura de carpetas (`features/*` + rutas lazy placeholder) | ✅ |
 | 0.3 | Supabase: cliente, `environment.ts`, `SupabaseService` | ✅ |
 | 0.4 | Design system base: variables SCSS + componentes `Button`/`Card` | ✅ |
-| 0.5 | Shell de layout: header, footer, fondo temático | ⬜ |
-| 0.6 | Esquema SQL inicial en Supabase (tablas base + RLS) | ⬜ |
-| 0.7 | Seed de datos de demo | ⬜ |
+| 0.5 | Shell de layout: header, footer, fondo temático | ✅ |
+| 0.6 | Esquema SQL inicial en Supabase (tablas base + RLS) | ✅ |
+| 0.7 | Seed de datos de demo | ✅ |
 
 **Verificación 0.2 (hecha)**: `ng build` genera un chunk lazy por feature,
 `ng serve` levanta la app y navega entre las 10 páginas placeholder vía la
