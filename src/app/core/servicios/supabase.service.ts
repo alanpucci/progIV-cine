@@ -1,6 +1,6 @@
 import { Service } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { entorno } from '../../environments/environment';
+import { entorno } from '../../../environments/environment';
 
 @Service()
 export class SupabaseService {

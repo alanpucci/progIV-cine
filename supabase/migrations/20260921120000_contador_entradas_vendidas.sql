@@ -1,21 +1,2 @@
--- Fase 1 (M02): contador cacheado para el destacado "3 más vendidas" del
--- catálogo público.
---
--- Reemplaza el enfoque anterior (RPC `security definer` que agregaba sobre
--- `ventas`/`venta_items` en el momento de la lectura). En vez de calcular en
--- cada visita al catálogo, se mantiene un contador ya resuelto en
--- `peliculas`, la misma idea que `perfiles.puntos_saldo`/`credito_saldo`
--- cacheados por trigger. Como `peliculas` ya es de lectura pública para
--- filas publicadas (política existente en `20260916120100_rls_politicas.sql`),
--- no hace falta ningún permiso nuevo ni relajar el RLS de las tablas de
--- venta: la columna nunca expone qué usuario compró qué, solo un total por
--- película.
---
--- El trigger que incrementa/decrementa esta columna al confirmar o cancelar
--- una venta se agrega recién en la Fase 4 (compra) y la Fase 9
--- (cancelaciones), que son las que definen cómo y cuándo `ventas.estado`
--- pasa a 'pagada' o 'cancelada'. Hasta entonces queda en 0 para toda
--- película — `PeliculasService.obtenerDestacadas()` ya contempla ese caso
--- ordenando por estreno más reciente como desempate.
 alter table public.peliculas
   add column entradas_vendidas integer not null default 0;

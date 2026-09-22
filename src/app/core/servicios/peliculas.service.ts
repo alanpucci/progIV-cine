@@ -1,7 +1,7 @@
 import { Service, inject } from '@angular/core';
-import { SupabaseService } from '../supabase.service';
+import { SupabaseService } from './supabase.service';
 import { PeliculaDetalle, PeliculaResumen, ResenaPelicula } from '../modelos/pelicula.model';
-import { mapearFuncion, mapearResumen } from './pelicula.mapeos';
+import { mapearFuncion, mapearResumen } from '../helpers/pelicula.mapeos';
 
 const COLUMNAS_RESUMEN = `
   id,
@@ -83,11 +83,6 @@ export class PeliculasService {
   }
 
   async obtenerDestacadas(cantidad = 3): Promise<PeliculaResumen[]> {
-    // `entradas_vendidas` es un contador cacheado en `peliculas` (ver
-    // migración `20260921120000_contador_entradas_vendidas.sql`): todavía
-    // vale 0 para todas las películas hasta que exista compra real (Fase 4),
-    // así que el desempate por estreno más reciente deja la home con algo
-    // sensato mientras tanto, sin necesitar una rama de fallback aparte.
     const { data, error } = await this.supabase
       .from('peliculas')
       .select(COLUMNAS_RESUMEN)
