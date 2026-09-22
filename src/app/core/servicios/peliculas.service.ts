@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { SupabaseService } from '../supabase.service';
 import {
   FuncionDisponible,
-  PeliculaDestacada,
   PeliculaDetalle,
   PeliculaResumen,
   ResenaPelicula,
@@ -14,6 +13,7 @@ const COLUMNAS_RESUMEN = `
   duracion_minutos,
   imagen_url,
   clasificacion_edad,
+  entradas_vendidas,
   pelicula_genero ( generos ( id, nombre ) )
 `;
 
@@ -86,36 +86,19 @@ export class PeliculasService {
     };
   }
 
-  async obtenerDestacadas(cantidad = 3): Promise<PeliculaDestacada[]> {
-    const { data: ranking, error } = await this.supabase.rpc('obtener_peliculas_mas_vendidas', {
-      cantidad,
-    });
-    if (error) throw error;
-
-    if (ranking && ranking.length > 0) {
-      const ids = ranking.map((fila: { pelicula_id: string }) => fila.pelicula_id);
-      const peliculas = await this.obtenerPorIds(ids);
-      const porId = new Map(peliculas.map((p) => [p.id, p]));
-      return ranking
-        .filter((fila: { pelicula_id: string }) => porId.has(fila.pelicula_id))
-        .map((fila: { pelicula_id: string; entradas_vendidas: number }) => ({
-          pelicula: porId.get(fila.pelicula_id)!,
-          entradasVendidas: fila.entradas_vendidas,
-        }));
-    }
-
-    // Todavía no hay ventas registradas (normal antes de la Fase 4): se
-    // destacan los estrenos más recientes en su lugar.
-    const recientes = await this.obtenerListado();
-    return recientes.slice(0, cantidad).map((pelicula) => ({ pelicula, entradasVendidas: 0 }));
-  }
-
-  private async obtenerPorIds(ids: string[]): Promise<PeliculaResumen[]> {
+  async obtenerDestacadas(cantidad = 3): Promise<PeliculaResumen[]> {
+    // `entradas_vendidas` es un contador cacheado en `peliculas` (ver
+    // migración `20260921120000_contador_entradas_vendidas.sql`): todavía
+    // vale 0 para todas las películas hasta que exista compra real (Fase 4),
+    // así que el desempate por estreno más reciente deja la home con algo
+    // sensato mientras tanto, sin necesitar una rama de fallback aparte.
     const { data, error } = await this.supabase
       .from('peliculas')
       .select(COLUMNAS_RESUMEN)
       .eq('publicada', true)
-      .in('id', ids);
+      .order('entradas_vendidas', { ascending: false })
+      .order('fecha_estreno', { ascending: false })
+      .limit(cantidad);
 
     if (error) throw error;
     return (data ?? []).map(mapearResumen);
@@ -146,6 +129,7 @@ function mapearResumen(fila: {
   duracion_minutos: number;
   imagen_url: string;
   clasificacion_edad: number | null;
+  entradas_vendidas: number;
   pelicula_genero: { generos: { id: string; nombre: string } | { id: string; nombre: string }[] }[] | null;
 }): PeliculaResumen {
   return {
@@ -154,6 +138,7 @@ function mapearResumen(fila: {
     duracionMinutos: fila.duracion_minutos,
     imagenUrl: fila.imagen_url,
     clasificacionEdad: fila.clasificacion_edad,
+    entradasVendidas: fila.entradas_vendidas,
     generos: (fila.pelicula_genero ?? []).flatMap((pg) => pg.generos),
   };
 }

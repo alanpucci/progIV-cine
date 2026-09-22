@@ -3,24 +3,26 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
-## [Fase 1.1] - 2026-09-17
+## [Fase 1.1] - 2026-09-21
 
 ### Added
 - `src/app/core/modelos/pelicula.model.ts`: modelos de dominio del catálogo
-  (`Genero`, `PeliculaResumen`, `FuncionDisponible`, `ResenaPelicula`,
-  `PeliculaDetalle`, `PeliculaDestacada`).
+  (`Genero`, `PeliculaResumen` —incluye `entradasVendidas`—,
+  `FuncionDisponible`, `ResenaPelicula`, `PeliculaDetalle`).
 - `src/app/core/servicios/peliculas.service.ts`: `PeliculasService` con
   `obtenerListado()`, `obtenerDetalle(id)` (funciones programadas a futuro,
   reseñas y promedio de estrellas) y `obtenerDestacadas(cantidad)` para el
   destacado "3 más vendidas" de la home.
-- `supabase/migrations/20260917130000_rpc_peliculas_destacadas.sql`: función
-  `obtener_peliculas_mas_vendidas` (`security definer`, lectura agregada) para
-  poder rankear películas por entradas vendidas sin exponer filas de venta
-  individuales a un visitante anónimo. `obtenerDestacadas()` cae a estrenos
-  recientes cuando todavía no hay ventas (normal antes de la Fase 4).
+- `supabase/migrations/20260921120000_contador_entradas_vendidas.sql`: columna
+  `peliculas.entradas_vendidas` (contador cacheado, default 0) para poder
+  ordenar por "más vendidas" con una consulta directa desde el frontend, sin
+  exponer `ventas`/`venta_items` (datos personales) ni depender de una
+  función SQL. El trigger que la mantiene al día se agrega en la Fase 4
+  (compra) y la Fase 9 (cancelaciones).
 
 ### Changed
-- `README.md`: nueva sub-sección "RPC pública para datos agregados (Fase 1)".
+- `README.md`: nueva sub-sección "Contador cacheado para datos agregados
+  públicos (Fase 1)".
 
 ## [Fase 0.6] - 2026-09-16
 

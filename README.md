@@ -166,16 +166,32 @@ acá: se corren con `supabase db push` (requiere `supabase link` con
 credenciales propias del proyecto) o pegando el contenido de cada archivo, en
 orden, en el SQL Editor del dashboard.
 
-### RPC pública para datos agregados (Fase 1)
+### Contador cacheado para datos agregados públicos (Fase 1)
 
 El destacado "3 más vendidas" del catálogo necesita un ranking de películas
 por entradas vendidas, pero `ventas`/`venta_items` son datos personales (cada
-usuario lee solo lo propio). En vez de relajar esa política, se agregó
-`obtener_peliculas_mas_vendidas(cantidad)`: una función `security definer`
-que devuelve únicamente `pelicula_id` + conteo agregado, sin exponer ninguna
-fila de venta individual, con `grant execute` a `anon`/`authenticated`. Es el
-mismo patrón de RPC ya usado para escritura en tablas transaccionales, aplicado
-acá a una lectura agregada en vez de a una escritura.
+usuario lee solo lo propio) — el catálogo público no puede leerlas ni para
+agregarlas, porque RLS filtra filas, no columnas: dar `SELECT` público sobre
+esas tablas expondría también email, montos y qué compró cada usuario, no
+solo el total por película.
+
+Se resuelve con un contador cacheado: `peliculas.entradas_vendidas`, una
+columna simple que ya es de lectura pública porque `peliculas` ya lo es. Es
+el mismo patrón que `perfiles.puntos_saldo`/`credito_saldo`: el valor se
+mantiene actualizado por un trigger en el momento de la escritura (a agregar
+en la Fase 4, cuando una venta se confirma, y en la Fase 9, cuando se
+cancela), no se recalcula en cada lectura. El frontend hace una consulta
+directa y simple:
+
+```ts
+.from('peliculas').select('...').order('entradas_vendidas', { ascending: false })
+```
+
+sin funciones ni joins en el momento de la lectura. Se descartó a propósito
+una función `security definer` que agregara `ventas`/`venta_items` al vuelo:
+funcionaba, pero sumaba una función a mantener por un cálculo que en realidad
+se puede resolver una sola vez, en el momento en que la venta cambia de
+estado.
 
 ## Diseño visual
 

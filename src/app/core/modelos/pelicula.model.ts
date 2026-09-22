@@ -10,6 +10,7 @@ export interface PeliculaResumen {
   imagenUrl: string;
   clasificacionEdad: number | null;
   generos: Genero[];
+  entradasVendidas: number;
 }
 
 export interface FuncionDisponible {
@@ -36,9 +37,4 @@ export interface PeliculaDetalle extends PeliculaResumen {
   funciones: FuncionDisponible[];
   resenas: ResenaPelicula[];
   promedioEstrellas: number | null;
-}
-
-export interface PeliculaDestacada {
-  pelicula: PeliculaResumen;
-  entradasVendidas: number;
 }
