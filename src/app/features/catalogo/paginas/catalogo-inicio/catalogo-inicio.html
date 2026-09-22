@@ -37,15 +37,56 @@
   <section class="catalogo-inicio__seccion">
     <h2 class="catalogo-inicio__titulo-seccion">Todas las películas</h2>
 
+    @if (!cargandoListado() && listado().length > 0) {
+      <div class="catalogo-inicio__filtros">
+        <label class="catalogo-inicio__buscador">
+          <span class="catalogo-inicio__buscador-icono" aria-hidden="true">⌕</span>
+          <input
+            type="search"
+            class="catalogo-inicio__buscador-input"
+            placeholder="Buscar por título…"
+            [value]="terminoBusqueda()"
+            (input)="actualizarBusqueda($any($event.target).value)"
+          />
+        </label>
+
+        @if (generosDisponibles().length > 0) {
+          <ul class="catalogo-inicio__chips">
+            @for (genero of generosDisponibles(); track genero.id) {
+              <li>
+                <button
+                  type="button"
+                  class="catalogo-inicio__chip"
+                  [class.catalogo-inicio__chip--activo]="generosSeleccionados().has(genero.id)"
+                  [attr.aria-pressed]="generosSeleccionados().has(genero.id)"
+                  (click)="alternarGenero(genero.id)"
+                >
+                  {{ genero.nombre }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
+
+        @if (hayFiltrosActivos()) {
+          <button type="button" class="catalogo-inicio__limpiar" (click)="limpiarFiltros()">
+            Limpiar filtros
+          </button>
+        }
+      </div>
+    }
+
     @if (errorListado()) {
       <p class="catalogo-inicio__estado catalogo-inicio__estado--error">
         No se pudo cargar la cartelera. Volvé a intentar más tarde.
       </p>
     } @else if (!cargandoListado() && listado().length === 0) {
       <p class="catalogo-inicio__estado">No hay películas publicadas por el momento.</p>
+    } @else if (!cargandoListado() && listadoFiltrado().length === 0) {
+      <p class="catalogo-inicio__estado">No se encontraron películas con esos filtros.</p>
     } @else if (!cargandoListado()) {
       <div class="catalogo-inicio__grilla">
-        @for (pelicula of listado(); track pelicula.id) {
+        @for (pelicula of listadoFiltrado(); track pelicula.id) {
           <app-tarjeta class="catalogo-inicio__tarjeta">
             <img
               class="catalogo-inicio__poster"

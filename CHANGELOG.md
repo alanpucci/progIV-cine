@@ -3,6 +3,36 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 1.3] - 2026-09-22
+
+### Fixed
+- `docs/ROADMAP.md`: la sub-tarea 1.2 había quedado en ⬜ pese a estar
+  mergeada (PR #14) — se corrige a ✅ junto con el estado de esta entrega.
+
+### Added
+- `src/app/core/helpers/texto.helpers.ts`: `normalizarTexto` (minúsculas +
+  sin acentos), utilidad genérica de texto (no específica de películas) para
+  comparar strings ignorando tildes.
+
+### Changed
+- `catalogo-inicio.ts`/`.html`/`.scss`: la sección "Todas las películas" suma
+  un buscador por título y chips de género (multi-selección) sobre el
+  listado ya cargado por `PeliculasService.obtenerListado()` en la Fase 1.1 —
+  sin ida adicional a Supabase por tecla ni por click. `generosDisponibles()`,
+  `listadoFiltrado()` y `hayFiltrosActivos()` son métodos planos (no
+  `computed()`, ver `CLAUDE.md`) que leen `listado()`, `terminoBusqueda()` y
+  `generosSeleccionados()` e invocados desde el template; botón "Limpiar
+  filtros" visible solo con algún filtro activo, y mensaje distinto para
+  "sin películas publicadas" vs. "sin resultados para el filtro actual".
+- `angular.json`: sube el budget `anyComponentStyle` (4kB → 6kB de warning,
+  8kB → 10kB de error) — el default del scaffold quedaba corto para una
+  página con buscador + chips de filtro; no es una decisión de arquitectura,
+  es el umbral de build.
+- `CLAUDE.md`: nueva regla — no usar `computed()` de Angular signals (no
+  visto en la materia, mismo criterio ya aplicado a `resource()`); un valor
+  derivado se resuelve con un método plano que lee los signals de origen e
+  invocado desde el template.
+
 ## [Fase 1.2] - 2026-09-22
 
 ### Added
