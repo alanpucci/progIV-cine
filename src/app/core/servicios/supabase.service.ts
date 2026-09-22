@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { entorno } from '../../environments/environment';
+import { entorno } from '../../../environments/environment';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class SupabaseService {
   readonly cliente: SupabaseClient = createClient(entorno.urlSupabase, entorno.claveAnonSupabase);
 }

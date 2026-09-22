@@ -118,6 +118,13 @@ entorno del proyecto en Vercel, y `scripts/generar-entorno.js` genera
 `src/environments/environment.ts` (gitignored) a partir de ellas antes de
 `ng serve`/`ng build` (hooks `prestart`/`prebuild` en `package.json`).
 
+Los servicios (`SupabaseService`, `PeliculasService`, etc.) se declaran con
+`@Service()` (Angular 22.1+) en vez de `@Injectable({ providedIn: 'root' })`.
+Es una API nueva, posterior a la mayoría del material de referencia sobre
+Angular, pero equivalente para el caso por defecto (singleton auto-provisto
+en el injector raíz, sin registrarlo en ningún módulo) — se prefirió por ser
+más corta y porque el nombre describe mejor el rol de la clase.
+
 ### Concurrencia y validación de negocio en el backend
 
 Reglas críticas como "no vender la misma butaca dos veces" o "no solapar
@@ -165,6 +172,33 @@ Las migraciones no se aplican solas contra el proyecto de Supabase real desde
 acá: se corren con `supabase db push` (requiere `supabase link` con
 credenciales propias del proyecto) o pegando el contenido de cada archivo, en
 orden, en el SQL Editor del dashboard.
+
+### Contador cacheado para datos agregados públicos (Fase 1)
+
+El destacado "3 más vendidas" del catálogo necesita un ranking de películas
+por entradas vendidas, pero `ventas`/`venta_items` son datos personales (cada
+usuario lee solo lo propio) — el catálogo público no puede leerlas ni para
+agregarlas, porque RLS filtra filas, no columnas: dar `SELECT` público sobre
+esas tablas expondría también email, montos y qué compró cada usuario, no
+solo el total por película.
+
+Se resuelve con un contador cacheado: `peliculas.entradas_vendidas`, una
+columna simple que ya es de lectura pública porque `peliculas` ya lo es. Es
+el mismo patrón que `perfiles.puntos_saldo`/`credito_saldo`: el valor se
+mantiene actualizado por un trigger en el momento de la escritura (a agregar
+en la Fase 4, cuando una venta se confirma, y en la Fase 9, cuando se
+cancela), no se recalcula en cada lectura. El frontend hace una consulta
+directa y simple:
+
+```ts
+.from('peliculas').select('...').order('entradas_vendidas', { ascending: false })
+```
+
+sin funciones ni joins en el momento de la lectura. Se descartó a propósito
+una función `security definer` que agregara `ventas`/`venta_items` al vuelo:
+funcionaba, pero sumaba una función a mantener por un cálculo que en realidad
+se puede resolver una sola vez, en el momento en que la venta cambia de
+estado.
 
 ## Diseño visual
 

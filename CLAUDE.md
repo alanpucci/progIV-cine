@@ -87,6 +87,16 @@ no del dominio):
 Si en algún punto conviene una excepción puntual además de estas, se
 menciona explícitamente y se explica por qué, no se asume.
 
+## Comentarios en el código
+
+No dejar comentarios en ningún archivo (`.ts`, `.html`, `.scss`, `.sql` de
+`supabase/migrations/`, etc.), ni siquiera para explicar el porqué de una
+decisión no obvia. Esa explicación va en el mensaje de commit, en la
+descripción del PR, o en `README.md`/`CHANGELOG.md` si es una decisión de
+arquitectura — no en el archivo. Aplica a archivos nuevos; las migraciones ya
+mergeadas que documentan su esquema con comentarios no se tocan
+retroactivamente solo por esto.
+
 ## Buenas prácticas Angular específicas de este proyecto
 
 - Standalone components por defecto. Dos features usan `NgModule` clásico a
