@@ -1,0 +1,39 @@
+.spinner-global {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(11 11 18 / 65%);
+  backdrop-filter: blur(2px);
+}
+
+.spinner-global__carrete {
+  width: 4rem;
+  height: 4rem;
+  animation: spinner-global-girar 1s linear infinite;
+  filter: drop-shadow(0 0 10px rgb(212 175 55 / 45%));
+}
+
+.spinner-global__aro {
+  fill: none;
+  stroke: var(--color-acento);
+  stroke-width: 2;
+}
+
+.spinner-global__eje {
+  fill: var(--color-acento-secundario);
+}
+
+.spinner-global__perforacion {
+  fill: var(--color-fondo);
+  stroke: var(--color-acento-secundario);
+  stroke-width: 1.4;
+}
+
+@keyframes spinner-global-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
