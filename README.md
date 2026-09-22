@@ -104,6 +104,32 @@ módulos, no tiene la complejidad de sincronización (undo/redo, time-travel,
 efectos altamente encadenados) que justifica su overhead. Si en el camino
 aparece un caso que realmente lo necesite, se reevalúa.
 
+### Estado de carga global: un overlay compartido, no uno por componente
+
+Ningún componente arma su propio indicador de carga. Existe
+`CargaGlobalService` (`core/servicios/`) con un contador de operaciones en
+curso, y `SpinnerGlobal` (`shared/componentes/`), montado una única vez en
+`Estructura`, que muestra un overlay a pantalla completa mientras ese
+contador es mayor a cero. Es un contador y no un booleano porque puede haber
+más de una carga en simultáneo (por ejemplo, destacadas + listado del
+catálogo pidiéndose en paralelo): un booleano que cualquiera de las dos
+pisara al terminar apagaría el spinner con la otra todavía en curso.
+
+El contador se modela con un `BehaviorSubject` de RxJS, no con un signal
+directo, y el `subscribe()` del constructor vuelca cada cambio a un
+`signal` (`visible`) — el único estado que la vista realmente lee. Es
+necesario hacerlo así porque el proyecto es zoneless: un `subscribe()` que
+no vuelca su resultado a un signal no dispara detección de cambios. Esa
+suscripción no se da de baja explícitamente porque `CargaGlobalService` es
+`@Service()` (singleton de toda la app) — vive y muere con la aplicación,
+no con un componente, a diferencia de una suscripción hecha dentro de un
+componente (esa sí necesita desuscribirse al destruirse).
+
+Los componentes no llaman `mostrar()`/`ocultar()` directo: envuelven la
+promesa con `cargaGlobal.envolver(() => servicio.metodo())`, que garantiza
+el `ocultar()` incluso si la promesa rechaza (bloque `finally`), para que
+ningún error deje el spinner trabado en pantalla.
+
 ### Acceso a datos: capa de servicios sobre Supabase
 
 Ningún componente llama a Supabase directamente. Existe un `SupabaseService`

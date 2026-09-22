@@ -3,6 +3,36 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 1.2] - 2026-09-22
+
+### Added
+- `src/app/features/catalogo/paginas/catalogo-inicio/`: home del catálogo
+  con dos secciones — podio de "Las 3 más vendidas" (ranking numerado,
+  poster grande) y grilla de "Todas las películas" (`app-tarjeta` con
+  poster, duración, clasificación y chips de género) — usando
+  `PeliculasService.obtenerDestacadas()`/`obtenerListado()` de la Fase 1.1.
+  Estado (listado, carga, error) manejado con signals simples seteados en el
+  constructor vía `async`/`await`, sin `resource()` (API no vista en la
+  materia) ni subscribes manuales sin volcar a signal.
+- `src/app/core/helpers/pelicula.formato.ts`: `formatearDuracion` (minutos →
+  `"2h 22m"`) y `formatearClasificacion` (`null`/`13`/`18` → `"ATP"`/`"+13"`/
+  `"+18"`), pensados para reusarse en el detalle de película (Fase 1.4) y el
+  buscador (Fase 1.3).
+- `src/app/core/servicios/carga-global.service.ts` (`CargaGlobalService`) y
+  `src/app/shared/componentes/spinner-global/` (`SpinnerGlobal`): overlay de
+  carga a pantalla completa, compartido por toda la app en vez de uno por
+  componente. Documentado en detalle en `README.md`.
+
+### Changed
+- `src/app/layout/estructura/`: monta `<app-spinner-global />` junto al
+  header/footer, así queda disponible en cualquier ruta sin repetirlo por
+  feature.
+- `catalogo-inicio.css` → `catalogo-inicio.scss`: pasa a tener estilos reales
+  (podio, grilla, chips de género) ahora que la pantalla se implementa,
+  consistente con el resto del design system.
+- `README.md`: nueva sub-sección "Estado de carga global: un overlay
+  compartido, no uno por componente".
+
 ## [Fase 1.1] - 2026-09-21
 
 ### Added
