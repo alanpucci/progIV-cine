@@ -23,6 +23,10 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
 ### Changed
 - `README.md`: nueva sub-sección "Contador cacheado para datos agregados
   públicos (Fase 1)".
+- `src/app/core/supabase.service.ts` y `peliculas.service.ts`: los servicios
+  pasan a declararse con `@Service()` (Angular 22.1+) en vez de
+  `@Injectable({ providedIn: 'root' })` — equivalente para este caso, se
+  documenta la convención en el README.
 
 ## [Fase 0.6] - 2026-09-16
 

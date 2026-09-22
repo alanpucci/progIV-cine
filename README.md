@@ -118,6 +118,13 @@ entorno del proyecto en Vercel, y `scripts/generar-entorno.js` genera
 `src/environments/environment.ts` (gitignored) a partir de ellas antes de
 `ng serve`/`ng build` (hooks `prestart`/`prebuild` en `package.json`).
 
+Los servicios (`SupabaseService`, `PeliculasService`, etc.) se declaran con
+`@Service()` (Angular 22.1+) en vez de `@Injectable({ providedIn: 'root' })`.
+Es una API nueva, posterior a la mayoría del material de referencia sobre
+Angular, pero equivalente para el caso por defecto (singleton auto-provisto
+en el injector raíz, sin registrarlo en ningún módulo) — se prefirió por ser
+más corta y porque el nombre describe mejor el rol de la clase.
+
 ### Concurrencia y validación de negocio en el backend
 
 Reglas críticas como "no vender la misma butaca dos veces" o "no solapar
