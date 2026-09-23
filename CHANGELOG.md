@@ -16,6 +16,64 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   redacción dirigida por texto/color de fondo real de cada fila) porque no
   hay una fuente editable versionada para este documento.
 
+## [Fase 2.3] - 2026-09-23
+
+### Added
+- `src/app/features/salas-butacas/paginas/butacas-inicio/` (`ButacasInicio`):
+  mapa visual de butacas de la función seleccionada en la Fase 2.2 — lee el
+  `funcionId` de la ruta (`/butacas/funcion/:id`), muestra encabezado
+  (película, sala, fecha/hora, tipo de proyección, idioma) y renderiza las
+  butacas agrupadas por fila (`filasDeButacas()`, método plano sin
+  `computed()`), posicionadas por `numero` en un CSS Grid con
+  `grid-column` para tolerar salas con huecos, con diferenciación de color
+  normal/accesible/VIP y leyenda. Pasa de `.css` vacío a `.scss` real,
+  consistente con el resto del design system. Puramente visual: sin
+  selección ni disponibilidad en tiempo real (Fases 2.4/2.5).
+- `FuncionesService.obtenerParaMapa(funcionId)` y
+  `.obtenerButacasPorSala(salaId)` (`funciones.service.ts`): primer método
+  para traer una función individual (con `peliculas`/`salas` joineados) y
+  primer método para traer butacas activas de una sala, ambos con su
+  mapeo en `funcion.mapeos.ts` (`mapearFuncionMapa`, `mapearButaca`).
+- `FuncionMapa` (`funcion.model.ts`): DTO para la pantalla del mapa —
+  `FuncionDisponible` (ya existente) no alcanza porque no trae
+  `peliculaId`/`peliculaNombre`, necesarios acá para el encabezado y el
+  link de "volver".
+- `--color-acento-terciario` (`_tokens.scss`): tercer acento (azul) para
+  distinguir butacas accesibles sin reusar el dorado marquesina, ya
+  ocupado por VIP.
+- `supabase/migrations/20260923120000_reseed_butacas_layout_real.sql`:
+  el seed de la Fase 0.7 nunca siguió el layout real documentado en
+  `docs/03_Modelo_de_Datos_Supabase_Cine.pdf` (tabla `butacas`, columna
+  `fila`: "20 filas, columnas de 4/20/4 butacas, filas J/K convertidas en
+  butacas accesibles (2/10/2), VIP en filas R/S/T") — quedó con 4-8 filas
+  según la sala. Esta migración borra y recarga `butacas` para las 4 salas
+  existentes con el layout correcto: filas A-T (K sin butacas, pasillo),
+  bloques de 4/6-25/4 con pasillos en los números 5 y 26, fila J reducida
+  a 2/10/2 accesible y filas R/S/T en VIP (recargo $1200, mismo valor que
+  ya usaba la Sala 3). No se pudo aplicar contra el proyecto real desde
+  acá (el `.env` local solo tiene la clave anon pública, sin permiso de
+  escritura); a correr manualmente en el SQL Editor de Supabase.
+
+### Changed
+- `butacas-inicio.ts`: `filasDeButacas()` ahora completa el rango
+  alfabético entre la primera y la última fila con butacas (en vez de
+  listar solo las filas con datos), para que una fila intermedia sin
+  butacas (la K, pasillo) aparezca igual con su etiqueta y sin asientos —
+  generalizable a cualquier sala con huecos de fila, no hardcodeado a "K".
+- `butacas-inicio.scss`: el layout real tiene hasta 30 columnas por fila
+  (vs. las 10 con las que se diseñó originalmente), así que:
+  - `.butacas-mapa` pasa de `max-width: 56rem` a `72rem` (igual que
+    `pelicula-detalle`/`catalogo-inicio`).
+  - `.butacas-mapa__sala` gana `overflow-x: auto` + `align-self: stretch`
+    (no alcanza con `max-width: 100%` dentro de un flex `align-items:
+    center` — el ancho no queda acotado al contenedor y nunca dispara el
+    scroll) para salas más anchas que la pantalla.
+  - `.butacas-mapa__etiqueta-fila` pasa a `position: sticky; left: 0` con
+    fondo propio, así la letra de fila no desaparece al hacer scroll
+    horizontal en mobile.
+  - Butacas de 2.25rem a 2rem (1.5rem en mobile) para que el layout de 20
+    filas entre sin scroll en un viewport de escritorio típico (~1280px).
+
 ## [Fase 2.2] - 2026-09-23
 
 ### Added
