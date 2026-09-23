@@ -3,6 +3,19 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Limpieza de docs] - 2026-09-23
+
+### Changed
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: se sacan los badges `NUEVO`/
+  `V3` y las cajas "Qué cambió en la versión 2"/"Qué cambió en la versión 3"
+  de la sección 1 (Criterio de modelado), junto con las menciones sueltas a
+  esas versiones (nota de tapa, intro de la sección 2, un par de notas al pie
+  con `(V3)`). El documento venía marcando cada cambio respecto a
+  revisiones anteriores; ahora queda solo el contenido vigente, sin ese
+  rastro de versionado. Editado directamente sobre el PDF (con PyMuPDF,
+  redacción dirigida por texto/color de fondo real de cada fila) porque no
+  hay una fuente editable versionada para este documento.
+
 ## [Limpieza de navegación] - 2026-09-23
 
 ### Removed
