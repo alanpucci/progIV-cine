@@ -164,6 +164,31 @@
   background: var(--color-superficie);
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-md);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--transicion-base),
+    background-color var(--transicion-base);
+
+  &:hover {
+    border-color: var(--color-acento-secundario);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--sombra-foco);
+  }
+
+  &--seleccionada {
+    background: var(--color-superficie-elevada);
+    border-color: var(--color-acento-secundario);
+  }
+}
+
+.pelicula-detalle__cta {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .pelicula-detalle__funcion-hora {

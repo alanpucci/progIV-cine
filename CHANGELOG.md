@@ -3,6 +3,25 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 2.2] - 2026-09-23
+
+### Added
+- `pelicula-detalle.ts`/`.html`/`.scss`: selección de función desde el
+  detalle de película. Cada función pasa de texto estático a un botón
+  seleccionable (signal `funcionSeleccionada`), con estado visual de
+  seleccionada y muestra sala además de horario, tipo de proyección e
+  idioma. CTA (`app-boton`) "Continuar a selección de butacas", deshabilitado
+  hasta elegir función, que navega a `/butacas/funcion/:id`.
+- `FuncionDisponible` (`funcion.model.ts`) ahora incluye `salaNombre`, vía
+  join a `salas` en `FuncionesService.obtenerDisponiblesPorPelicula()`
+  (`funciones.service.ts`/`funcion.mapeos.ts`) — mismo workaround de tipado
+  ya usado en `pelicula.mapeos.ts` para joins muchos-a-uno sin tipos
+  generados de Supabase.
+
+### Changed
+- `salas-butacas.routes.ts`: la ruta placeholder pasa de `''` a
+  `'funcion/:id'`, a la espera del mapa real de butacas (Fase 2.3).
+
 ## [Configuración de repo] - 2026-09-23
 
 ### Removed

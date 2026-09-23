@@ -10,7 +10,7 @@ export class FuncionesService {
   async obtenerDisponiblesPorPelicula(peliculaId: string): Promise<FuncionDisponible[]> {
     const { data, error } = await this.supabase
       .from('funciones')
-      .select('id, sala_id, inicio, tipo_proyeccion, idioma, precio_base')
+      .select('id, sala_id, salas ( nombre ), inicio, tipo_proyeccion, idioma, precio_base')
       .eq('pelicula_id', peliculaId)
       .eq('estado', 'programada')
       .gt('inicio', new Date().toISOString())
