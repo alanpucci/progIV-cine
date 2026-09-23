@@ -104,6 +104,20 @@ módulos, no tiene la complejidad de sincronización (undo/redo, time-travel,
 efectos altamente encadenados) que justifica su overhead. Si en el camino
 aparece un caso que realmente lo necesite, se reevalúa.
 
+### Formularios simples: `ngModel` en un solo sentido contra un signal
+
+El buscador del catálogo (Fase 1.3) usa `[ngModel]`/`(ngModelChange)` de
+`FormsModule` en vez de leer `$event.target` a mano. La sintaxis de dos vías
+real, `[(ngModel)]="terminoBusqueda()"`, no compila: se expande a
+`[ngModel]="terminoBusqueda()"` + `(ngModelChange)="terminoBusqueda() = $event"`,
+y el lado derecho de esa segunda línea no es válido — `terminoBusqueda()` es
+una llamada a función (lee el signal), no una propiedad asignable. Por eso el
+binding queda partido a mano: `[ngModel]` de lectura + `(ngModelChange)`
+explícito que llama a un método del componente (`actualizarBusqueda()`) que
+hace el `.set()` sobre el signal. El mismo criterio aplica a cualquier campo
+de formulario que en el proyecto respalde su valor en un signal en vez de una
+propiedad plana.
+
 ### Estado de carga global: un overlay compartido, no uno por componente
 
 Ningún componente arma su propio indicador de carga. Existe

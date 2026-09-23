@@ -24,10 +24,13 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
 - `catalogo-inicio.ts`/`.html`/`.scss`: la sección "Todas las películas" suma
   un buscador por título y chips de género (multi-selección) sobre el
   listado ya cargado por `PeliculasService.obtenerListado()` en la Fase 1.1 —
-  sin ida adicional a Supabase por tecla ni por click. `generosDisponibles()`
-  y `hayFiltrosActivos()` son métodos planos (no `computed()`, ver
-  `CLAUDE.md`) que leen `listado()`, `terminoBusqueda()` y
-  `generosSeleccionados()` e invocados desde el template; el filtrado en sí
+  sin ida adicional a Supabase por tecla ni por click. El input de búsqueda
+  usa `[ngModel]`/`(ngModelChange)` de `FormsModule` en vez de leer
+  `$event.target` a mano; sigue siendo un binding en un solo sentido hacia
+  `terminoBusqueda` (un signal no es asignable con `[(ngModel)]` de dos
+  vías). `generosDisponibles()` y `hayFiltrosActivos()` son métodos planos
+  (no `computed()`, ver `CLAUDE.md`) que leen `listado()`, `terminoBusqueda()`
+  y `generosSeleccionados()` e invocados desde el template; el filtrado en sí
   lo resuelve `FiltrarPeliculas`. Botón "Limpiar filtros" visible solo con
   algún filtro activo, y mensaje distinto para "sin películas publicadas" vs.
   "sin resultados para el filtro actual".
