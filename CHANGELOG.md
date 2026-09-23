@@ -3,6 +3,13 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Configuración de repo] - 2026-09-23
+
+### Removed
+- `supabase/` y `.claude/` dejan de versionarse (agregados a `.gitignore`,
+  destrackeados con `git rm --cached`). Los archivos siguen en disco
+  (migraciones SQL, skills), pero de acá en más no viajan por git.
+
 ## [Fase 2.1] - 2026-09-23
 
 ### Added

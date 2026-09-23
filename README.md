@@ -228,11 +228,12 @@ de integridad.
 
 ### Esquema SQL versionado y RLS (Fase 0.6)
 
-El esquema completo (26 tablas de negocio) vive como migraciones SQL
-versionadas en `supabase/migrations/` (`<timestamp>_<nombre>.sql`, convención
-del CLI de Supabase), no como algo creado a mano desde el dashboard. Cada
-migración se aplica una sola vez y en orden; no se edita una ya aplicada, se
-agrega una nueva.
+El esquema completo (26 tablas de negocio) vive como migraciones SQL en
+`supabase/migrations/` (`<timestamp>_<nombre>.sql`, convención del CLI de
+Supabase), no como algo creado a mano desde el dashboard. Cada migración se
+aplica una sola vez y en orden; no se edita una ya aplicada, se agrega una
+nueva. La carpeta `supabase/` (junto con `.claude/`) está en `.gitignore`:
+las migraciones quedan solo en el filesystem local, no en el repo de GitHub.
 
 Row Level Security está habilitada en las 26 tablas desde el arranque, con un
 criterio parejo:
