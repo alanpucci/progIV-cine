@@ -177,29 +177,28 @@ Angular, pero equivalente para el caso por defecto (singleton auto-provisto
 en el injector raíz, sin registrarlo en ningún módulo) — se prefirió por ser
 más corta y porque el nombre describe mejor el rol de la clase.
 
-### Parámetros de ruta: `ActivatedRoute` + `subscribe()` a signal
+### Parámetros de ruta: `ActivatedRoute.snapshot`, no `withComponentInputBinding()`
 
-Un segmento de ruta como `:id` se lee con el patrón clásico de Angular:
-inyectar `ActivatedRoute` y suscribirse a `paramMap`, volcando cada emisión a
-un signal (o, como en `PeliculaDetallePagina`, disparando directo la carga de
-datos correspondiente). Se descartó `withComponentInputBinding()` (que
+Un segmento de ruta como `:id` se lee con `ActivatedRoute` inyectado y
+`snapshot.paramMap.get('id')` en el constructor — una lectura sincrónica, sin
+`Observable` ni suscripción. Se descartó `withComponentInputBinding()` (que
 mapearía el parámetro de ruta directo a un `input()` del componente) por ser
 una API de Router no vista en la materia — el mismo criterio que ya excluye
 `computed()`/`resource()`.
 
-A diferencia de `CargaGlobalService` (`@Service()`, singleton de toda la
-app, cuya suscripción interna vive y muere con la aplicación), una
-suscripción hecha **dentro de un componente** sí necesita darse de baja
-explícitamente al destruirse — si no, sigue viva más allá del ciclo de vida
-del componente. Por eso `PeliculaDetallePagina` implementa `OnDestroy` y
-guarda la `Subscription` de `paramMap` para poder cancelarla en
-`ngOnDestroy()`. Como el router reutiliza la instancia del componente cuando
-dos rutas coinciden con el mismo path (por ejemplo, navegar de `/pelicula/A`
-a `/pelicula/B` sin salir de esa página), `paramMap` emite de nuevo ante ese
-cambio y la carga de datos se repite sola, sin lógica extra. Este patrón
-(`ActivatedRoute.paramMap.subscribe()` + `ngOnDestroy()`) se reutiliza en
-cualquier página futura que dependa de un identificador en la URL (detalle
-de función, validación de entrada, etc.).
+Usar `snapshot` en vez de suscribirse a `paramMap` es una decisión puntual
+para este caso, no la regla general: `snapshot` solo refleja el valor del
+parámetro en el momento en que se crea el componente, y **no** se entera si
+después cambia sin que el componente se destruya y recree (por ejemplo,
+navegar de `/pelicula/A` a `/pelicula/B` sin salir de esa página — el router
+reutiliza la instancia). Hoy ninguna pantalla del proyecto enlaza una ruta
+consigo misma cambiando solo el parámetro, así que ese caso no se da. El día
+que aparezca (por ejemplo, "películas relacionadas" enlazando entre dos
+detalles), ahí sí hace falta volver a `ActivatedRoute.paramMap.subscribe()`
+— y, al ser una suscripción hecha **dentro de un componente** (a diferencia
+de la de `CargaGlobalService`, que es un singleton `@Service()` y vive y
+muere con la app), esa versión necesitaría además `OnDestroy` para darla de
+baja explícitamente al destruirse el componente.
 
 ### Concurrencia y validación de negocio en el backend
 

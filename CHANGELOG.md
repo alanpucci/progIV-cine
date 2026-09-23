@@ -12,9 +12,8 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   disponibles agrupadas por día y reseñas con promedio de estrellas. Usa
   `PeliculasService.obtenerDetalle()` (ya existente desde la Fase 1.1).
   Ruta `pelicula/:id` (`catalogo.routes.ts`), con el `id` leído vía
-  `ActivatedRoute.paramMap.subscribe()` (no `withComponentInputBinding()`,
-  API de Router no vista en la materia) y desuscripción explícita en
-  `ngOnDestroy()` — detalle en `README.md`.
+  `ActivatedRoute.snapshot.paramMap.get('id')` (no `withComponentInputBinding()`,
+  API de Router no vista en la materia) — detalle y trade-off en `README.md`.
 - `src/app/core/helpers/pelicula.formato.ts`: `formatearFechaFuncion`,
   `formatearHoraFuncion` y `formatearFechaEstreno`.
 

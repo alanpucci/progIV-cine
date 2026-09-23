@@ -1,6 +1,5 @@
-import { Component, inject, OnDestroy, signal } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { ActivatedRoute, RouterLink } from "@angular/router";
-import { Subscription } from "rxjs";
 import { PeliculasService } from "../../../../core/servicios/peliculas.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
 import { FuncionDisponible, PeliculaDetalle } from "../../../../core/modelos/pelicula.model";
@@ -23,11 +22,10 @@ interface GrupoFunciones {
   styleUrl: "./pelicula-detalle.scss",
   templateUrl: "./pelicula-detalle.html",
 })
-export class PeliculaDetallePagina implements OnDestroy {
+export class PeliculaDetallePagina {
   private readonly ruta = inject(ActivatedRoute);
   private readonly peliculasService = inject(PeliculasService);
   private readonly cargaGlobal = inject(CargaGlobalService);
-  private readonly suscripcionRuta: Subscription;
 
   protected readonly detalle = signal<PeliculaDetalle | null>(null);
   protected readonly cargando = signal(true);
@@ -41,13 +39,7 @@ export class PeliculaDetallePagina implements OnDestroy {
   protected readonly formatearHoraFuncion = formatearHoraFuncion;
 
   constructor() {
-    this.suscripcionRuta = this.ruta.paramMap.subscribe((params) => {
-      this.cargarDetalle(params.get("id")!);
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.suscripcionRuta.unsubscribe();
+    this.cargarDetalle(this.ruta.snapshot.paramMap.get("id")!);
   }
 
   protected funcionesAgrupadas(): GrupoFunciones[] {
