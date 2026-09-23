@@ -16,6 +16,23 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   redacción dirigida por texto/color de fondo real de cada fila) porque no
   hay una fuente editable versionada para este documento.
 
+## [Limpieza de navegación] - 2026-09-23
+
+### Removed
+- Carpetas `features/compra/`, `fidelizacion/`, `entradas/`, `cancelaciones/`,
+  `proximamente/`, `perfil/`, `empleado/` y `administracion/`: eran
+  placeholders de la Fase 0.2 sin funcionalidad real todavía (Fases 3-10 sin
+  empezar). Se sacan del repo para que el estado del proyecto no genere
+  confusión con features a medio armar; se recrean cuando arranque la fase
+  correspondiente.
+- `app.routes.ts`: rutas de esas 8 features eliminadas del array (quedan
+  `catalogo` y `butacas`, las dos únicas en desarrollo activo).
+- Header (`encabezado.html`): nav pública queda solo con "Catálogo" (se
+  saca Próximamente/Fidelización/Mis entradas/Perfil).
+- Footer (`pie.html`): se saca el bloque "Tu compra" (enlace a
+  Cancelaciones) y el CSS asociado (`pie__enlaces*`) que quedaba sin uso;
+  `pie.ts` deja de importar `RouterLink`/`RouterLinkActive`.
+
 ## [Fase 2.3] - 2026-09-23
 
 ### Added
