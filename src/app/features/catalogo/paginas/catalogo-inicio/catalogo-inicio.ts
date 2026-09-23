@@ -27,7 +27,7 @@ export class CatalogoInicio {
   protected readonly errorListado = signal(false);
 
   protected readonly terminoBusqueda = signal("");
-  protected readonly generosSeleccionados = signal<ReadonlySet<string>>(new Set());
+  protected readonly generosSeleccionados = signal<readonly string[]>([]);
 
   protected generosDisponibles(): Genero[] {
     const mapa = new Map<string, Genero>();
@@ -40,7 +40,15 @@ export class CatalogoInicio {
   }
 
   protected hayFiltrosActivos(): boolean {
-    return this.terminoBusqueda().trim() !== "" || this.generosSeleccionados().size > 0;
+    return this.terminoBusqueda().trim() !== "" || this.generosSeleccionados().length > 0;
+  }
+
+  protected get terminoBusquedaValor(): string {
+    return this.terminoBusqueda();
+  }
+
+  protected set terminoBusquedaValor(valor: string) {
+    this.terminoBusqueda.set(valor);
   }
 
   protected get terminoBusquedaValor(): string {
@@ -60,18 +68,17 @@ export class CatalogoInicio {
   }
 
   protected alternarGenero(id: string): void {
-    const seleccionados = new Set(this.generosSeleccionados());
-    if (seleccionados.has(id)) {
-      seleccionados.delete(id);
-    } else {
-      seleccionados.add(id);
-    }
-    this.generosSeleccionados.set(seleccionados);
+    const seleccionados = this.generosSeleccionados();
+    this.generosSeleccionados.set(
+      seleccionados.includes(id)
+        ? seleccionados.filter((seleccionado) => seleccionado !== id)
+        : [...seleccionados, id],
+    );
   }
 
   protected limpiarFiltros(): void {
     this.terminoBusqueda.set("");
-    this.generosSeleccionados.set(new Set());
+    this.generosSeleccionados.set([]);
   }
 
   private async cargarDestacadas(): Promise<void> {

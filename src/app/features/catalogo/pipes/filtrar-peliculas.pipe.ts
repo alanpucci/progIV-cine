@@ -9,7 +9,7 @@ export class FiltrarPeliculas implements PipeTransform {
   transform(
     peliculas: PeliculaResumen[],
     termino: string,
-    generos: ReadonlySet<string>,
+    generos: readonly string[],
   ): PeliculaResumen[] {
     const terminoNormalizado = normalizarTexto(termino);
 
@@ -17,7 +17,7 @@ export class FiltrarPeliculas implements PipeTransform {
       const coincideNombre =
         terminoNormalizado === "" || normalizarTexto(pelicula.nombre).includes(terminoNormalizado);
       const coincideGeneros =
-        generos.size === 0 || pelicula.generos.some((genero) => generos.has(genero.id));
+        generos.length === 0 || pelicula.generos.some((genero) => generos.includes(genero.id));
       return coincideNombre && coincideGeneros;
     });
   }
