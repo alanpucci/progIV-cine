@@ -5,38 +5,6 @@
 > casos de uso, modelo de datos) es externa a este documento; acá se traduce
 > ese análisis en un plan de ejecución ordenado.
 
-## Contexto
-
-TP de Programación IV: una plataforma de cine completa (catálogo público,
-selección de butacas, checkout con Candy Bar/combos/cupones, fidelización,
-tickets QR, panel de administrador y panel de empleado para validación
-presencial).
-
-El usuario pidió explícitamente:
-- Avanzar **tarea por tarea**, no todo de una — cada entrega debe ser sólida y
-  entendible antes de escalar a la siguiente.
-- Un **diseño visual único**, no genérico: estética oscura/nocturna, cómoda a
-  la vista, con motivos de cine (proyección, cinta de película, marquesina).
-- El flujo debe soportar compra **anónima** y compra **registrada** (con
-  beneficios/puntos) desde el catálogo público.
-- Un panel de administrador con reportes y configuración integral.
-
-## Decisiones confirmadas
-
-| Decisión | Elegido |
-|---|---|
-| Estilo visual | SCSS propio con design tokens (paleta oscura tipo sala de cine). Sin Angular Material ni Tailwind. |
-| Pagos | Checkout con pasarela **simulada** (mock), persistida igual en la tabla `pagos` como aprobada. |
-| Despliegue | Vercel |
-| Componentes | Standalone por defecto. `compra` y `administracion` usan NgModule clásico (más componentes relacionados + valor pedagógico de la materia); el resto sigue standalone. |
-| Manejo de estado | Signals de Angular + servicios inyectables. Sin NgRx. |
-| Acceso a datos | `SupabaseService` central + servicios de dominio por feature. Nunca Supabase directo desde un componente. |
-| Concurrencia de butacas | Validación de disponibilidad vía transacción/RPC en Postgres, no solo en el frontend. |
-| Commits / PRs | Sin líneas de atribución al agente. Toda PR incluye Objetivo inicial / Qué se terminó haciendo / Resumen de cambios. |
-| Idioma del código | Todo en español (componentes, servicios, rutas, variables) salvo API de Angular/TS/RxJS y vocabulario técnico de arquitectura (`core`, `shared`, `features`, `layout`). |
-| Tests unitarios | No se generan salvo pedido explícito. |
-| Archivos de componente | Siempre 3 separados (`.ts`/`.html`/`.css`), nunca template/estilos inline. |
-
 ## Estructura de carpetas
 
 ```
@@ -91,13 +59,13 @@ buscador + filtro múltiple por género, destacado "3 más vendidas" en home.
 | 1.3 | Buscador + filtro múltiple por género | ✅ |
 | 1.4 | Página de detalle de película (sinopsis, géneros, funciones disponibles, reseñas + promedio) | ⬜ |
 
-### Fase 2 — Salas, butacas y funciones (M03/M04) ⬜
+### Fase 2 — Salas, butacas y funciones (M03/M04) 🔄
 Mapa visual de butacas (normal/accesible/VIP con diferenciación de color
 clara), disponibilidad en tiempo real, selección de función desde el detalle.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 2.1 | Capa de datos: modelos (`Sala`, `Butaca`, `Funcion`, `ReservaButaca`) + `FuncionesService` (funciones disponibles por película) | ⬜ |
+| 2.1 | Capa de datos: modelos (`Sala`, `Butaca`, `Funcion`, `ReservaButaca`) + `FuncionesService` (funciones disponibles por película) | ✅ |
 | 2.2 | Selección de función desde el detalle de película (fecha, horario, sala, tipo de proyección 2D/3D/4D/5D, idioma) | ⬜ |
 | 2.3 | Mapa visual de butacas: layout por sala (filas/columnas) con diferenciación de color normal/accesible/VIP | ⬜ |
 | 2.4 | Bloqueo temporal de butacas en selección: RPC transaccional sobre `reservas_butaca` + expiración por `expira_at` | ⬜ |
@@ -230,20 +198,6 @@ responsive final, despliegue a Vercel, README de arquitectura (RNF-008).
 | 13.4 | Responsive final en todas las features | ⬜ |
 | 13.5 | Despliegue a Vercel + variables de entorno de producción | ⬜ |
 | 13.6 | README de arquitectura final (RNF-008) | ⬜ |
-
-## Puntos abiertos (se resuelven al llegar a la fase correspondiente)
-
-- ~~**Edad en compra anónima** (Fase 4)~~ — **resuelto**: el checkout anónimo
-  pide fecha de nacimiento y se valida igual que con un perfil registrado
-  (ver `docs/01_Analisis_Funcional_Cine.pdf`, sección 11, y
-  `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`, tabla `ventas`, columna
-  `fecha_nacimiento_comprador`).
-- **Canal de notificaciones de estreno** (Fase 10): arrancar in-app, evaluar
-  email después.
-- **Borrado físico vs soft-delete** (Fase 7): se propone soft-delete
-  (`activo`/`activa`) salvo indicación contraria.
-- **Layout gráfico de butacas accesibles** (Fase 2): se define con un mockup
-  simple antes de codear.
 
 ## Convención transversal
 

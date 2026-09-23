@@ -2,7 +2,8 @@ import { Component, inject, signal } from "@angular/core";
 import { ActivatedRoute, RouterLink } from "@angular/router";
 import { PeliculasService } from "../../../../core/servicios/peliculas.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
-import { FuncionDisponible, PeliculaDetalle } from "../../../../core/modelos/pelicula.model";
+import { PeliculaDetalle } from "../../../../core/modelos/pelicula.model";
+import { FuncionDisponible } from "../../../../core/modelos/funcion.model";
 import {
   formatearClasificacion,
   formatearDuracion,

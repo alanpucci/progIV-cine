@@ -3,6 +3,25 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 2.1] - 2026-09-23
+
+### Added
+- `src/app/core/modelos/funcion.model.ts`: modelos `Sala`, `Butaca`,
+  `Funcion` y `ReservaButaca` (M03/M04), más `FuncionDisponible` (movido
+  desde `pelicula.model.ts`, ahora dominio de `funcion.model.ts`).
+- `src/app/core/servicios/funciones.service.ts` (`FuncionesService`):
+  `obtenerDisponiblesPorPelicula()`, con la query a la tabla `funciones` que
+  antes vivía inline en `PeliculasService.obtenerDetalle()`.
+- `src/app/core/helpers/funcion.mapeos.ts`: `mapearFuncionDisponible` (movido
+  desde `pelicula.mapeos.ts`).
+
+### Changed
+- `PeliculasService.obtenerDetalle()` delega en
+  `FuncionesService.obtenerDisponiblesPorPelicula()` en vez de consultar
+  `funciones` directamente — evita duplicar esa query a medida que más
+  features (`salas-butacas`, `compra`, `administracion`) necesiten funciones
+  de una película. Detalle y justificación en `README.md`.
+
 ## [Fase 1.4] - 2026-09-23
 
 ### Added

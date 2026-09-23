@@ -1,3 +1,5 @@
+import { FuncionDisponible } from './funcion.model';
+
 export interface Genero {
   id: string;
   nombre: string;
@@ -11,15 +13,6 @@ export interface PeliculaResumen {
   clasificacionEdad: number | null;
   generos: Genero[];
   entradasVendidas: number;
-}
-
-export interface FuncionDisponible {
-  id: string;
-  salaId: string;
-  inicio: string;
-  tipoProyeccion: string;
-  idioma: string;
-  precioBase: number;
 }
 
 export interface ResenaPelicula {

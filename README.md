@@ -177,6 +177,24 @@ Angular, pero equivalente para el caso por defecto (singleton auto-provisto
 en el injector raíz, sin registrarlo en ningún módulo) — se prefirió por ser
 más corta y porque el nombre describe mejor el rol de la clase.
 
+### Servicios de dominio compartidos entre features viven en `core/`, no en la feature
+
+`PeliculasService` y `FuncionesService` están en `core/servicios/`, aunque la
+regla general (ver más arriba) sea "si algo se usa desde una sola feature,
+vive en esa feature". No es una excepción: ambos se van a consumir desde más
+de una feature (el detalle de película de `catalogo` necesita las funciones
+disponibles; `salas-butacas` va a necesitar `FuncionesService` para el mapa de
+butacas de la Fase 2.2+; `administracion` va a necesitar los dos para las
+ABM de las Fases 7.2/7.4; `compra` va a necesitar `FuncionesService` para el
+checkout), así que la regla los sube a `core/` desde que se crean, en vez de
+nacer en una feature y migrarse después.
+
+Por eso `PeliculasService.obtenerDetalle()` no arma su propia query contra la
+tabla `funciones`: delega en `FuncionesService.obtenerDisponiblesPorPelicula()`
+(Fase 2.1). Mantiene esa tabla con una sola consulta relevante en todo el
+proyecto en vez de duplicarla a medida que más features necesiten "funciones
+de una película" (catálogo hoy, selección de función en la Fase 2.2 después).
+
 ### Parámetros de ruta: `ActivatedRoute.snapshot`, no `withComponentInputBinding()`
 
 Un segmento de ruta como `:id` se lee con `ActivatedRoute` inyectado y

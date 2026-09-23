@@ -1,7 +1,8 @@
 import { Service, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
+import { FuncionesService } from './funciones.service';
 import { PeliculaDetalle, PeliculaResumen, ResenaPelicula } from '../modelos/pelicula.model';
-import { mapearFuncion, mapearResumen } from '../helpers/pelicula.mapeos';
+import { mapearResumen } from '../helpers/pelicula.mapeos';
 
 const COLUMNAS_RESUMEN = `
   id,
@@ -16,6 +17,7 @@ const COLUMNAS_RESUMEN = `
 @Service()
 export class PeliculasService {
   private readonly supabase = inject(SupabaseService).cliente;
+  private readonly funcionesService = inject(FuncionesService);
 
   async obtenerListado(): Promise<PeliculaResumen[]> {
     const { data, error } = await this.supabase
@@ -29,33 +31,25 @@ export class PeliculasService {
   }
 
   async obtenerDetalle(id: string): Promise<PeliculaDetalle | null> {
-    const [{ data: pelicula, error: errorPelicula }, { data: funciones, error: errorFunciones }] =
-      await Promise.all([
-        this.supabase
-          .from('peliculas')
-          .select(`
-            ${COLUMNAS_RESUMEN},
-            sinopsis,
-            fecha_estreno,
-            preventa_habilitada,
-            precio_preventa,
-            resenas ( id, estrellas, comentario, created_at )
-          `)
-          .eq('id', id)
-          .eq('publicada', true)
-          .maybeSingle(),
-        this.supabase
-          .from('funciones')
-          .select('id, sala_id, inicio, tipo_proyeccion, idioma, precio_base')
-          .eq('pelicula_id', id)
-          .eq('estado', 'programada')
-          .gt('inicio', new Date().toISOString())
-          .order('inicio', { ascending: true }),
-      ]);
+    const [{ data: pelicula, error: errorPelicula }, funciones] = await Promise.all([
+      this.supabase
+        .from('peliculas')
+        .select(`
+          ${COLUMNAS_RESUMEN},
+          sinopsis,
+          fecha_estreno,
+          preventa_habilitada,
+          precio_preventa,
+          resenas ( id, estrellas, comentario, created_at )
+        `)
+        .eq('id', id)
+        .eq('publicada', true)
+        .maybeSingle(),
+      this.funcionesService.obtenerDisponiblesPorPelicula(id),
+    ]);
 
     if (errorPelicula) throw errorPelicula;
     if (!pelicula) return null;
-    if (errorFunciones) throw errorFunciones;
 
     const resenas: ResenaPelicula[] = (pelicula.resenas ?? []).map(
       (r: { id: string; estrellas: number; comentario: string | null; created_at: string }) => ({
@@ -76,7 +70,7 @@ export class PeliculasService {
       fechaEstreno: pelicula.fecha_estreno,
       preventaHabilitada: pelicula.preventa_habilitada,
       precioPreventa: pelicula.precio_preventa,
-      funciones: (funciones ?? []).map(mapearFuncion),
+      funciones,
       resenas,
       promedioEstrellas,
     };

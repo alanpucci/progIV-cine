@@ -1,22 +1,4 @@
-import { FuncionDisponible, PeliculaResumen } from '../modelos/pelicula.model';
-
-export function mapearFuncion(fila: {
-  id: string;
-  sala_id: string;
-  inicio: string;
-  tipo_proyeccion: string;
-  idioma: string;
-  precio_base: number;
-}): FuncionDisponible {
-  return {
-    id: fila.id,
-    salaId: fila.sala_id,
-    inicio: fila.inicio,
-    tipoProyeccion: fila.tipo_proyeccion,
-    idioma: fila.idioma,
-    precioBase: fila.precio_base,
-  };
-}
+import { PeliculaResumen } from '../modelos/pelicula.model';
 
 export function mapearResumen(fila: {
   id: string;
