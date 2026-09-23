@@ -78,17 +78,19 @@
       </div>
     }
 
+    @let listadoFiltrado = listado() | filtrarPeliculas:terminoBusqueda():generosSeleccionados();
+
     @if (errorListado()) {
       <p class="catalogo-inicio__estado catalogo-inicio__estado--error">
         No se pudo cargar la cartelera. Volvé a intentar más tarde.
       </p>
     } @else if (!cargandoListado() && listado().length === 0) {
       <p class="catalogo-inicio__estado">No hay películas publicadas por el momento.</p>
-    } @else if (!cargandoListado() && listadoFiltrado().length === 0) {
+    } @else if (!cargandoListado() && listadoFiltrado.length === 0) {
       <p class="catalogo-inicio__estado">No se encontraron películas con esos filtros.</p>
     } @else if (!cargandoListado()) {
       <div class="catalogo-inicio__grilla">
-        @for (pelicula of listadoFiltrado(); track pelicula.id) {
+        @for (pelicula of listadoFiltrado; track pelicula.id) {
           <a class="catalogo-inicio__enlace" [routerLink]="['/pelicula', pelicula.id]">
             <app-tarjeta class="catalogo-inicio__tarjeta" [interactiva]="true">
               <img
