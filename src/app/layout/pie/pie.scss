@@ -50,32 +50,6 @@
   font-size: 0.9rem;
 }
 
-.pie__enlaces {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-xs);
-}
-
-.pie__enlaces-titulo {
-  color: var(--color-texto-silenciado);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: var(--espacio-xs);
-}
-
-.pie__enlaces a {
-  color: var(--color-texto-secundario);
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: color var(--transicion-base);
-
-  &:hover,
-  &.activo {
-    color: var(--color-acento-secundario);
-  }
-}
-
 .pie__copy {
   max-width: 72rem;
   margin: var(--espacio-lg) auto 0;

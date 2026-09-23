@@ -22,10 +22,6 @@
       [routerLinkActiveOptions]="{ exact: true }"
       >Catálogo</a
     >
-    <a routerLink="/proximamente" routerLinkActive="activo">Próximamente</a>
-    <a routerLink="/fidelizacion" routerLinkActive="activo">Fidelización</a>
-    <a routerLink="/entradas" routerLinkActive="activo">Mis entradas</a>
-    <a routerLink="/perfil" routerLinkActive="activo">Perfil</a>
   </nav>
 
   <button
@@ -52,9 +48,5 @@
       (click)="cerrarMenu()"
       >Catálogo</a
     >
-    <a routerLink="/proximamente" routerLinkActive="activo" (click)="cerrarMenu()">Próximamente</a>
-    <a routerLink="/fidelizacion" routerLinkActive="activo" (click)="cerrarMenu()">Fidelización</a>
-    <a routerLink="/entradas" routerLinkActive="activo" (click)="cerrarMenu()">Mis entradas</a>
-    <a routerLink="/perfil" routerLinkActive="activo" (click)="cerrarMenu()">Perfil</a>
   </nav>
 }
