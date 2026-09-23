@@ -41,6 +41,18 @@ export interface FuncionDisponible {
   precioBase: number;
 }
 
+export interface FuncionMapa {
+  id: string;
+  peliculaId: string;
+  peliculaNombre: string;
+  salaId: string;
+  salaNombre: string;
+  inicio: string;
+  tipoProyeccion: TipoProyeccion;
+  idioma: Idioma;
+  precioBase: number;
+}
+
 export interface ReservaButaca {
   id: string;
   funcionId: string;
