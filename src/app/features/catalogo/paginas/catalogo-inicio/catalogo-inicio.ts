@@ -3,11 +3,11 @@ import { PeliculasService } from "../../../../core/servicios/peliculas.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
 import { Genero, PeliculaResumen } from "../../../../core/modelos/pelicula.model";
 import { formatearClasificacion, formatearDuracion } from "../../../../core/helpers/pelicula.formato";
-import { normalizarTexto } from "../../../../core/helpers/texto.helpers";
 import { Tarjeta } from "../../../../shared/componentes/tarjeta/tarjeta";
+import { FiltrarPeliculas } from "../../pipes/filtrar-peliculas.pipe";
 
 @Component({
-  imports: [Tarjeta],
+  imports: [Tarjeta, FiltrarPeliculas],
   selector: "app-catalogo-inicio",
   styleUrl: "./catalogo-inicio.scss",
   templateUrl: "./catalogo-inicio.html",
@@ -35,18 +35,6 @@ export class CatalogoInicio {
       }
     }
     return [...mapa.values()].sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
-  }
-
-  protected listadoFiltrado(): PeliculaResumen[] {
-    const termino = normalizarTexto(this.terminoBusqueda());
-    const generos = this.generosSeleccionados();
-
-    return this.listado().filter((pelicula) => {
-      const coincideNombre = termino === "" || normalizarTexto(pelicula.nombre).includes(termino);
-      const coincideGeneros =
-        generos.size === 0 || pelicula.generos.some((genero) => generos.has(genero.id));
-      return coincideNombre && coincideGeneros;
-    });
   }
 
   protected hayFiltrosActivos(): boolean {

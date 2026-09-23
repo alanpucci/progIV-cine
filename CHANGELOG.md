@@ -13,17 +13,24 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
 - `src/app/core/helpers/texto.helpers.ts`: `normalizarTexto` (minúsculas +
   sin acentos), utilidad genérica de texto (no específica de películas) para
   comparar strings ignorando tildes.
+- `src/app/features/catalogo/pipes/filtrar-peliculas.pipe.ts`
+  (`FiltrarPeliculas`): pipe puro que filtra `PeliculaResumen[]` por título
+  (usando `normalizarTexto`) y por géneros seleccionados. Se usa inline en el
+  template (`@let listadoFiltrado = listado() | filtrarPeliculas:...`) en vez
+  de un método plano, porque al ser puro Angular lo recalcula solo cuando
+  cambian sus argumentos por referencia, en vez de en cada ciclo de detección.
 
 ### Changed
 - `catalogo-inicio.ts`/`.html`/`.scss`: la sección "Todas las películas" suma
   un buscador por título y chips de género (multi-selección) sobre el
   listado ya cargado por `PeliculasService.obtenerListado()` en la Fase 1.1 —
-  sin ida adicional a Supabase por tecla ni por click. `generosDisponibles()`,
-  `listadoFiltrado()` y `hayFiltrosActivos()` son métodos planos (no
-  `computed()`, ver `CLAUDE.md`) que leen `listado()`, `terminoBusqueda()` y
-  `generosSeleccionados()` e invocados desde el template; botón "Limpiar
-  filtros" visible solo con algún filtro activo, y mensaje distinto para
-  "sin películas publicadas" vs. "sin resultados para el filtro actual".
+  sin ida adicional a Supabase por tecla ni por click. `generosDisponibles()`
+  y `hayFiltrosActivos()` son métodos planos (no `computed()`, ver
+  `CLAUDE.md`) que leen `listado()`, `terminoBusqueda()` y
+  `generosSeleccionados()` e invocados desde el template; el filtrado en sí
+  lo resuelve `FiltrarPeliculas`. Botón "Limpiar filtros" visible solo con
+  algún filtro activo, y mensaje distinto para "sin películas publicadas" vs.
+  "sin resultados para el filtro actual".
 - `angular.json`: sube el budget `anyComponentStyle` (4kB → 6kB de warning,
   8kB → 10kB de error) — el default del scaffold quedaba corto para una
   página con buscador + chips de filtro; no es una decisión de arquitectura,
