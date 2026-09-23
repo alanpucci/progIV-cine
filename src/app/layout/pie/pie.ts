@@ -1,8 +1,7 @@
 import { Component } from "@angular/core";
-import { RouterLink, RouterLinkActive } from "@angular/router";
 
 @Component({
-  imports: [RouterLink, RouterLinkActive],
+  imports: [],
   selector: "app-pie",
   styleUrl: "./pie.scss",
   templateUrl: "./pie.html",
