@@ -36,3 +36,7 @@ yarn-error.log*
 Thumbs.db
 .vscode/*
 !.vscode/extensions.json
+
+# Supabase y Claude Code
+/supabase/
+/.claude/
