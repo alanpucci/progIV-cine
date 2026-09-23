@@ -87,8 +87,8 @@ buscador + filtro múltiple por género, destacado "3 más vendidas" en home.
 | # | Sub-tarea | Estado |
 |---|---|---|
 | 1.1 | Capa de datos: modelos + `PeliculasService` (listado/detalle/destacadas) + RPC agregada de "más vendidas" | ✅ |
-| 1.2 | Página de listado (home): grilla de películas + destacado "3 más vendidas" | ⬜ |
-| 1.3 | Buscador + filtro múltiple por género | ⬜ |
+| 1.2 | Página de listado (home): grilla de películas + destacado "3 más vendidas" | ✅ |
+| 1.3 | Buscador + filtro múltiple por género | ✅ |
 | 1.4 | Página de detalle de película (sinopsis, géneros, funciones disponibles, reseñas + promedio) | ⬜ |
 
 ### Fase 2 — Salas, butacas y funciones (M03/M04) ⬜

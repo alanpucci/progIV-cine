@@ -118,9 +118,16 @@ retroactivamente solo por esto.
 - El proyecto es **zoneless** (sin `zone.js`, confirmado en `package.json`):
   la detección de cambios depende de signals, no de que Zone.js parchee APIs
   async. Cualquier estado que deba reflejarse en la UI tiene que ser un
-  signal (o derivarse de uno con `computed`) — mutar una variable plana o
-  hacer un `subscribe()` sin volcar el valor a un signal no va a actualizar
-  la vista.
+  signal — mutar una variable plana o hacer un `subscribe()` sin volcar el
+  valor a un signal no va a actualizar la vista.
+- **No usar `computed()`** (API de signals no vista en la materia, mismo
+  criterio que con `resource()`). Para un valor derivado de uno o más
+  signals, usar un método protegido plano (sin envolverlo en `signal`) que
+  lea esos signals adentro e invocarlo desde el template — Angular sigue
+  actualizando la vista porque en zoneless los signals leídos durante el
+  render quedan trackeados como dependencia de esa vista, sin necesidad de
+  `computed`. Tiene como único costo recalcularse en cada ciclo de detección
+  en vez de memoizarse, aceptable para los tamaños de datos de este TP.
 - Preferir signals/`async` pipe sobre subscribes manuales sin unsubscribe.
 - **No generar tests unitarios** (`*.spec.ts`) salvo que se pida
   explícitamente. Al crear componentes con `ng generate`, usar
