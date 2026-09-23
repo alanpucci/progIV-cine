@@ -1,4 +1,5 @@
 import { Component, inject, signal } from "@angular/core";
+import { RouterLink } from "@angular/router";
 import { FormsModule } from "@angular/forms";
 import { PeliculasService } from "../../../../core/servicios/peliculas.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
@@ -8,7 +9,7 @@ import { Tarjeta } from "../../../../shared/componentes/tarjeta/tarjeta";
 import { FiltrarPeliculas } from "../../pipes/filtrar-peliculas.pipe";
 
 @Component({
-  imports: [FormsModule, Tarjeta, FiltrarPeliculas],
+  imports: [RouterLink, FormsModule, Tarjeta, FiltrarPeliculas],
   selector: "app-catalogo-inicio",
   styleUrl: "./catalogo-inicio.scss",
   templateUrl: "./catalogo-inicio.html",

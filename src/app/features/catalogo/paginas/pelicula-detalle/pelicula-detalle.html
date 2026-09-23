@@ -1,0 +1,109 @@
+<section class="pelicula-detalle">
+  <a class="pelicula-detalle__volver" routerLink="/">← Volver a la cartelera</a>
+
+  @if (error()) {
+    <p class="pelicula-detalle__estado pelicula-detalle__estado--error">
+      No se pudo cargar la película. Volvé a intentar más tarde.
+    </p>
+  } @else if (!cargando() && !detalle()) {
+    <p class="pelicula-detalle__estado">No encontramos esa película en cartelera.</p>
+  } @else if (!cargando() && detalle(); as pelicula) {
+    <article class="pelicula-detalle__ficha">
+      <img class="pelicula-detalle__poster" [src]="pelicula.imagenUrl" [alt]="pelicula.nombre" />
+
+      <div class="pelicula-detalle__info">
+        <h1 class="pelicula-detalle__nombre">{{ pelicula.nombre }}</h1>
+
+        <p class="pelicula-detalle__meta">
+          {{ formatearDuracion(pelicula.duracionMinutos) }} ·
+          {{ formatearClasificacion(pelicula.clasificacionEdad) }} ·
+          Estreno {{ formatearFechaEstreno(pelicula.fechaEstreno) }}
+        </p>
+
+        @if (pelicula.generos.length > 0) {
+          <ul class="pelicula-detalle__generos">
+            @for (genero of pelicula.generos; track genero.id) {
+              <li class="pelicula-detalle__genero">{{ genero.nombre }}</li>
+            }
+          </ul>
+        }
+
+        @if (pelicula.promedioEstrellas !== null) {
+          <div class="pelicula-detalle__resumen-estrellas" aria-hidden="true">
+            @for (estrella of rangoEstrellas; track estrella) {
+              <span
+                class="pelicula-detalle__estrella"
+                [class.pelicula-detalle__estrella--llena]="estrella <= promedioRedondeado()"
+              >★</span>
+            }
+            <span class="pelicula-detalle__promedio-numero">{{ pelicula.promedioEstrellas!.toFixed(1) }}</span>
+          </div>
+        }
+
+        <p class="pelicula-detalle__sinopsis">{{ pelicula.sinopsis }}</p>
+
+        @if (pelicula.preventaHabilitada) {
+          <p class="pelicula-detalle__preventa">
+            En preventa
+            @if (pelicula.precioPreventa !== null) {
+              · desde ${{ pelicula.precioPreventa }}
+            }
+          </p>
+        }
+      </div>
+    </article>
+
+    <section class="pelicula-detalle__seccion">
+      <h2 class="pelicula-detalle__titulo-seccion">Funciones disponibles</h2>
+
+      @if (pelicula.funciones.length === 0) {
+        <p class="pelicula-detalle__estado">No hay funciones programadas por el momento.</p>
+      } @else {
+        <div class="pelicula-detalle__dias">
+          @for (grupo of funcionesAgrupadas(); track grupo.fecha) {
+            <div class="pelicula-detalle__dia">
+              <h3 class="pelicula-detalle__fecha">{{ grupo.fecha }}</h3>
+              <ul class="pelicula-detalle__funciones">
+                @for (funcion of grupo.funciones; track funcion.id) {
+                  <li class="pelicula-detalle__funcion">
+                    <span class="pelicula-detalle__funcion-hora">{{ formatearHoraFuncion(funcion.inicio) }}</span>
+                    <span class="pelicula-detalle__funcion-detalle">
+                      {{ funcion.tipoProyeccion }} · {{ funcion.idioma }}
+                    </span>
+                    <span class="pelicula-detalle__funcion-precio">${{ funcion.precioBase }}</span>
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="pelicula-detalle__seccion">
+      <h2 class="pelicula-detalle__titulo-seccion">Reseñas</h2>
+
+      @if (pelicula.resenas.length === 0) {
+        <p class="pelicula-detalle__estado">Todavía no hay reseñas para esta película.</p>
+      } @else {
+        <ul class="pelicula-detalle__resenas">
+          @for (resena of pelicula.resenas; track resena.id) {
+            <li class="pelicula-detalle__resena">
+              <div class="pelicula-detalle__resena-estrellas" aria-hidden="true">
+                @for (estrella of rangoEstrellas; track estrella) {
+                  <span
+                    class="pelicula-detalle__estrella"
+                    [class.pelicula-detalle__estrella--llena]="estrella <= resena.estrellas"
+                  >★</span>
+                }
+              </div>
+              @if (resena.comentario) {
+                <p class="pelicula-detalle__resena-comentario">{{ resena.comentario }}</p>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</section>
