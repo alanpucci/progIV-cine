@@ -3,6 +3,26 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 1.4] - 2026-09-23
+
+### Added
+- `src/app/features/catalogo/paginas/pelicula-detalle/` (`PeliculaDetallePagina`):
+  página de detalle de película — poster, nombre, duración, clasificación,
+  géneros, fecha de estreno, sinopsis, badge de preventa, funciones
+  disponibles agrupadas por día y reseñas con promedio de estrellas. Usa
+  `PeliculasService.obtenerDetalle()` (ya existente desde la Fase 1.1).
+  Ruta `pelicula/:id` (`catalogo.routes.ts`), con el `id` recibido como
+  `input` de ruta (`withComponentInputBinding()` en `app.config.ts`) y
+  recargado con un `effect()` ante cambios de `id` — detalle en `README.md`.
+- `src/app/core/helpers/pelicula.formato.ts`: `formatearFechaFuncion`,
+  `formatearHoraFuncion` y `formatearFechaEstreno`.
+
+### Changed
+- `catalogo-inicio.html`/`.ts`/`.scss`: el podio de destacadas y la grilla de
+  la Fase 1.2/1.3 pasan a ser enlaces (`routerLink`) a `/pelicula/:id`.
+- `docs/ROADMAP.md`/`docs/ROADMAP.pdf`: desglose de sub-tareas de las Fases
+  2 a 13 (planificación, sin tocar el estado de la Fase 1).
+
 ## [Fase 1.3] - 2026-09-22
 
 ### Fixed

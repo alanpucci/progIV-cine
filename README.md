@@ -151,6 +151,24 @@ Angular, pero equivalente para el caso por defecto (singleton auto-provisto
 en el injector raíz, sin registrarlo en ningún módulo) — se prefirió por ser
 más corta y porque el nombre describe mejor el rol de la clase.
 
+### Parámetros de ruta como signal de entrada (Fase 1.4)
+
+`provideRouter` se configura con `withComponentInputBinding()`
+(`app.config.ts`), así que un segmento de ruta como `:id` llega al componente
+de la página como un `input` más (`readonly id = input.required<string>();`),
+no leído a mano desde `ActivatedRoute`. Es consistente con el resto del
+proyecto, donde todo el estado que afecta a la vista pasa por un signal.
+
+Como el router reutiliza la instancia del componente cuando dos rutas
+coinciden con el mismo path (por ejemplo, navegar de `/pelicula/A` a
+`/pelicula/B` sin salir de esa página), la carga de datos no puede hacerse
+una sola vez en el constructor: se dispara con un `effect()` que lee `id()`
+y vuelve a pedir el detalle cada vez que cambia. `PeliculaDetallePagina`
+(`features/catalogo/paginas/pelicula-detalle/`) es el primer caso de ruta con
+parámetro del proyecto; el patrón (`input` de ruta + `effect()` para
+recargar) se reutiliza en cualquier página futura que dependa de un
+identificador en la URL (detalle de función, validación de entrada, etc.).
+
 ### Concurrencia y validación de negocio en el backend
 
 Reglas críticas como "no vender la misma butaca dos veces" o "no solapar

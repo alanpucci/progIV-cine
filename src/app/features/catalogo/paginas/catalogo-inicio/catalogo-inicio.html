@@ -14,21 +14,23 @@
     } @else if (!cargandoDestacadas()) {
       <div class="catalogo-inicio__podio">
         @for (pelicula of destacadas(); track pelicula.id; let indice = $index) {
-          <article class="catalogo-inicio__destacada">
-            <span class="catalogo-inicio__rango">{{ indice + 1 }}</span>
-            <img
-              class="catalogo-inicio__destacada-poster"
-              [src]="pelicula.imagenUrl"
-              [alt]="pelicula.nombre"
-            />
-            <div class="catalogo-inicio__destacada-info">
-              <h3 class="catalogo-inicio__destacada-nombre">{{ pelicula.nombre }}</h3>
-              <p class="catalogo-inicio__meta">
-                {{ formatearDuracion(pelicula.duracionMinutos) }} ·
-                {{ formatearClasificacion(pelicula.clasificacionEdad) }}
-              </p>
-            </div>
-          </article>
+          <a class="catalogo-inicio__enlace" [routerLink]="['/pelicula', pelicula.id]">
+            <article class="catalogo-inicio__destacada">
+              <span class="catalogo-inicio__rango">{{ indice + 1 }}</span>
+              <img
+                class="catalogo-inicio__destacada-poster"
+                [src]="pelicula.imagenUrl"
+                [alt]="pelicula.nombre"
+              />
+              <div class="catalogo-inicio__destacada-info">
+                <h3 class="catalogo-inicio__destacada-nombre">{{ pelicula.nombre }}</h3>
+                <p class="catalogo-inicio__meta">
+                  {{ formatearDuracion(pelicula.duracionMinutos) }} ·
+                  {{ formatearClasificacion(pelicula.clasificacionEdad) }}
+                </p>
+              </div>
+            </article>
+          </a>
         }
       </div>
     }
@@ -87,28 +89,30 @@
     } @else if (!cargandoListado()) {
       <div class="catalogo-inicio__grilla">
         @for (pelicula of listadoFiltrado(); track pelicula.id) {
-          <app-tarjeta class="catalogo-inicio__tarjeta">
-            <img
-              class="catalogo-inicio__poster"
-              [src]="pelicula.imagenUrl"
-              [alt]="pelicula.nombre"
-              loading="lazy"
-            />
-            <div class="catalogo-inicio__info">
-              <h3 class="catalogo-inicio__nombre">{{ pelicula.nombre }}</h3>
-              <p class="catalogo-inicio__meta">
-                {{ formatearDuracion(pelicula.duracionMinutos) }} ·
-                {{ formatearClasificacion(pelicula.clasificacionEdad) }}
-              </p>
-              @if (pelicula.generos.length > 0) {
-                <ul class="catalogo-inicio__generos">
-                  @for (genero of pelicula.generos; track genero.id) {
-                    <li class="catalogo-inicio__genero">{{ genero.nombre }}</li>
-                  }
-                </ul>
-              }
-            </div>
-          </app-tarjeta>
+          <a class="catalogo-inicio__enlace" [routerLink]="['/pelicula', pelicula.id]">
+            <app-tarjeta class="catalogo-inicio__tarjeta" [interactiva]="true">
+              <img
+                class="catalogo-inicio__poster"
+                [src]="pelicula.imagenUrl"
+                [alt]="pelicula.nombre"
+                loading="lazy"
+              />
+              <div class="catalogo-inicio__info">
+                <h3 class="catalogo-inicio__nombre">{{ pelicula.nombre }}</h3>
+                <p class="catalogo-inicio__meta">
+                  {{ formatearDuracion(pelicula.duracionMinutos) }} ·
+                  {{ formatearClasificacion(pelicula.clasificacionEdad) }}
+                </p>
+                @if (pelicula.generos.length > 0) {
+                  <ul class="catalogo-inicio__generos">
+                    @for (genero of pelicula.generos; track genero.id) {
+                      <li class="catalogo-inicio__genero">{{ genero.nombre }}</li>
+                    }
+                  </ul>
+                }
+              </div>
+            </app-tarjeta>
+          </a>
         }
       </div>
     }

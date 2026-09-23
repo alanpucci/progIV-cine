@@ -1,0 +1,230 @@
+.pelicula-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2xl);
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--espacio-xl);
+}
+
+.pelicula-detalle__volver {
+  align-self: flex-start;
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-texto-primario);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--sombra-foco);
+  }
+}
+
+.pelicula-detalle__estado {
+  color: var(--color-texto-secundario);
+  font-size: 0.95rem;
+
+  &--error {
+    color: var(--color-error);
+  }
+}
+
+.pelicula-detalle__ficha {
+  display: grid;
+  grid-template-columns: minmax(0, 16rem) 1fr;
+  gap: var(--espacio-xl);
+}
+
+.pelicula-detalle__poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-elevada);
+  object-fit: cover;
+}
+
+.pelicula-detalle__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.pelicula-detalle__nombre {
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: var(--color-texto-primario);
+}
+
+.pelicula-detalle__meta {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.95rem;
+}
+
+.pelicula-detalle__generos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-xs);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.pelicula-detalle__genero {
+  padding: 0.15rem var(--espacio-sm);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-completo);
+  color: var(--color-texto-secundario);
+  font-size: 0.8rem;
+}
+
+.pelicula-detalle__resumen-estrellas {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.pelicula-detalle__estrella {
+  color: var(--color-borde);
+  font-size: 1.1rem;
+
+  &--llena {
+    color: var(--color-acento-secundario);
+  }
+}
+
+.pelicula-detalle__promedio-numero {
+  margin-left: var(--espacio-xs);
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.pelicula-detalle__sinopsis {
+  margin: 0;
+  max-width: 48rem;
+  color: var(--color-texto-secundario);
+  line-height: 1.6;
+}
+
+.pelicula-detalle__preventa {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0.35rem var(--espacio-md);
+  background: var(--color-superficie-elevada);
+  border: 1px solid var(--color-acento-secundario);
+  border-radius: var(--radio-completo);
+  color: var(--color-acento-secundario);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.pelicula-detalle__seccion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+.pelicula-detalle__titulo-seccion {
+  padding-left: var(--espacio-md);
+  border-left: 3px solid var(--color-acento);
+  font-size: 1.5rem;
+  color: var(--color-texto-primario);
+}
+
+.pelicula-detalle__dias {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+.pelicula-detalle__fecha {
+  margin: 0 0 var(--espacio-sm);
+  color: var(--color-texto-secundario);
+  font-size: 0.95rem;
+  text-transform: capitalize;
+}
+
+.pelicula-detalle__funciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-md);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.pelicula-detalle__funcion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+  min-width: 9rem;
+  padding: var(--espacio-md) var(--espacio-lg);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+}
+
+.pelicula-detalle__funcion-hora {
+  font-family: var(--fuente-titulo);
+  font-size: 1.3rem;
+  color: var(--color-texto-primario);
+}
+
+.pelicula-detalle__funcion-detalle {
+  color: var(--color-texto-secundario);
+  font-size: 0.8rem;
+}
+
+.pelicula-detalle__funcion-precio {
+  color: var(--color-acento-secundario);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.pelicula-detalle__resenas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.pelicula-detalle__resena {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+  padding: var(--espacio-md) var(--espacio-lg);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+}
+
+.pelicula-detalle__resena-estrellas {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.pelicula-detalle__resena-comentario {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .pelicula-detalle {
+    padding: var(--espacio-lg) var(--espacio-md);
+    gap: var(--espacio-xl);
+  }
+
+  .pelicula-detalle__ficha {
+    grid-template-columns: 1fr;
+  }
+
+  .pelicula-detalle__poster {
+    max-width: 14rem;
+    margin: 0 auto;
+  }
+}

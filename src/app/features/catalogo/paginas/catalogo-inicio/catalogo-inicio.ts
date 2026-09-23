@@ -1,4 +1,5 @@
 import { Component, inject, signal } from "@angular/core";
+import { RouterLink } from "@angular/router";
 import { PeliculasService } from "../../../../core/servicios/peliculas.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
 import { Genero, PeliculaResumen } from "../../../../core/modelos/pelicula.model";
@@ -7,7 +8,7 @@ import { normalizarTexto } from "../../../../core/helpers/texto.helpers";
 import { Tarjeta } from "../../../../shared/componentes/tarjeta/tarjeta";
 
 @Component({
-  imports: [Tarjeta],
+  imports: [RouterLink, Tarjeta],
   selector: "app-catalogo-inicio",
   styleUrl: "./catalogo-inicio.scss",
   templateUrl: "./catalogo-inicio.html",
