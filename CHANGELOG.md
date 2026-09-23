@@ -32,9 +32,12 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   `generosDisponibles()` y `hayFiltrosActivos()` son métodos planos
   (no `computed()`, ver `CLAUDE.md`) que leen `listado()`, `terminoBusqueda()`
   y `generosSeleccionados()` e invocados desde el template; el filtrado en sí
-  lo resuelve `FiltrarPeliculas`. Botón "Limpiar filtros" visible solo con
-  algún filtro activo, y mensaje distinto para "sin películas publicadas" vs.
-  "sin resultados para el filtro actual".
+  lo resuelve `FiltrarPeliculas`. `generosSeleccionados` es un
+  `signal<readonly string[]>` (no `Set`, no visto en la materia): agregar/
+  quitar un género arma un array nuevo con `filter`/spread en vez de
+  `add`/`delete` sobre una copia del `Set`. Botón "Limpiar filtros" visible
+  solo con algún filtro activo, y mensaje distinto para "sin películas
+  publicadas" vs. "sin resultados para el filtro actual".
 - `angular.json`: sube el budget `anyComponentStyle` (4kB → 6kB de warning,
   8kB → 10kB de error) — el default del scaffold quedaba corto para una
   página con buscador + chips de filtro; no es una decisión de arquitectura,

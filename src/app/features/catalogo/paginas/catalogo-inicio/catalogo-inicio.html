@@ -56,8 +56,8 @@
                 <button
                   type="button"
                   class="catalogo-inicio__chip"
-                  [class.catalogo-inicio__chip--activo]="generosSeleccionados().has(genero.id)"
-                  [attr.aria-pressed]="generosSeleccionados().has(genero.id)"
+                  [class.catalogo-inicio__chip--activo]="generosSeleccionados().includes(genero.id)"
+                  [attr.aria-pressed]="generosSeleccionados().includes(genero.id)"
                   (click)="alternarGenero(genero.id)"
                 >
                   {{ genero.nombre }}
