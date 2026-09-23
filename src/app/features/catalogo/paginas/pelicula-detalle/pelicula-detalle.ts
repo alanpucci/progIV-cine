@@ -1,5 +1,6 @@
 import { Component, inject, signal } from "@angular/core";
-import { ActivatedRoute, RouterLink } from "@angular/router";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { Boton } from "../../../../shared/componentes/boton/boton";
 import { PeliculasService } from "../../../../core/servicios/peliculas.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
 import { PeliculaDetalle } from "../../../../core/modelos/pelicula.model";
@@ -18,19 +19,21 @@ interface GrupoFunciones {
 }
 
 @Component({
-  imports: [RouterLink],
+  imports: [RouterLink, Boton],
   selector: "app-pelicula-detalle",
   styleUrl: "./pelicula-detalle.scss",
   templateUrl: "./pelicula-detalle.html",
 })
 export class PeliculaDetallePagina {
   private readonly ruta = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly peliculasService = inject(PeliculasService);
   private readonly cargaGlobal = inject(CargaGlobalService);
 
   protected readonly detalle = signal<PeliculaDetalle | null>(null);
   protected readonly cargando = signal(true);
   protected readonly error = signal(false);
+  protected readonly funcionSeleccionada = signal<string | null>(null);
 
   protected readonly rangoEstrellas = [1, 2, 3, 4, 5] as const;
 
@@ -59,10 +62,21 @@ export class PeliculaDetallePagina {
     return promedio ? Math.round(promedio) : 0;
   }
 
+  protected seleccionarFuncion(id: string): void {
+    this.funcionSeleccionada.set(id);
+  }
+
+  protected continuarAButacas(): void {
+    const id = this.funcionSeleccionada();
+    if (!id) return;
+    this.router.navigate(["/butacas/funcion", id]);
+  }
+
   private async cargarDetalle(id: string): Promise<void> {
     this.cargando.set(true);
     this.error.set(false);
     this.detalle.set(null);
+    this.funcionSeleccionada.set(null);
     try {
       const resultado = await this.cargaGlobal.envolver(() => this.peliculasService.obtenerDetalle(id));
       this.detalle.set(resultado);

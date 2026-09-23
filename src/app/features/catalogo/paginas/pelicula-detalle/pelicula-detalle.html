@@ -65,17 +65,31 @@
               <h3 class="pelicula-detalle__fecha">{{ grupo.fecha }}</h3>
               <ul class="pelicula-detalle__funciones">
                 @for (funcion of grupo.funciones; track funcion.id) {
-                  <li class="pelicula-detalle__funcion">
-                    <span class="pelicula-detalle__funcion-hora">{{ formatearHoraFuncion(funcion.inicio) }}</span>
-                    <span class="pelicula-detalle__funcion-detalle">
-                      {{ funcion.tipoProyeccion }} · {{ funcion.idioma }}
-                    </span>
-                    <span class="pelicula-detalle__funcion-precio">${{ funcion.precioBase }}</span>
+                  <li>
+                    <button
+                      type="button"
+                      class="pelicula-detalle__funcion"
+                      [class.pelicula-detalle__funcion--seleccionada]="funcionSeleccionada() === funcion.id"
+                      [attr.aria-pressed]="funcionSeleccionada() === funcion.id"
+                      (click)="seleccionarFuncion(funcion.id)"
+                    >
+                      <span class="pelicula-detalle__funcion-hora">{{ formatearHoraFuncion(funcion.inicio) }}</span>
+                      <span class="pelicula-detalle__funcion-detalle">
+                        {{ funcion.salaNombre }} · {{ funcion.tipoProyeccion }} · {{ funcion.idioma }}
+                      </span>
+                      <span class="pelicula-detalle__funcion-precio">${{ funcion.precioBase }}</span>
+                    </button>
                   </li>
                 }
               </ul>
             </div>
           }
+        </div>
+
+        <div class="pelicula-detalle__cta">
+          <app-boton [deshabilitado]="!funcionSeleccionada()" (click)="continuarAButacas()">
+            Continuar a selección de butacas
+          </app-boton>
         </div>
       }
     </section>

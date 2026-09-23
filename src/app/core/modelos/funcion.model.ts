@@ -34,6 +34,7 @@ export interface Funcion {
 export interface FuncionDisponible {
   id: string;
   salaId: string;
+  salaNombre: string;
   inicio: string;
   tipoProyeccion: TipoProyeccion;
   idioma: Idioma;

@@ -66,7 +66,7 @@ clara), disponibilidad en tiempo real, selección de función desde el detalle.
 | # | Sub-tarea | Estado |
 |---|---|---|
 | 2.1 | Capa de datos: modelos (`Sala`, `Butaca`, `Funcion`, `ReservaButaca`) + `FuncionesService` (funciones disponibles por película) | ✅ |
-| 2.2 | Selección de función desde el detalle de película (fecha, horario, sala, tipo de proyección 2D/3D/4D/5D, idioma) | ⬜ |
+| 2.2 | Selección de función desde el detalle de película (fecha, horario, sala, tipo de proyección 2D/3D/4D/5D, idioma) | ✅ |
 | 2.3 | Mapa visual de butacas: layout por sala (filas/columnas) con diferenciación de color normal/accesible/VIP | ⬜ |
 | 2.4 | Bloqueo temporal de butacas en selección: RPC transaccional sobre `reservas_butaca` + expiración por `expira_at` | ⬜ |
 | 2.5 | Disponibilidad en tiempo real (Supabase Realtime) reflejada en el mapa mientras otro usuario selecciona | ⬜ |
