@@ -45,8 +45,7 @@
             type="search"
             class="catalogo-inicio__buscador-input"
             placeholder="Buscar por título…"
-            [ngModel]="terminoBusqueda()"
-            (ngModelChange)="actualizarBusqueda($event)"
+            [(ngModel)]="terminoBusquedaValor"
           />
         </label>
 

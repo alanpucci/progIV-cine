@@ -42,16 +42,20 @@ export class CatalogoInicio {
     return this.terminoBusqueda().trim() !== "" || this.generosSeleccionados().size > 0;
   }
 
+  protected get terminoBusquedaValor(): string {
+    return this.terminoBusqueda();
+  }
+
+  protected set terminoBusquedaValor(valor: string) {
+    this.terminoBusqueda.set(valor);
+  }
+
   protected readonly formatearDuracion = formatearDuracion;
   protected readonly formatearClasificacion = formatearClasificacion;
 
   constructor() {
     this.cargarDestacadas();
     this.cargarListado();
-  }
-
-  protected actualizarBusqueda(valor: string): void {
-    this.terminoBusqueda.set(valor);
   }
 
   protected alternarGenero(id: string): void {
