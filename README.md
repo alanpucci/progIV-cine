@@ -177,23 +177,29 @@ Angular, pero equivalente para el caso por defecto (singleton auto-provisto
 en el injector raíz, sin registrarlo en ningún módulo) — se prefirió por ser
 más corta y porque el nombre describe mejor el rol de la clase.
 
-### Parámetros de ruta como signal de entrada (Fase 1.4)
+### Parámetros de ruta: `ActivatedRoute` + `subscribe()` a signal
 
-`provideRouter` se configura con `withComponentInputBinding()`
-(`app.config.ts`), así que un segmento de ruta como `:id` llega al componente
-de la página como un `input` más (`readonly id = input.required<string>();`),
-no leído a mano desde `ActivatedRoute`. Es consistente con el resto del
-proyecto, donde todo el estado que afecta a la vista pasa por un signal.
+Un segmento de ruta como `:id` se lee con el patrón clásico de Angular:
+inyectar `ActivatedRoute` y suscribirse a `paramMap`, volcando cada emisión a
+un signal (o, como en `PeliculaDetallePagina`, disparando directo la carga de
+datos correspondiente). Se descartó `withComponentInputBinding()` (que
+mapearía el parámetro de ruta directo a un `input()` del componente) por ser
+una API de Router no vista en la materia — el mismo criterio que ya excluye
+`computed()`/`resource()`.
 
-Como el router reutiliza la instancia del componente cuando dos rutas
-coinciden con el mismo path (por ejemplo, navegar de `/pelicula/A` a
-`/pelicula/B` sin salir de esa página), la carga de datos no puede hacerse
-una sola vez en el constructor: se dispara con un `effect()` que lee `id()`
-y vuelve a pedir el detalle cada vez que cambia. `PeliculaDetallePagina`
-(`features/catalogo/paginas/pelicula-detalle/`) es el primer caso de ruta con
-parámetro del proyecto; el patrón (`input` de ruta + `effect()` para
-recargar) se reutiliza en cualquier página futura que dependa de un
-identificador en la URL (detalle de función, validación de entrada, etc.).
+A diferencia de `CargaGlobalService` (`@Service()`, singleton de toda la
+app, cuya suscripción interna vive y muere con la aplicación), una
+suscripción hecha **dentro de un componente** sí necesita darse de baja
+explícitamente al destruirse — si no, sigue viva más allá del ciclo de vida
+del componente. Por eso `PeliculaDetallePagina` implementa `OnDestroy` y
+guarda la `Subscription` de `paramMap` para poder cancelarla en
+`ngOnDestroy()`. Como el router reutiliza la instancia del componente cuando
+dos rutas coinciden con el mismo path (por ejemplo, navegar de `/pelicula/A`
+a `/pelicula/B` sin salir de esa página), `paramMap` emite de nuevo ante ese
+cambio y la carga de datos se repite sola, sin lógica extra. Este patrón
+(`ActivatedRoute.paramMap.subscribe()` + `ngOnDestroy()`) se reutiliza en
+cualquier página futura que dependa de un identificador en la URL (detalle
+de función, validación de entrada, etc.).
 
 ### Concurrencia y validación de negocio en el backend
 
