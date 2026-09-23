@@ -1,5 +1,6 @@
 import { Component, inject, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
+import { FormsModule } from "@angular/forms";
 import { PeliculasService } from "../../../../core/servicios/peliculas.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
 import { Genero, PeliculaResumen } from "../../../../core/modelos/pelicula.model";
@@ -8,7 +9,7 @@ import { Tarjeta } from "../../../../shared/componentes/tarjeta/tarjeta";
 import { FiltrarPeliculas } from "../../pipes/filtrar-peliculas.pipe";
 
 @Component({
-  imports: [RouterLink, Tarjeta, FiltrarPeliculas],
+  imports: [RouterLink, FormsModule, Tarjeta, FiltrarPeliculas],
   selector: "app-catalogo-inicio",
   styleUrl: "./catalogo-inicio.scss",
   templateUrl: "./catalogo-inicio.html",
@@ -42,16 +43,20 @@ export class CatalogoInicio {
     return this.terminoBusqueda().trim() !== "" || this.generosSeleccionados().size > 0;
   }
 
+  protected get terminoBusquedaValor(): string {
+    return this.terminoBusqueda();
+  }
+
+  protected set terminoBusquedaValor(valor: string) {
+    this.terminoBusqueda.set(valor);
+  }
+
   protected readonly formatearDuracion = formatearDuracion;
   protected readonly formatearClasificacion = formatearClasificacion;
 
   constructor() {
     this.cargarDestacadas();
     this.cargarListado();
-  }
-
-  protected actualizarBusqueda(valor: string): void {
-    this.terminoBusqueda.set(valor);
   }
 
   protected alternarGenero(id: string): void {

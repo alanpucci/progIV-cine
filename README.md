@@ -104,6 +104,32 @@ módulos, no tiene la complejidad de sincronización (undo/redo, time-travel,
 efectos altamente encadenados) que justifica su overhead. Si en el camino
 aparece un caso que realmente lo necesite, se reevalúa.
 
+### Formularios simples: `[(ngModel)]` de dos vías contra un signal
+
+El buscador del catálogo (Fase 1.3) usa `[(ngModel)]` de `FormsModule` en vez
+de leer `$event.target` a mano. La sintaxis de dos vías no funciona escrita
+directo contra el signal (`[(ngModel)]="terminoBusqueda()"` no compila: se
+expandiría a `(ngModelChange)="terminoBusqueda() = $event"`, y el resultado de
+invocar una función no es asignable), así que el componente expone un
+accessor `get`/`set` (`terminoBusquedaValor`) que lee y escribe el signal por
+detrás:
+
+```ts
+protected get terminoBusquedaValor(): string {
+  return this.terminoBusqueda();
+}
+protected set terminoBusquedaValor(valor: string) {
+  this.terminoBusqueda.set(valor);
+}
+```
+
+`[(ngModel)]="terminoBusquedaValor"` se expande entonces contra una propiedad
+de verdad, así que compila y funciona como dos vías reales. El `get` sigue
+leyendo el signal en el momento del render (se trackea igual que cualquier
+otra lectura de signal en el template), y el `set` es el único lugar que lo
+escribe. El mismo criterio aplica a cualquier campo de formulario que en el
+proyecto respalde su valor en un signal en vez de una propiedad plana.
+
 ### Estado de carga global: un overlay compartido, no uno por componente
 
 Ningún componente arma su propio indicador de carga. Existe
