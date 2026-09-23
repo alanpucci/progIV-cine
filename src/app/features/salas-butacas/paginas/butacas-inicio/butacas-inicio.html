@@ -1,4 +1,55 @@
-<section class="marcador-de-posicion">
-  <h1>Butacas y funciones</h1>
-  <p>Pantalla en construcción — se implementa en la Fase 2 del roadmap.</p>
+<section class="butacas-mapa">
+  @if (error()) {
+    <a class="butacas-mapa__volver" routerLink="/">← Volver a la cartelera</a>
+    <p class="butacas-mapa__estado butacas-mapa__estado--error">
+      No se pudo cargar la función. Volvé a intentar más tarde.
+    </p>
+  } @else if (!cargando() && !funcion()) {
+    <a class="butacas-mapa__volver" routerLink="/">← Volver a la cartelera</a>
+    <p class="butacas-mapa__estado">No encontramos esa función.</p>
+  } @else if (!cargando() && funcion(); as datosFuncion) {
+    <a class="butacas-mapa__volver" [routerLink]="['/pelicula', datosFuncion.peliculaId]">← Volver a la película</a>
+
+    <header class="butacas-mapa__encabezado">
+      <h1 class="butacas-mapa__pelicula">{{ datosFuncion.peliculaNombre }}</h1>
+      <p class="butacas-mapa__meta">
+        {{ datosFuncion.salaNombre }} · {{ formatearFechaFuncion(datosFuncion.inicio) }}
+        {{ formatearHoraFuncion(datosFuncion.inicio) }} ·
+        {{ datosFuncion.tipoProyeccion }} · {{ datosFuncion.idioma }}
+      </p>
+    </header>
+
+    <div class="butacas-mapa__pantalla" aria-hidden="true">Pantalla</div>
+
+    <div class="butacas-mapa__sala" [style.--columnas]="columnasSala()">
+      @for (grupo of filasDeButacas(); track grupo.fila) {
+        <div class="butacas-mapa__fila">
+          <span class="butacas-mapa__etiqueta-fila" aria-hidden="true">{{ grupo.fila }}</span>
+          <div class="butacas-mapa__asientos">
+            @for (butaca of grupo.butacas; track butaca.id) {
+              <span
+                class="butacas-mapa__butaca"
+                [class.butacas-mapa__butaca--accesible]="butaca.tipo === 'accesible'"
+                [class.butacas-mapa__butaca--vip]="butaca.tipo === 'vip'"
+                [style.grid-column]="butaca.numero"
+                [attr.aria-label]="'Fila ' + grupo.fila + ', butaca ' + butaca.numero + ', tipo ' + butaca.tipo"
+              >{{ butaca.numero }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <ul class="butacas-mapa__leyenda">
+      <li class="butacas-mapa__leyenda-item">
+        <span class="butacas-mapa__muestra"></span> Normal
+      </li>
+      <li class="butacas-mapa__leyenda-item">
+        <span class="butacas-mapa__muestra butacas-mapa__muestra--accesible"></span> Accesible
+      </li>
+      <li class="butacas-mapa__leyenda-item">
+        <span class="butacas-mapa__muestra butacas-mapa__muestra--vip"></span> VIP
+      </li>
+    </ul>
+  }
 </section>
