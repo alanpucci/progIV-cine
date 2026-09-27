@@ -27,13 +27,16 @@
           <span class="butacas-mapa__etiqueta-fila" aria-hidden="true">{{ grupo.fila }}</span>
           <div class="butacas-mapa__asientos">
             @for (butaca of grupo.butacas; track butaca.id) {
-              <span
+              <button
+                type="button"
                 class="butacas-mapa__butaca"
                 [class.butacas-mapa__butaca--accesible]="butaca.tipo === 'accesible'"
                 [class.butacas-mapa__butaca--vip]="butaca.tipo === 'vip'"
+                [appButacaSeleccionada]="estaSeleccionada(butaca.id)"
                 [style.grid-column]="butaca.numero"
                 [attr.aria-label]="'Fila ' + grupo.fila + ', butaca ' + butaca.numero + ', tipo ' + butaca.tipo"
-              >{{ butaca.numero }}</span>
+                (click)="alternarButaca(butaca.id)"
+              >{{ butaca.numero }}</button>
             }
           </div>
         </div>
@@ -50,6 +53,31 @@
       <li class="butacas-mapa__leyenda-item">
         <span class="butacas-mapa__muestra butacas-mapa__muestra--vip"></span> VIP
       </li>
+      <li class="butacas-mapa__leyenda-item">
+        <span class="butacas-mapa__muestra butacas-mapa__muestra--seleccionada"></span> Tu selección
+      </li>
     </ul>
+
+    <aside class="butacas-mapa__resumen" aria-live="polite">
+      <div class="butacas-mapa__resumen-detalle">
+        @if (butacasSeleccionadas().length === 0) {
+          <p class="butacas-mapa__resumen-titulo">Elegí tus butacas en el mapa</p>
+          <p class="butacas-mapa__resumen-texto">Entrada desde ${{ datosFuncion.precioBase }}</p>
+        } @else {
+          <p class="butacas-mapa__resumen-titulo">
+            {{ butacasSeleccionadas().length }}
+            {{ butacasSeleccionadas().length === 1 ? 'butaca' : 'butacas' }} · ${{ totalSeleccion() }}
+          </p>
+          <p class="butacas-mapa__resumen-texto">
+            @for (butaca of butacasSeleccionadas(); track butaca.id; let ultima = $last) {
+              {{ butaca.fila }}{{ butaca.numero }}{{ ultima ? '' : ', ' }}
+            }
+          </p>
+        }
+      </div>
+      <app-boton [deshabilitado]="butacasSeleccionadas().length === 0" (click)="confirmarSeleccion()">
+        Confirmar butacas
+      </app-boton>
+    </aside>
   }
 </section>

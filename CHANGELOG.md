@@ -3,6 +3,49 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 2.6] - 2026-09-27
+
+### Added
+- Selección de butacas en el mapa (`ButacasInicio`): cada butaca pasa de
+  `<span>` a `<button>`, se alterna con un click (`alternarButaca()`) y se
+  resalta con el acento rojo, pisando el color normal/accesible/VIP. Nueva
+  entrada "Tu selección" en la leyenda.
+- Directiva de atributo `ButacaSeleccionada`
+  (`features/salas-butacas/directivas/butaca-seleccionada.directive.ts`,
+  selector `[appButacaSeleccionada]`): refleja el estado de selección en
+  `aria-pressed` del host, y el SCSS estiliza sobre
+  `[aria-pressed="true"]` en vez de una clase modificadora. Así el estado
+  tiene una sola fuente, que sirve tanto a lectores de pantalla como al
+  estilo. De atributo y no estructural porque la butaca siempre existe en
+  el DOM; solo cambia su estado.
+- Barra de resumen fija al pie del mapa (`butacas-mapa__resumen`): muestra
+  cantidad, total y ubicaciones elegidas (`butacasSeleccionadas()`,
+  `totalSeleccion()`, métodos planos sin `computed()`), con el botón
+  "Confirmar butacas" deshabilitado mientras no haya selección.
+- `SeleccionButacasService` (`core/servicios/seleccion-butacas.service.ts`):
+  contrato entre el mapa y la futura feature `compra` (Fase 4.1).
+  `confirmar(funcion, butacas)` guarda la función y las butacas ordenadas
+  por fila/número, con el precio de cada una (`precio_base` +
+  `precio_adicional`); expone también `limpiar()`, `total()` e
+  `idsElegidosPara(funcionId)`. Respaldado en `sessionStorage` para que un
+  refresh no pierda la selección (justificación en `README.md`).
+- Modelos `ButacaElegida` y `SeleccionButacas` (`funcion.model.ts`).
+- `ResumenSeleccion` (`features/salas-butacas/paginas/resumen-seleccion/`,
+  ruta `/butacas/funcion/:id/resumen`): destino de "Confirmar butacas".
+  Muestra la selección con estética de ticket (película, función, butacas
+  con tipo y precio, total), permite volver a modificarla (el mapa la
+  precarga, descartando butacas que ya no estén activas) o cancelarla.
+  Sin botón de "continuar a la compra" hasta que exista la Fase 4.
+
+### Changed
+- `docs/ROADMAP.md`/`docs/ROADMAP.pdf`: 2.4 (bloqueo temporal) y 2.5
+  (Realtime) quedan **diferidas**; 2.4 pasa a ser prerrequisito de 4.6.
+  2.6 se amplía para incluir la selección del lado del cliente, que no
+  estaba asignada a ninguna sub-tarea (2.3 era solo visual). 4.1 aclara
+  que las entradas del carrito salen de `SeleccionButacasService`.
+- `README.md`: nueva sección sobre dónde vive el estado de la selección y
+  por qué se respalda en `sessionStorage`.
+
 ## [Limpieza de docs] - 2026-09-23
 
 ### Changed

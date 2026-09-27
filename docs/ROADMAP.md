@@ -68,9 +68,17 @@ clara), disponibilidad en tiempo real, selección de función desde el detalle.
 | 2.1 | Capa de datos: modelos (`Sala`, `Butaca`, `Funcion`, `ReservaButaca`) + `FuncionesService` (funciones disponibles por película) | ✅ |
 | 2.2 | Selección de función desde el detalle de película (fecha, horario, sala, tipo de proyección 2D/3D/4D/5D, idioma) | ✅ |
 | 2.3 | Mapa visual de butacas: layout por sala (filas/columnas) con diferenciación de color normal/accesible/VIP | ✅ |
-| 2.4 | Bloqueo temporal de butacas en selección: RPC transaccional sobre `reservas_butaca` + expiración por `expira_at` | ⬜ |
-| 2.5 | Disponibilidad en tiempo real (Supabase Realtime) reflejada en el mapa mientras otro usuario selecciona | ⬜ |
-| 2.6 | Confirmación de butacas seleccionadas → entrega el estado al carrito de la Fase 4 | ⬜ |
+| 2.4 | Bloqueo temporal de butacas en selección: RPC transaccional sobre `reservas_butaca` + expiración por `expira_at` — **diferida**, se retoma antes de 4.6 | ⬜ |
+| 2.5 | Disponibilidad en tiempo real (Supabase Realtime) reflejada en el mapa mientras otro usuario selecciona — **diferida**, se retoma después de 2.4 | ⬜ |
+| 2.6 | Selección de butacas en el mapa + confirmación → entrega el estado al carrito de la Fase 4 | ✅ |
+
+> **2.4 y 2.5 diferidas.** Se adelanta 2.6 para cerrar el flujo
+> película → función → butacas sin esperar el bloqueo en Postgres ni
+> Realtime. Mientras tanto la selección es solo del lado del cliente (no
+> bloquea nada), lo cual es aceptable porque todavía no se vende. 2.4 es
+> **prerrequisito de 4.6**: la confirmación de compra no se implementa
+> sin el bloqueo transaccional. 2.4 se enchufa en
+> `SeleccionButacasService.confirmar()` sin tocar el mapa.
 
 ### Fase 3 — Autenticación y perfil (M01) ⬜
 Registro (mail, nombre, apellido, fecha nacimiento, tipo de sangre, color de
@@ -92,7 +100,7 @@ validación de edad (RN04), pantalla de pago simulada, persistencia de venta.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 4.1 | Estructura `NgModule` de la feature `compra` + `CarritoService` (signals: entradas seleccionadas, productos, combos) | ⬜ |
+| 4.1 | Estructura `NgModule` de la feature `compra` + `CarritoService` (signals: entradas seleccionadas — tomadas de `SeleccionButacasService` de la 2.6 —, productos, combos) | ⬜ |
 | 4.2 | Candy Bar: listado de productos/combos por categoría, cantidad, agregar/quitar del carrito | ⬜ |
 | 4.3 | Aplicación de cupón: validación de tipo (`primera_compra`/`edad`/`general`), vigencia y porcentaje | ⬜ |
 | 4.4 | Checkout: datos de contacto, compra anónima vs registrada, validación de edad (RN04, `fecha_nacimiento_comprador`) | ⬜ |

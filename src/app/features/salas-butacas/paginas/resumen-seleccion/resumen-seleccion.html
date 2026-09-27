@@ -1,0 +1,43 @@
+<section class="resumen-seleccion">
+  @if (seleccion(); as datos) {
+    <a class="resumen-seleccion__volver" [routerLink]="['/butacas/funcion', funcionId]">← Modificar butacas</a>
+
+    <article class="resumen-seleccion__ticket">
+      <header class="resumen-seleccion__cabecera">
+        <p class="resumen-seleccion__etiqueta">Tu selección</p>
+        <h1 class="resumen-seleccion__pelicula">{{ datos.funcion.peliculaNombre }}</h1>
+        <p class="resumen-seleccion__meta">
+          {{ datos.funcion.salaNombre }} · {{ formatearFechaFuncion(datos.funcion.inicio) }}
+          {{ formatearHoraFuncion(datos.funcion.inicio) }} ·
+          {{ datos.funcion.tipoProyeccion }} · {{ datos.funcion.idioma }}
+        </p>
+      </header>
+
+      <ul class="resumen-seleccion__butacas">
+        @for (butaca of datos.butacas; track butaca.id) {
+          <li class="resumen-seleccion__butaca">
+            <span class="resumen-seleccion__ubicacion">Fila {{ butaca.fila }} · Butaca {{ butaca.numero }}</span>
+            <span
+              class="resumen-seleccion__tipo"
+              [class.resumen-seleccion__tipo--accesible]="butaca.tipo === 'accesible'"
+              [class.resumen-seleccion__tipo--vip]="butaca.tipo === 'vip'"
+            >{{ butaca.tipo }}</span>
+            <span class="resumen-seleccion__precio">${{ butaca.precio }}</span>
+          </li>
+        }
+      </ul>
+
+      <footer class="resumen-seleccion__total">
+        <span>Total entradas</span>
+        <span class="resumen-seleccion__total-monto">${{ total() }}</span>
+      </footer>
+    </article>
+
+    <div class="resumen-seleccion__acciones">
+      <app-boton variante="fantasma" (click)="cancelarSeleccion()">Cancelar selección</app-boton>
+    </div>
+  } @else {
+    <a class="resumen-seleccion__volver" [routerLink]="['/butacas/funcion', funcionId]">← Volver al mapa de butacas</a>
+    <p class="resumen-seleccion__estado">No hay butacas confirmadas para esta función.</p>
+  }
+</section>
