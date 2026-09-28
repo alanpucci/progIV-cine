@@ -3,6 +3,60 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 3.2] - 2026-09-27
+
+### Added
+- `AuthService`: signal `sesion`, que se carga al arrancar con
+  `getSession()` y se actualiza a mano en `registrar()`, `iniciarSesion()`
+  y `cerrarSesion()`. También `haySesion()` y `cargarSesion()`, que el
+  constructor llama al arrancar y el guard vuelve a llamar antes de decidir.
+  Mensajes en español para `invalid_credentials` y `user_banned`.
+- Guard funcional `sinSesionGuard` (`core/guardias/sesion.guard.ts`),
+  aplicado a `/cuenta/ingreso` y `/cuenta/registro`: si ya hay sesión,
+  navega al inicio con `replaceUrl: true` y cancela la navegación.
+- Página `IngresoCuenta` en `/cuenta/ingreso`: formulario reactivo de mail
+  y contraseña. Después del login vuelve al catálogo. Si falla, limpia la
+  contraseña y muestra el error.
+- Encabezado: "Ingresar" y "Crear cuenta" sin sesión, "Cerrar sesión" con
+  sesión, tanto en escritorio como en el menú móvil. El header completo
+  (nombre, acceso al perfil) sigue siendo la Fase 3.6.
+- Registro: enlace al ingreso al pie del formulario.
+- Partial `src/styles/_formularios.scss` con mixins de panel, campo, errores
+  y enlace, y `src/styles` en `stylePreprocessorOptions.includePaths`.
+
+### Changed
+- `RegistroCuenta` usa los mixins de `_formularios.scss` en vez de sus
+  propios estilos de campo. El resultado visual es el mismo.
+- `RegistroCuenta` (e `IngresoCuenta` desde el inicio) ya no tienen el
+  signal `enviando`: mientras dura el envío, el overlay de
+  `CargaGlobalService` tapa el formulario, y eso alcanza para evitar el
+  doble envío.
+- Se desactivó la confirmación por mail en Supabase (Authentication →
+  Sign In / Providers → Email → *Confirm email*). `signUp()` ahora deja la
+  sesión iniciada, así que `AuthService.registrar()` devuelve `void` y
+  guarda la sesión en el signal. `RegistroCuenta` navega al catálogo al
+  terminar, igual que el login.
+- La directiva `ButacaSeleccionada` pasa a llamarse `ButacaEstado`
+  (`features/salas-butacas/directivas/butaca-estado.directive.ts`, selector
+  `[appButaca]`). Además de la selección (`[seleccionada]` →
+  `aria-pressed`), recibe el tipo de butaca (`[appButaca]="butaca.tipo"` →
+  `data-tipo`). Reemplaza los dos `[class...--accesible/--vip]` del mapa.
+  También se usa en las muestras de la leyenda, así que los colores por
+  tipo y de selección quedan en un solo bloque del SCSS, compartido entre
+  butaca y muestra (antes estaban duplicados como modificadores `--*`).
+- `README.md`: nueva sección sobre el manejo de sesión, el guard y el
+  partial de formularios. La sección del alta de perfil ya no asume
+  confirmación por mail.
+
+### Removed
+- Todo lo que dependía de la confirmación por mail: el tipo
+  `ResultadoRegistro`, la pantalla de éxito del registro con sus dos
+  variantes ("Revisá tu mail" y "Cuenta creada"), los signals `resultado` y
+  `emailRegistrado`, `emailRedirectTo` en el `signUp()`, la detección de
+  mail repetido por `identities` vacío (sin confirmación, Supabase devuelve
+  directamente `user_already_exists`) y los mensajes de
+  `email_not_confirmed` y `over_email_send_rate_limit`.
+
 ## [Fase 3.1] - 2026-09-27
 
 ### Added

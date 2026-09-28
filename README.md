@@ -157,9 +157,11 @@ Registrarse son dos escrituras: `auth.signUp()` crea el usuario en
 inserta la fila de negocio en `perfiles` con el `id` que devolvió el signup.
 `AuthService.registrar()` orquesta las dos; ningún componente toca Supabase.
 
-El perfil se crea aunque el usuario todavía no haya confirmado el mail, así
-que ese INSERT puede llegar como `anon` (sin sesión). La política
-`perfiles_insert_alta` lo permite solo si:
+La confirmación por mail está desactivada en Supabase, así que `signUp()`
+ya devuelve sesión y el INSERT del perfil llega como `authenticated`. La
+política `perfiles_insert_alta` igual admite `anon` (quedó así de cuando la
+confirmación estaba activa y el signup no devolvía sesión), y lo permite
+solo si:
 - el `id` corresponde a un usuario de `auth.users` creado hace menos de 15
   minutos (función `es_usuario_recien_registrado`, `security definer`
   porque `anon` no puede leer `auth.users`);
@@ -176,6 +178,40 @@ ese caso. Antes esto lo resolvía un trigger sobre `auth.users`
 
 `AuthService` y `PerfilesService` viven en `core/servicios/` porque los van
 a consumir varias features (perfil, encabezado, compra registrada).
+
+### Sesión: signal cargado con `getSession()` (Fase 3.2)
+
+`AuthService.sesion` es un `signal<Session | null>`. Se carga una vez al
+arrancar con `supabase.auth.getSession()`, que lee la sesión que el cliente
+de Supabase persiste en `localStorage`, así que al recargar la página la
+sesión sigue activa. Después se actualiza a mano en `registrar()` (si el
+signup devuelve sesión), en `iniciarSesion()` y en `cerrarSesion()`. El
+header lee ese signal y cambia solo.
+
+Se descartó `onAuthStateChange` (un listener que avisa cada cambio de
+sesión) porque no se vio en la materia y la versión con `getSession()` se
+lee más fácil. Lo que se pierde no importa para este TP: el signal no se
+entera si el token vence sin poder renovarse ni si se cierra sesión en otra
+pestaña.
+
+La carga la hace `cargarSesion()`, que el constructor de `AuthService`
+llama al arrancar (el header inyecta el servicio apenas se abre la app).
+Como `getSession()` es asíncrono, hay unos milisegundos en que `sesion()`
+vale `null` aunque el usuario esté logueado. Por eso `sinSesionGuard`
+(`core/guardias/sesion.guard.ts`) vuelve a llamar a `cargarSesion()` con
+`await` antes de decidir. Llamarlo dos veces no cuesta nada, porque
+`getSession()` lee `localStorage` sin ir al servidor. El guard decide así: si ya hay sesión, `/cuenta/ingreso` y
+`/cuenta/registro` navegan al inicio con `replaceUrl: true`, así la página
+de ingreso no queda en el historial y el botón "atrás" no vuelve a ella.
+
+El guard es funcional (`CanActivateFn`), no una clase: es la forma
+recomendada desde Angular 15 y la de clase está deprecada.
+
+Los estilos de campo de formulario (panel, input/select, errores, enlaces)
+están en el partial `src/styles/_formularios.scss` como mixins, que usan
+tanto el registro como el ingreso. `src/styles` está en
+`stylePreprocessorOptions.includePaths`, así que se importa con
+`@use "formularios"` sin rutas relativas.
 
 ### Estado de carga global: un overlay compartido, no uno por componente
 

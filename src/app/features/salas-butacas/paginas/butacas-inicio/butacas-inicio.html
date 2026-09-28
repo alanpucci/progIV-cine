@@ -30,9 +30,8 @@
               <button
                 type="button"
                 class="butacas-mapa__butaca"
-                [class.butacas-mapa__butaca--accesible]="butaca.tipo === 'accesible'"
-                [class.butacas-mapa__butaca--vip]="butaca.tipo === 'vip'"
-                [appButacaSeleccionada]="estaSeleccionada(butaca.id)"
+                [appButaca]="butaca.tipo"
+                [seleccionada]="estaSeleccionada(butaca.id)"
                 [style.grid-column]="butaca.numero"
                 [attr.aria-label]="'Fila ' + grupo.fila + ', butaca ' + butaca.numero + ', tipo ' + butaca.tipo"
                 (click)="alternarButaca(butaca.id)"
@@ -45,16 +44,16 @@
 
     <ul class="butacas-mapa__leyenda">
       <li class="butacas-mapa__leyenda-item">
-        <span class="butacas-mapa__muestra"></span> Normal
+        <span class="butacas-mapa__muestra" appButaca="normal"></span> Normal
       </li>
       <li class="butacas-mapa__leyenda-item">
-        <span class="butacas-mapa__muestra butacas-mapa__muestra--accesible"></span> Accesible
+        <span class="butacas-mapa__muestra" appButaca="accesible"></span> Accesible
       </li>
       <li class="butacas-mapa__leyenda-item">
-        <span class="butacas-mapa__muestra butacas-mapa__muestra--vip"></span> VIP
+        <span class="butacas-mapa__muestra" appButaca="vip"></span> VIP
       </li>
       <li class="butacas-mapa__leyenda-item">
-        <span class="butacas-mapa__muestra butacas-mapa__muestra--seleccionada"></span> Tu selección
+        <span class="butacas-mapa__muestra" appButaca="normal" [seleccionada]="true"></span> Tu selección
       </li>
     </ul>
 

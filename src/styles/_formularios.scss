@@ -1,0 +1,60 @@
+@mixin panel {
+  padding: var(--espacio-xl) var(--espacio-lg);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-superficie);
+}
+
+@mixin campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+
+  label {
+    font-size: 0.9rem;
+  }
+
+  input,
+  select {
+    width: 100%;
+    min-height: 2.5rem;
+    padding: var(--espacio-sm) var(--espacio-md);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-sm);
+    background: var(--color-fondo-alterno);
+    color: var(--color-texto-primario);
+    font: inherit;
+    color-scheme: dark;
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--color-acento);
+      box-shadow: var(--sombra-foco);
+    }
+
+    &[aria-invalid="true"] {
+      border-color: var(--color-error);
+    }
+  }
+}
+
+@mixin error-campo {
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.8rem;
+}
+
+@mixin error-envio {
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.9rem;
+}
+
+@mixin enlace {
+  color: var(--color-acento-secundario);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

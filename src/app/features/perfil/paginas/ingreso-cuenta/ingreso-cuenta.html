@@ -1,0 +1,51 @@
+<section class="ingreso">
+  <div class="ingreso__panel">
+    <h1 class="ingreso__titulo">Ingresar</h1>
+
+    <form class="ingreso__formulario" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+      <div class="ingreso__campo">
+        <label for="ingreso-email">Mail</label>
+        <input
+          id="ingreso-email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          [attr.aria-invalid]="mostrarError(formulario.controls.email)"
+          aria-describedby="ingreso-email-error"
+        />
+        @if (mostrarError(formulario.controls.email)) {
+          <p id="ingreso-email-error" class="ingreso__error">
+            {{ formulario.controls.email.hasError("required") ? "Ingresá tu mail." : "El formato del mail no es válido." }}
+          </p>
+        }
+      </div>
+
+      <div class="ingreso__campo">
+        <label for="ingreso-contrasena">Contraseña</label>
+        <input
+          id="ingreso-contrasena"
+          type="password"
+          formControlName="contrasena"
+          autocomplete="current-password"
+          [attr.aria-invalid]="mostrarError(formulario.controls.contrasena)"
+          aria-describedby="ingreso-contrasena-error"
+        />
+        @if (mostrarError(formulario.controls.contrasena)) {
+          <p id="ingreso-contrasena-error" class="ingreso__error">Ingresá tu contraseña.</p>
+        }
+      </div>
+
+      @if (errorEnvio(); as mensaje) {
+        <p class="ingreso__error-envio" role="alert">{{ mensaje }}</p>
+      }
+
+      <div class="ingreso__acciones">
+        <app-boton tipo="submit">Ingresar</app-boton>
+      </div>
+    </form>
+
+    <p class="ingreso__pie">
+      ¿Todavía no tenés cuenta? <a class="ingreso__enlace" routerLink="/cuenta/registro">Creala acá</a>
+    </p>
+  </div>
+</section>

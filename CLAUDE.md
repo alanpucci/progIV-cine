@@ -39,6 +39,18 @@ cine), nunca un look de librería reconocible a simple vista.
   `docs/ROADMAP.md`. No implementar fases futuras sin que se pida
   explícitamente, aunque parezca natural encadenarlas.
 
+## Alcance: es un TP universitario, no un producto en producción
+
+No hace falta cubrir todas las casuísticas posibles ni validar absolutamente
+todo. Implementar el camino principal de cada funcionalidad más las
+validaciones que pide el análisis funcional o que son obvias para el usuario
+(campos obligatorios, formatos básicos, reglas de negocio críticas en
+Postgres). No agregar protecciones defensivas para casos borde improbables
+(dobles envíos por teclado, carreras de render, estados globales ajenos,
+etc.) ni extras de accesibilidad (ARIA, lectores de pantalla) si no se piden
+explícitamente. Ante la duda, preferir el código más simple y mencionar el
+caso borde en una línea en vez de resolverlo.
+
 ## Convenciones de repo (aplicar siempre, sin que se pida)
 
 - **`CHANGELOG.md`**: agregar una entrada nueva por cada PR/entrega

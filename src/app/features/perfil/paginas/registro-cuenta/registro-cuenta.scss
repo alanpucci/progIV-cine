@@ -1,3 +1,5 @@
+@use "formularios";
+
 .registro {
   max-width: 36rem;
   margin: var(--espacio-xl) auto;
@@ -5,10 +7,7 @@
 }
 
 .registro__panel {
-  padding: var(--espacio-xl) var(--espacio-lg);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio-md);
-  background: var(--color-superficie);
+  @include formularios.panel;
 }
 
 .registro__titulo {
@@ -40,36 +39,7 @@
 }
 
 .registro__campo {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-xs);
-
-  label {
-    font-size: 0.9rem;
-  }
-
-  input,
-  select {
-    width: 100%;
-    min-height: 2.5rem;
-    padding: var(--espacio-sm) var(--espacio-md);
-    border: 1px solid var(--color-borde);
-    border-radius: var(--radio-sm);
-    background: var(--color-fondo-alterno);
-    color: var(--color-texto-primario);
-    font: inherit;
-    color-scheme: dark;
-
-    &:focus-visible {
-      outline: none;
-      border-color: var(--color-acento);
-      box-shadow: var(--sombra-foco);
-    }
-
-    &[aria-invalid="true"] {
-      border-color: var(--color-error);
-    }
-  }
+  @include formularios.campo;
 }
 
 .registro__ayuda {
@@ -79,15 +49,11 @@
 }
 
 .registro__error {
-  margin: 0;
-  color: var(--color-error);
-  font-size: 0.8rem;
+  @include formularios.error-campo;
 }
 
 .registro__error-envio {
-  margin: 0;
-  color: var(--color-error);
-  font-size: 0.9rem;
+  @include formularios.error-envio;
 }
 
 .registro__acciones {
@@ -95,25 +61,16 @@
   justify-content: flex-end;
 }
 
-.registro__exito {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-md);
-}
-
-.registro__exito-texto {
-  margin: 0;
+.registro__pie {
+  margin: var(--espacio-lg) 0 0;
+  padding-top: var(--espacio-md);
+  border-top: 1px solid var(--color-borde);
   color: var(--color-texto-secundario);
-  line-height: 1.5;
+  font-size: 0.9rem;
 }
 
 .registro__enlace {
-  color: var(--color-acento-secundario);
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
-  }
+  @include formularios.enlace;
 }
 
 @media (min-width: 40rem) {
