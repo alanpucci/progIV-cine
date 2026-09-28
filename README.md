@@ -130,6 +130,34 @@ otra lectura de signal en el template), y el `set` es el único lugar que lo
 escribe. El mismo criterio aplica a cualquier campo de formulario que en el
 proyecto respalde su valor en un signal en vez de una propiedad plana.
 
+### Formularios con validación compuesta: Reactive Forms (Fase 3.1)
+
+El criterio de `[(ngModel)]` de la sección anterior es para campos sueltos
+sin reglas (un buscador). El registro es otro caso: nueve campos, reglas
+por campo (formato de mail, largo mínimo de contraseña, fecha no futura,
+entero entre 0 y 365) y una regla **cruzada** entre dos campos (la
+contraseña y su confirmación tienen que coincidir). Con `ngModel` esas
+reglas quedarían dispersas en atributos del template y la cruzada no tiene
+un lugar natural; con `ReactiveFormsModule` el formulario entero se declara
+en el componente (`FormBuilder.nonNullable.group`), los validadores propios
+son funciones puras testeables en `features/perfil/validadores/`, y la regla
+cruzada es un validador de grupo.
+
+Encaje con zoneless: el estado del `FormGroup` (errores, `touched`) no es
+un signal, pero sólo cambia como consecuencia de eventos del DOM
+(`input`/`blur`/`submit`) que Angular ya escucha desde el template, y esos
+eventos marcan la vista para re-renderizar. Lo que ocurre fuera de un
+evento del DOM — el resultado asíncrono de `signUp`, el mensaje de error
+del backend, el flag de envío en curso — sí va a signals.
+
+Los datos de perfil (nombre, apellido, fecha de nacimiento, tipo de sangre,
+color de ojos, días de vacaciones) viajan en `options.data` de
+`auth.signUp()`, que Supabase guarda como `raw_user_meta_data`; el trigger
+`manejar_nuevo_usuario` los lee de ahí para crear la fila de `perfiles`.
+El frontend nunca inserta en `perfiles` directo. `AuthService` vive en
+`core/servicios/` porque lo van a consumir varias features (perfil,
+encabezado, compra registrada).
+
 ### Estado de carga global: un overlay compartido, no uno por componente
 
 Ningún componente arma su propio indicador de carga. Existe

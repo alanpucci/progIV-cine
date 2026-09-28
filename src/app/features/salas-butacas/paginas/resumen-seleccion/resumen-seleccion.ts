@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { SeleccionButacasService } from "../../../../core/servicios/seleccion-butacas.service";
 import { SeleccionButacas } from "../../../../core/modelos/funcion.model";
 import { Boton } from "../../../../shared/componentes/boton/boton";
+import { formatearFechaFuncion, formatearHoraFuncion } from "../../../../core/helpers/pelicula.formato";
 
 @Component({
   imports: [RouterLink, Boton],
@@ -14,6 +15,9 @@ export class ResumenSeleccion {
   private readonly ruta = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly seleccionButacas = inject(SeleccionButacasService);
+
+  protected readonly formatearFechaFuncion = formatearFechaFuncion;
+  protected readonly formatearHoraFuncion = formatearHoraFuncion;
 
   protected readonly funcionId = this.ruta.snapshot.paramMap.get("id")!;
 

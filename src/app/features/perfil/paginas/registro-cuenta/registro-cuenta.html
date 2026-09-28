@@ -1,0 +1,221 @@
+<section class="registro">
+  <div class="registro__panel">
+    @if (resultado(); as estado) {
+      <div class="registro__exito" role="status">
+        @if (estado === "confirmacion-pendiente") {
+          <h1 class="registro__titulo">Revisá tu mail</h1>
+          <p class="registro__exito-texto">
+            Te enviamos un enlace de confirmación a <strong>{{ emailRegistrado() }}</strong>.
+            Abrilo para activar tu cuenta.
+          </p>
+        } @else {
+          <h1 class="registro__titulo">Cuenta creada</h1>
+          <p class="registro__exito-texto">
+            Tu cuenta <strong>{{ emailRegistrado() }}</strong> ya está activa.
+          </p>
+        }
+        <a class="registro__enlace" routerLink="/">Volver al catálogo</a>
+      </div>
+    } @else {
+      <h1 class="registro__titulo">Crear cuenta</h1>
+
+      <form class="registro__formulario" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+        <fieldset class="registro__grupo">
+          <legend class="registro__leyenda">Acceso</legend>
+
+          <div class="registro__campo registro__campo--ancho">
+            <label for="registro-email">Mail</label>
+            <input
+              id="registro-email"
+              type="email"
+              formControlName="email"
+              autocomplete="email"
+              [attr.aria-invalid]="mostrarError(formulario.controls.email)"
+              aria-describedby="registro-email-error"
+            />
+            @if (mostrarError(formulario.controls.email)) {
+              <p id="registro-email-error" class="registro__error">
+                {{ formulario.controls.email.hasError("required") ? "Ingresá tu mail." : "El formato del mail no es válido." }}
+              </p>
+            }
+          </div>
+
+          <div class="registro__campo">
+            <label for="registro-contrasena">Contraseña</label>
+            <input
+              id="registro-contrasena"
+              type="password"
+              formControlName="contrasena"
+              autocomplete="new-password"
+              [attr.aria-invalid]="mostrarError(formulario.controls.contrasena)"
+              aria-describedby="registro-contrasena-error"
+            />
+            @if (mostrarError(formulario.controls.contrasena)) {
+              <p id="registro-contrasena-error" class="registro__error">
+                {{
+                  formulario.controls.contrasena.hasError("required")
+                    ? "Ingresá una contraseña."
+                    : "Usá al menos " + largoMinimoContrasena + " caracteres."
+                }}
+              </p>
+            }
+          </div>
+
+          <div class="registro__campo">
+            <label for="registro-confirmacion">Repetí la contraseña</label>
+            <input
+              id="registro-confirmacion"
+              type="password"
+              formControlName="confirmacion"
+              autocomplete="new-password"
+              [attr.aria-invalid]="mostrarError(formulario.controls.confirmacion) || confirmacionNoCoincide()"
+              aria-describedby="registro-confirmacion-error"
+            />
+            @if (mostrarError(formulario.controls.confirmacion)) {
+              <p id="registro-confirmacion-error" class="registro__error">Repetí la contraseña.</p>
+            } @else if (confirmacionNoCoincide()) {
+              <p id="registro-confirmacion-error" class="registro__error">Las contraseñas no coinciden.</p>
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="registro__grupo">
+          <legend class="registro__leyenda">Datos personales</legend>
+
+          <div class="registro__campo">
+            <label for="registro-nombre">Nombre</label>
+            <input
+              id="registro-nombre"
+              type="text"
+              formControlName="nombre"
+              autocomplete="given-name"
+              [attr.aria-invalid]="mostrarError(formulario.controls.nombre)"
+              aria-describedby="registro-nombre-error"
+            />
+            @if (mostrarError(formulario.controls.nombre)) {
+              <p id="registro-nombre-error" class="registro__error">
+                {{ formulario.controls.nombre.hasError("maxlength") ? "Máximo 60 caracteres." : "Ingresá tu nombre." }}
+              </p>
+            }
+          </div>
+
+          <div class="registro__campo">
+            <label for="registro-apellido">Apellido</label>
+            <input
+              id="registro-apellido"
+              type="text"
+              formControlName="apellido"
+              autocomplete="family-name"
+              [attr.aria-invalid]="mostrarError(formulario.controls.apellido)"
+              aria-describedby="registro-apellido-error"
+            />
+            @if (mostrarError(formulario.controls.apellido)) {
+              <p id="registro-apellido-error" class="registro__error">
+                {{ formulario.controls.apellido.hasError("maxlength") ? "Máximo 60 caracteres." : "Ingresá tu apellido." }}
+              </p>
+            }
+          </div>
+
+          <div class="registro__campo registro__campo--ancho">
+            <label for="registro-fecha">Fecha de nacimiento</label>
+            <input
+              id="registro-fecha"
+              type="date"
+              formControlName="fechaNacimiento"
+              autocomplete="bday"
+              [min]="fechaMinima"
+              [max]="fechaMaxima"
+              [attr.aria-invalid]="mostrarError(formulario.controls.fechaNacimiento)"
+              aria-describedby="registro-fecha-ayuda registro-fecha-error"
+            />
+            <p id="registro-fecha-ayuda" class="registro__ayuda">La usamos para validar funciones con restricción de edad.</p>
+            @if (mostrarError(formulario.controls.fechaNacimiento)) {
+              <p id="registro-fecha-error" class="registro__error">
+                @if (formulario.controls.fechaNacimiento.hasError("fechaFutura")) {
+                  La fecha no puede ser posterior a hoy.
+                } @else if (formulario.controls.fechaNacimiento.hasError("fechaImprobable")) {
+                  Revisá el año ingresado.
+                } @else {
+                  Ingresá tu fecha de nacimiento.
+                }
+              </p>
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="registro__grupo">
+          <legend class="registro__leyenda">Otros datos</legend>
+
+          <div class="registro__campo">
+            <label for="registro-sangre">Tipo de sangre</label>
+            <select
+              id="registro-sangre"
+              formControlName="tipoSangre"
+              [attr.aria-invalid]="mostrarError(formulario.controls.tipoSangre)"
+              aria-describedby="registro-sangre-error"
+            >
+              <option value="" disabled>Elegí una opción</option>
+              @for (tipo of tiposSangre; track tipo) {
+                <option [value]="tipo">{{ tipo }}</option>
+              }
+            </select>
+            @if (mostrarError(formulario.controls.tipoSangre)) {
+              <p id="registro-sangre-error" class="registro__error">Elegí tu tipo de sangre.</p>
+            }
+          </div>
+
+          <div class="registro__campo">
+            <label for="registro-ojos">Color de ojos</label>
+            <select
+              id="registro-ojos"
+              formControlName="colorOjos"
+              [attr.aria-invalid]="mostrarError(formulario.controls.colorOjos)"
+              aria-describedby="registro-ojos-error"
+            >
+              <option value="" disabled>Elegí una opción</option>
+              @for (color of coloresOjos; track color) {
+                <option [value]="color">{{ color }}</option>
+              }
+            </select>
+            @if (mostrarError(formulario.controls.colorOjos)) {
+              <p id="registro-ojos-error" class="registro__error">Elegí tu color de ojos.</p>
+            }
+          </div>
+
+          <div class="registro__campo registro__campo--ancho">
+            <label for="registro-vacaciones">Días de vacaciones anuales</label>
+            <input
+              id="registro-vacaciones"
+              type="text"
+              inputmode="numeric"
+              maxlength="3"
+              formControlName="diasVacacionesAnuales"
+              (input)="dejarSoloDigitos($event)"
+              [attr.aria-invalid]="mostrarError(formulario.controls.diasVacacionesAnuales)"
+              aria-describedby="registro-vacaciones-error"
+            />
+            @if (mostrarError(formulario.controls.diasVacacionesAnuales)) {
+              <p id="registro-vacaciones-error" class="registro__error">
+                {{
+                  formulario.controls.diasVacacionesAnuales.hasError("required")
+                    ? "Ingresá la cantidad de días."
+                    : "Ingresá un número entero entre 0 y 365."
+                }}
+              </p>
+            }
+          </div>
+        </fieldset>
+
+        @if (errorEnvio(); as mensaje) {
+          <p class="registro__error-envio" role="alert">{{ mensaje }}</p>
+        }
+
+        <div class="registro__acciones">
+          <app-boton tipo="submit" [deshabilitado]="enviando()">
+            {{ enviando() ? "Creando cuenta…" : "Crear cuenta" }}
+          </app-boton>
+        </div>
+      </form>
+    }
+  </div>
+</section>

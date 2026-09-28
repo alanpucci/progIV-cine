@@ -1,0 +1,128 @@
+.registro {
+  max-width: 36rem;
+  margin: var(--espacio-xl) auto;
+  padding: 0 var(--espacio-md);
+}
+
+.registro__panel {
+  padding: var(--espacio-xl) var(--espacio-lg);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-superficie);
+}
+
+.registro__titulo {
+  margin-bottom: var(--espacio-lg);
+  font-size: 2rem;
+}
+
+.registro__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+.registro__grupo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-md);
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.registro__leyenda {
+  margin-bottom: var(--espacio-sm);
+  padding: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.registro__campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+
+  label {
+    font-size: 0.9rem;
+  }
+
+  input,
+  select {
+    width: 100%;
+    min-height: 2.5rem;
+    padding: var(--espacio-sm) var(--espacio-md);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-sm);
+    background: var(--color-fondo-alterno);
+    color: var(--color-texto-primario);
+    font: inherit;
+    color-scheme: dark;
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--color-acento);
+      box-shadow: var(--sombra-foco);
+    }
+
+    &[aria-invalid="true"] {
+      border-color: var(--color-error);
+    }
+  }
+}
+
+.registro__ayuda {
+  margin: 0;
+  color: var(--color-texto-silenciado);
+  font-size: 0.8rem;
+}
+
+.registro__error {
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.8rem;
+}
+
+.registro__error-envio {
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.9rem;
+}
+
+.registro__acciones {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.registro__exito {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.registro__exito-texto {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  line-height: 1.5;
+}
+
+.registro__enlace {
+  color: var(--color-acento-secundario);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+@media (min-width: 40rem) {
+  .registro__grupo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .registro__leyenda,
+  .registro__campo--ancho {
+    grid-column: 1 / -1;
+  }
+}

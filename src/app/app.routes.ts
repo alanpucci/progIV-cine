@@ -11,6 +11,10 @@ export const routes: Routes = [
       import('./features/salas-butacas/salas-butacas.routes').then((m) => m.RUTAS_SALAS_BUTACAS),
   },
   {
+    path: 'cuenta',
+    loadChildren: () => import('./features/perfil/perfil.routes').then((m) => m.RUTAS_PERFIL),
+  },
+  {
     path: '**',
     redirectTo: '',
   },
