@@ -1,0 +1,37 @@
+<article
+  class="tarjeta-candy"
+  [class.tarjeta-candy--destacada]="destacado()"
+  [class.tarjeta-candy--elegida]="cantidad() > 0"
+  [class.tarjeta-candy--agotada]="agotado()"
+>
+  @if (destacado()) {
+    <span class="tarjeta-candy__sello">Recomendado</span>
+  }
+
+  <header class="tarjeta-candy__renglon">
+    <h3 class="tarjeta-candy__nombre">{{ nombre() }}</h3>
+    <span class="tarjeta-candy__puntos"></span>
+    <span class="tarjeta-candy__precio">${{ precio() }}</span>
+  </header>
+
+  @if (descripcion()) {
+    <p class="tarjeta-candy__descripcion">{{ descripcion() }}</p>
+  }
+
+  <footer class="tarjeta-candy__pie">
+    @if (agotado()) {
+      <span class="tarjeta-candy__agotado">Agotado</span>
+    } @else if (cantidad() === 0) {
+      <app-boton variante="secundario" tamano="chico" (click)="sumar.emit()">Agregar</app-boton>
+    } @else {
+      <span class="tarjeta-candy__cantidad">
+        <button type="button" class="tarjeta-candy__paso" (click)="restar.emit()">−</button>
+        <span class="tarjeta-candy__numero">{{ cantidad() }}</span>
+        <button type="button" class="tarjeta-candy__paso" [disabled]="alcanzoMaximo()" (click)="sumar.emit()">
+          +
+        </button>
+      </span>
+      <span class="tarjeta-candy__subtotal">${{ precio() * cantidad() }}</span>
+    }
+  </footer>
+</article>

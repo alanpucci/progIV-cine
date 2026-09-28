@@ -75,6 +75,13 @@
   text-transform: uppercase;
 }
 
+.carrito-compra__encabezado-bloque {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-md);
+}
+
 .carrito-compra__funcion {
   display: flex;
   flex-direction: column;

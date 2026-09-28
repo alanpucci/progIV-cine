@@ -36,7 +36,7 @@ export class ResumenSeleccion {
     this.router.navigate(peliculaId ? ["/pelicula", peliculaId] : ["/"]);
   }
 
-  protected continuarAlCarrito(): void {
-    this.router.navigate(["/compra/carrito"]);
+  protected continuarAlCandyBar(): void {
+    this.router.navigate(["/compra/candy-bar"]);
   }
 }

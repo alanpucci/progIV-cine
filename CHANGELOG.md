@@ -3,6 +3,37 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 4.2] - 2026-09-28
+
+### Added
+- Página `CandyBar` en `/compra/candy-bar` (`standalone: false`, declarada
+  en `CompraModule`): combos primero (los destacados arriba, con sello
+  "Recomendado") y después una sección por categoría de producto. Chips
+  para filtrar por Todo / Combos / categoría (solo las categorías con
+  productos activos). Barra fija inferior con la cantidad de ítems de
+  Candy, el total del carrito y "Ir al carrito" / "Seguir sin Candy".
+- Componente presentacional `TarjetaCandy`
+  (`features/compra/componentes/`): recibe nombre, descripción, precio,
+  cantidad, stock máximo y si está destacado, y emite `sumar` / `restar`.
+  Muestra "Agregar" sin unidades y stepper −/+ con unidades. Si
+  `stock` es 0 muestra "Agotado", y el + se desactiva al llegar al stock.
+  Si el stock es `null`, no hay tope.
+- `CandyBarService` (`features/compra/servicios/`): `obtenerCarta()` trae
+  en paralelo categorías, productos activos y combos activos.
+- `features/compra/modelos/candy-bar.model.ts` (`CategoriaProducto`,
+  `ProductoCandy`, `ComboCandy`, `CartaCandy`) y los mapeos en
+  `features/compra/helpers/candy-bar.mapeos.ts`.
+- `CarritoService.cantidadDe(tipo, id)` (unidades de un producto/combo en
+  el carrito) y `cantidadExtras()` (total de unidades del Candy Bar).
+
+### Changed
+- El resumen de selección de butacas ahora continúa al Candy Bar
+  ("Continuar al Candy Bar") en vez de ir directo al carrito. El flujo
+  queda butacas → Candy Bar → carrito.
+- El bloque Candy Bar del carrito suma un link para volver a agregar
+  productos ("Agregar del Candy Bar" / "Sumar más").
+- `CarritoService.cantidadItems()` reutiliza `cantidadExtras()`.
+
 ## [Fase 4.1] - 2026-09-28
 
 ### Added

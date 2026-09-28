@@ -329,6 +329,30 @@ butacas. Subtotales y total son métodos planos que leen esos signals (sin
 `computed()`). Los precios son solo para mostrar: el monto definitivo lo
 recalcula Postgres en la RPC de la Fase 4.6.
 
+### Candy Bar: carta dentro de `compra` y stock como tope visual (Fase 4.2)
+
+El flujo de compra queda **butacas → Candy Bar → carrito**: el resumen de
+butacas continúa a `/compra/candy-bar`, que se puede saltear sin agregar
+nada. `CandyBarService` y sus mapeos (`features/compra/helpers/`) viven en
+la feature porque hoy solo los usa `compra`, con la misma regla que
+`CarritoService`. El ABM de la Fase 7.5 va a escribir en las mismas tablas
+desde `administracion`, pero con otras consultas (incluye inactivos), así
+que no hay nada para compartir todavía.
+
+La página `CandyBar` arma la carta y habla con el carrito, y cada ítem es un
+componente presentacional (`TarjetaCandy`, declarado en `CompraModule`) que
+solo recibe datos por `input()` y avisa con `output()`. Productos y combos
+usan la misma tarjeta y no sabe a qué tabla pertenece el ítem.
+
+`productos` y `combos` son tablas separadas en el modelo: el combo tiene
+precio fijo propio, no tiene categoría ni stock, y su composición vive en
+`combo_items`. Por eso el Candy Bar limita la cantidad de un producto a su
+`stock` (y lo muestra "Agotado" en 0), pero no limita los combos. Es solo
+un tope en pantalla: el stock no se descuenta en la base hasta la RPC de
+la Fase 4.6. Esa RPC también tiene que descontar los productos que vienen
+dentro de cada combo, vía `combo_items`, y rechazar la venta si alguno
+queda sin stock.
+
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 
 Los componentes y directivas reciben datos con `input()` y emiten eventos con
