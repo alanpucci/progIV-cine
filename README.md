@@ -150,13 +150,32 @@ eventos marcan la vista para re-renderizar. Lo que ocurre fuera de un
 evento del DOM — el resultado asíncrono de `signUp`, el mensaje de error
 del backend, el flag de envío en curso — sí va a signals.
 
-Los datos de perfil (nombre, apellido, fecha de nacimiento, tipo de sangre,
-color de ojos, días de vacaciones) viajan en `options.data` de
-`auth.signUp()`, que Supabase guarda como `raw_user_meta_data`; el trigger
-`manejar_nuevo_usuario` los lee de ahí para crear la fila de `perfiles`.
-El frontend nunca inserta en `perfiles` directo. `AuthService` vive en
-`core/servicios/` porque lo van a consumir varias features (perfil,
-encabezado, compra registrada).
+### Alta de perfil desde el frontend (Fase 3.1)
+
+Registrarse son dos escrituras: `auth.signUp()` crea el usuario en
+`auth.users` (tabla interna de Supabase Auth) y después `PerfilesService`
+inserta la fila de negocio en `perfiles` con el `id` que devolvió el signup.
+`AuthService.registrar()` orquesta las dos; ningún componente toca Supabase.
+
+El perfil se crea aunque el usuario todavía no haya confirmado el mail, así
+que ese INSERT puede llegar como `anon` (sin sesión). La política
+`perfiles_insert_alta` lo permite solo si:
+- el `id` corresponde a un usuario de `auth.users` creado hace menos de 15
+  minutos (función `es_usuario_recien_registrado`, `security definer`
+  porque `anon` no puede leer `auth.users`);
+- si hay sesión, el `id` es el del propio usuario;
+- `rol = 'cliente'` y ambos saldos en 0 (el trigger que protege esos campos
+  es solo de UPDATE, así que en el alta los cubre la política).
+
+Trade-off asumido: las dos escrituras no son atómicas. Si el signup sale
+bien y el insert falla, queda un usuario de Auth sin perfil, y el mismo mail
+no puede volver a registrarse. El formulario muestra un error explícito en
+ese caso. Antes esto lo resolvía un trigger sobre `auth.users`
+(`manejar_nuevo_usuario`), que la migración
+`20260928120000_alta_perfil_desde_frontend.sql` elimina.
+
+`AuthService` y `PerfilesService` viven en `core/servicios/` porque los van
+a consumir varias features (perfil, encabezado, compra registrada).
 
 ### Estado de carga global: un overlay compartido, no uno por componente
 
@@ -311,9 +330,9 @@ criterio parejo:
   por un trigger (no solo por RLS): ni siquiera con una política de UPDATE
   "propio" un usuario puede autopromoverse a admin o cargarse saldo, porque
   el trigger rechaza el cambio si quien lo hace no es admin.
-- El alta de `perfiles` es automática: un trigger sobre `auth.users` crea la
-  fila de negocio al registrarse, tomando nombre/apellido/fecha de nacimiento
-  del `raw_user_meta_data` que mande el formulario de registro (Fase 3).
+- El alta de `perfiles` la hace el frontend después del signup, acotada por
+  la política `perfiles_insert_alta` (ver "Alta de perfil desde el
+  frontend").
 
 Las migraciones no se aplican solas contra el proyecto de Supabase real desde
 acá: se corren con `supabase db push` (requiere `supabase link` con

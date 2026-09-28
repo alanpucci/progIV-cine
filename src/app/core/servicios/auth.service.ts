@@ -1,6 +1,7 @@
 import { Service, inject } from '@angular/core';
 import { AuthError } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase.service';
+import { PerfilesService } from './perfiles.service';
 import { DatosRegistro, ResultadoRegistro } from '../modelos/usuario.model';
 
 const MENSAJES_ERROR_AUTH: Record<string, string> = {
@@ -16,26 +17,23 @@ const MENSAJES_ERROR_AUTH: Record<string, string> = {
 @Service()
 export class AuthService {
   private readonly supabase = inject(SupabaseService).cliente;
+  private readonly perfiles = inject(PerfilesService);
 
   async registrar(datos: DatosRegistro): Promise<ResultadoRegistro> {
     const { data, error } = await this.supabase.auth.signUp({
       email: datos.email,
       password: datos.contrasena,
-      options: {
-        emailRedirectTo: window.location.origin,
-        data: {
-          nombre: datos.nombre,
-          apellido: datos.apellido,
-          fecha_nacimiento: datos.fechaNacimiento,
-          tipo_sangre: datos.tipoSangre,
-          color_ojos: datos.colorOjos,
-          dias_vacaciones_anuales: datos.diasVacacionesAnuales,
-        },
-      },
+      options: { emailRedirectTo: window.location.origin },
     });
 
     if (error) throw new Error(this.traducirError(error));
-    if (data.user?.identities?.length === 0) throw new Error(MENSAJES_ERROR_AUTH['user_already_exists']);
+    if (!data.user || data.user.identities?.length === 0) throw new Error(MENSAJES_ERROR_AUTH['user_already_exists']);
+
+    try {
+      await this.perfiles.crear(data.user.id, datos);
+    } catch {
+      throw new Error('La cuenta se creó pero no se pudieron guardar tus datos de perfil. Contactá al cine para completarlos.');
+    }
 
     return data.session ? 'sesion-iniciada' : 'confirmacion-pendiente';
   }

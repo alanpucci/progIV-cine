@@ -24,7 +24,7 @@ const LARGO_MINIMO_CONTRASENA = 8;
 export class RegistroCuenta {
   private readonly auth = inject(AuthService);
   private readonly cargaGlobal = inject(CargaGlobalService);
-  private readonly fb = inject(FormBuilder).nonNullable;
+  private readonly fb = inject(FormBuilder);
 
   protected readonly tiposSangre = TIPOS_SANGRE;
   protected readonly coloresOjos = COLORES_OJOS;
