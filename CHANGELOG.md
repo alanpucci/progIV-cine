@@ -3,6 +3,30 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 3.3] - 2026-09-28
+
+### Added
+- Guard funcional `conSesionGuard` (`core/guardias/sesion.guard.ts`): si no
+  hay sesión, navega a `/cuenta/ingreso` con `replaceUrl: true`.
+- Página `PerfilCuenta` en `/cuenta/perfil`, protegida por
+  `conSesionGuard`. Arriba muestra un "carnet de socio" con las iniciales,
+  el nombre y el mail (solo lectura). Debajo está el formulario de datos
+  propios (nombre, apellido, fecha de nacimiento, tipo de sangre, color de
+  ojos, vacaciones anuales), con los mismos validadores del registro.
+  "Guardar" y "Descartar cambios" se habilitan solo si hay cambios.
+- `PerfilesService.obtener()` y `PerfilesService.actualizar()`. El update
+  solo manda los campos editables. `rol`, `credito_saldo` y `puntos_saldo`
+  siguen protegidos por el trigger `proteger_campos_sensibles_perfil`, que
+  ya existía, así que no hizo falta migración.
+- `core/helpers/perfil.mapeos.ts`: `mapearPerfil()` / `aFilaPerfil()` para
+  pasar de las columnas snake_case de `perfiles` al modelo y viceversa.
+- Encabezado: link "Mi perfil" con sesión iniciada, en escritorio y en el
+  menú móvil. Se adelanta de la 3.6 porque sin él no se llega a la página.
+
+### Changed
+- `DatosPerfilNuevo` pasa a llamarse `DatosPerfil`, porque ahora sirve para
+  el alta y para la edición. `PerfilesService.crear()` usa `aFilaPerfil()`.
+
 ## [Fase 3.2] - 2026-09-27
 
 ### Added

@@ -23,6 +23,7 @@
       >Catálogo</a
     >
     @if (auth.haySesion()) {
+      <a routerLink="/cuenta/perfil" routerLinkActive="activo">Mi perfil</a>
       <button type="button" [disabled]="cerrandoSesion()" (click)="cerrarSesion()">Cerrar sesión</button>
     } @else {
       <a routerLink="/cuenta/ingreso" routerLinkActive="activo">Ingresar</a>
@@ -55,6 +56,7 @@
       >Catálogo</a
     >
     @if (auth.haySesion()) {
+      <a routerLink="/cuenta/perfil" routerLinkActive="activo" (click)="cerrarMenu()">Mi perfil</a>
       <button type="button" [disabled]="cerrandoSesion()" (click)="cerrarSesion()">Cerrar sesión</button>
     } @else {
       <a routerLink="/cuenta/ingreso" routerLinkActive="activo" (click)="cerrarMenu()">Ingresar</a>

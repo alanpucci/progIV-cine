@@ -10,3 +10,12 @@ export const sinSesionGuard: CanActivateFn = async () => {
   void router.navigate(['/'], { replaceUrl: true });
   return false;
 };
+
+export const conSesionGuard: CanActivateFn = async () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  await auth.cargarSesion();
+  if (auth.haySesion()) return true;
+  void router.navigate(['/cuenta/ingreso'], { replaceUrl: true });
+  return false;
+};
