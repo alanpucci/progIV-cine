@@ -11,6 +11,7 @@ import {
   TipoSangre,
 } from "../../../../core/modelos/usuario.model";
 import { Boton } from "../../../../shared/componentes/boton/boton";
+import { BilleteraCuenta } from "../../componentes/billetera-cuenta/billetera-cuenta";
 import {
   FECHA_NACIMIENTO_MINIMA,
   fechaIsoLocal,
@@ -19,7 +20,7 @@ import {
 } from "../../validadores/registro.validadores";
 
 @Component({
-  imports: [ReactiveFormsModule, Boton],
+  imports: [ReactiveFormsModule, Boton, BilleteraCuenta],
   selector: "app-perfil-cuenta",
   styleUrl: "./perfil-cuenta.scss",
   templateUrl: "./perfil-cuenta.html",
@@ -52,6 +53,10 @@ export class PerfilCuenta {
 
   constructor() {
     void this.cargar();
+  }
+
+  protected usuarioId(): string {
+    return this.auth.sesion()?.user.id ?? "";
   }
 
   protected email(): string {

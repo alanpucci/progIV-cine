@@ -89,16 +89,15 @@ historiales) — sin romper la navegación de invitado.
 |---|---|---|
 | 3.1 | Formulario de registro (alta en `perfiles` desde el frontend: nombre, apellido, fecha de nacimiento, tipo de sangre, color de ojos, vacaciones anuales) + `AuthService` | ✅ |
 | 3.2 | Login/logout, persistencia de sesión y guard de rutas de invitado (ingreso/registro) | ✅ |
-| 3.3 | Página de perfil: ver/editar datos propios (sin poder tocar `rol`/saldos, protegido también por trigger en backend) | ⬜ |
-| 3.4 | Perfil: saldo de puntos y crédito + historial de movimientos (`movimientos_puntos`/`movimientos_credito`) | ⬜ |
+| 3.3 | Página de perfil: ver/editar datos propios (sin poder tocar `rol`/saldos, protegido también por trigger en backend) | ✅ |
+| 3.4 | Perfil: saldo de puntos y crédito + historial de movimientos (`movimientos_puntos`/`movimientos_credito`) | ✅ |
 | 3.5 | Perfil: historial de compras propias (`ventas`) y accesos rápidos ("Mis películas") | ⬜ |
 | 3.6 | Navegación mixta invitado/registrado: header refleja sesión sin romper el flujo de compra anónima existente | ⬜ |
 
-> **Guard de sesión requerida diferido.** En 3.2 solo se implementó
-> `sinSesionGuard` (saca de ingreso/registro a quien ya tiene sesión). El
-> guard que exige sesión se agrega cuando haya una ruta que lo necesite
-> (perfil, 3.3). La confirmación por mail está desactivada en Supabase:
-> el registro deja la sesión iniciada.
+> **Guards de sesión.** En 3.2 se implementó `sinSesionGuard` (saca de
+> ingreso/registro a quien ya tiene sesión) y en 3.3 `conSesionGuard`
+> (exige sesión, aplicado al perfil). La confirmación por mail está
+> desactivada en Supabase: el registro deja la sesión iniciada.
 
 ### Fase 4 — Compra: entradas + Candy/combos + cupones (M05/M06/M07) ⬜
 Carrito (entradas + productos + combos), cupón, compra anónima vs registrada,

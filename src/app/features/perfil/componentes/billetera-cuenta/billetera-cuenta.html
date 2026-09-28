@@ -1,0 +1,56 @@
+<section class="billetera">
+  <h2 class="billetera__titulo">Mi billetera</h2>
+
+  @if (errorCarga(); as mensaje) {
+    <p class="billetera__error" role="alert">{{ mensaje }}</p>
+  } @else if (saldos()) {
+    <div class="billetera__saldos">
+      <button
+        type="button"
+        class="billetera__ficha billetera__ficha--puntos"
+        [class.billetera__ficha--activa]="pestana() === 'puntos'"
+        (click)="elegirPestana('puntos')"
+      >
+        <span class="billetera__ficha-etiqueta">Puntos</span>
+        <span class="billetera__ficha-valor">{{ puntosSaldo() }}</span>
+        <span class="billetera__ficha-pie">Canjeables por recompensas</span>
+      </button>
+
+      <button
+        type="button"
+        class="billetera__ficha billetera__ficha--credito"
+        [class.billetera__ficha--activa]="pestana() === 'credito'"
+        (click)="elegirPestana('credito')"
+      >
+        <span class="billetera__ficha-etiqueta">Crédito</span>
+        <span class="billetera__ficha-valor">{{ creditoSaldo() }}</span>
+        <span class="billetera__ficha-pie">Disponible para tus compras</span>
+      </button>
+    </div>
+
+    <h3 class="billetera__subtitulo">
+      Movimientos de {{ pestana() === "puntos" ? "puntos" : "crédito" }}
+    </h3>
+
+    @if (filas().length === 0) {
+      <p class="billetera__vacio">Todavía no tenés movimientos.</p>
+    } @else {
+      <ol class="billetera__historial">
+        @for (fila of filas(); track fila.id) {
+          <li class="billetera__movimiento">
+            <div class="billetera__movimiento-detalle">
+              <span class="billetera__movimiento-concepto">{{ fila.concepto }}</span>
+              <span class="billetera__movimiento-fecha">{{ fila.fecha }}</span>
+            </div>
+            <span
+              class="billetera__movimiento-cantidad"
+              [class.billetera__movimiento-cantidad--positiva]="fila.positivo"
+            >
+              {{ fila.cantidad }}
+            </span>
+          </li>
+        }
+      </ol>
+    }
+  }
+</section>
