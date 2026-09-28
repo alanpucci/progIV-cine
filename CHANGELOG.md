@@ -3,6 +3,38 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 4.3] - 2026-09-28
+
+### Added
+- `supabase/migrations/20260928130000_lectura_cupones_activos.sql`:
+  política `cupones_select_activos` para que `anon` y `authenticated`
+  puedan leer los cupones con `activo = true`.
+- `CuponesService` (`features/compra/servicios/`): busca el cupón por
+  código y valida vigencia, primera compra (con sesión y sin ventas previas
+  no canceladas) y edad mínima (con sesión, usando la fecha de nacimiento
+  del perfil). Devuelve el mensaje de error listo para mostrar.
+- `features/compra/modelos/cupon.model.ts` (`CuponAplicado`), su mapeo en
+  `helpers/cupon.mapeos.ts` y `helpers/edad.helpers.ts` (`calcularEdad`).
+- Componente `CuponCarrito` (`standalone: false`, declarado en
+  `CompraModule`): campo de código con Reactive Forms y botón "Aplicar";
+  con un cupón aplicado muestra el código, el porcentaje y "Quitar".
+- `CarritoService`: signal `cupon` (guardado en `sessionStorage`),
+  `aplicarCupon(codigo)`, `aplicarCuponAutomatico()`, `quitarCupon()`,
+  `subtotal()` y `descuento()`.
+- Aplicación automática de cupones: al abrir el carrito con sesión y sin
+  cupón, `CuponesService.buscarCuponAutomatico()` aplica el cupón
+  `primera_compra` o `edad` de mayor porcentaje que el usuario cumpla. Los
+  cupones `general` se siguen ingresando a mano.
+
+### Changed
+- Se reabre la decisión de la Fase 0.6 de que `cupones` sea legible solo
+  por admin (ver README, sección Cupones).
+- `CarritoService.total()` ahora resta el descuento del cupón. El carrito
+  muestra la línea "Descuento CÓDIGO (X%)" entre los subtotales y el total.
+  La barra del Candy Bar también muestra el total con descuento.
+- `CarritoService.vaciar()` también quita el cupón.
+- `CompraModule` importa `ReactiveFormsModule`.
+
 ## [Fase 4.2] - 2026-09-28
 
 ### Added

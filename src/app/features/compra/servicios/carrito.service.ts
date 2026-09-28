@@ -2,16 +2,21 @@ import { inject, Service, signal, WritableSignal } from '@angular/core';
 import { SeleccionButacasService } from '../../../core/servicios/seleccion-butacas.service';
 import { ButacaElegida, SeleccionButacas } from '../../../core/modelos/funcion.model';
 import { ExtraCarrito, ExtrasCarrito, TipoExtraCarrito } from '../modelos/carrito.model';
+import { CuponAplicado } from '../modelos/cupon.model';
+import { CuponesService } from './cupones.service';
 
 const CLAVE_ALMACENAMIENTO = 'cine.carrito-extras';
+const CLAVE_CUPON = 'cine.carrito-cupon';
 
 @Service()
 export class CarritoService {
   private readonly seleccionButacas = inject(SeleccionButacasService);
+  private readonly cupones = inject(CuponesService);
   private readonly almacenados = this.leerAlmacenados();
 
   readonly productos = signal<ExtraCarrito[]>(this.almacenados.productos);
   readonly combos = signal<ExtraCarrito[]>(this.almacenados.combos);
+  readonly cupon = signal<CuponAplicado | null>(this.leerCupon());
 
   seleccion(): SeleccionButacas | null {
     return this.seleccionButacas.seleccion();
@@ -66,8 +71,37 @@ export class CarritoService {
     return this.extras().reduce((suma, item) => suma + item.precioUnitario * item.cantidad, 0);
   }
 
-  total(): number {
+  subtotal(): number {
     return this.subtotalEntradas() + this.subtotalExtras();
+  }
+
+  descuento(): number {
+    const cupon = this.cupon();
+    if (!cupon) return 0;
+    return Math.round(this.subtotal() * cupon.porcentaje) / 100;
+  }
+
+  total(): number {
+    return this.subtotal() - this.descuento();
+  }
+
+  async aplicarCupon(codigo: string): Promise<void> {
+    const cupon = await this.cupones.validar(codigo.trim().toUpperCase());
+    this.cupon.set(cupon);
+    this.guardarCupon();
+  }
+
+  async aplicarCuponAutomatico(): Promise<void> {
+    if (this.cupon()) return;
+    const cupon = await this.cupones.buscarCuponAutomatico();
+    if (!cupon) return;
+    this.cupon.set(cupon);
+    this.guardarCupon();
+  }
+
+  quitarCupon(): void {
+    this.cupon.set(null);
+    this.guardarCupon();
   }
 
   cantidadItems(): number {
@@ -82,6 +116,7 @@ export class CarritoService {
     this.productos.set([]);
     this.combos.set([]);
     this.guardar();
+    this.quitarCupon();
     this.seleccionButacas.limpiar();
   }
 
@@ -99,6 +134,28 @@ export class CarritoService {
       }
     } catch {
       return;
+    }
+  }
+
+  private guardarCupon(): void {
+    const cupon = this.cupon();
+    try {
+      if (cupon) {
+        sessionStorage.setItem(CLAVE_CUPON, JSON.stringify(cupon));
+      } else {
+        sessionStorage.removeItem(CLAVE_CUPON);
+      }
+    } catch {
+      return;
+    }
+  }
+
+  private leerCupon(): CuponAplicado | null {
+    try {
+      const guardado = sessionStorage.getItem(CLAVE_CUPON);
+      return guardado ? (JSON.parse(guardado) as CuponAplicado) : null;
+    } catch {
+      return null;
     }
   }
 

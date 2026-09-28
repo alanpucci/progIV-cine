@@ -1,0 +1,18 @@
+<div class="cupon">
+  <h2 class="cupon__titulo">Cupón</h2>
+
+  @if (carrito.cupon(); as cupon) {
+    <p class="cupon__aplicado">
+      <span>{{ cupon.codigo }} · {{ cupon.porcentaje }}% de descuento</span>
+      <button type="button" class="cupon__quitar" (click)="carrito.quitarCupon()">Quitar</button>
+    </p>
+  } @else {
+    <form class="cupon__form" [formGroup]="formulario" (ngSubmit)="aplicar()">
+      <input type="text" formControlName="codigo" placeholder="Código" />
+      <app-boton tipo="submit" variante="secundario">Aplicar</app-boton>
+    </form>
+    @if (error()) {
+      <p class="cupon__error">{{ error() }}</p>
+    }
+  }
+</div>
