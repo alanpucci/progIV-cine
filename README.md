@@ -195,6 +195,31 @@ tabla `funciones`: delega en `FuncionesService.obtenerDisponiblesPorPelicula()`
 proyecto en vez de duplicarla a medida que más features necesiten "funciones
 de una película" (catálogo hoy, selección de función en la Fase 2.2 después).
 
+### Selección de butacas: estado compartido en `core/` y respaldado en `sessionStorage` (Fase 2.6)
+
+La selección confirmada en el mapa de butacas (función + butacas elegidas +
+precio de cada una) vive en `SeleccionButacasService` (`core/servicios/`),
+no en la feature `salas-butacas`. Lo va a consumir la feature `compra`
+(`CarritoService`, Fase 4.1), así que aplica la misma regla que a
+`FuncionesService`: se sube a `core/` desde que nace. El mapa solo mantiene
+la selección *en curso* como un signal local; recién al confirmar se
+entrega al servicio, que es el contrato entre ambas features.
+
+El servicio respalda el signal en `sessionStorage` para que refrescar la
+pantalla de resumen (o, más adelante, el checkout) no pierda la selección.
+Se eligió `sessionStorage` y no `localStorage` porque la selección es
+efímera: no tiene sentido que sobreviva al cierre de la pestaña ni que se
+comparta entre pestañas. El precio por butaca (`precio_base` de la función
++ `precio_adicional` de la butaca) se calcula en el cliente solo para
+mostrarlo: el monto que se cobra lo recalcula Postgres en la RPC de
+confirmación de compra (Fase 4.6).
+
+Hasta que se haga la Fase 2.4, esta selección **no bloquea** butacas en la
+base: es puramente del lado del cliente. 2.4 y 2.5 se difirieron a
+propósito (ver `docs/ROADMAP.md`) y 2.4 es prerrequisito de 4.6; el
+bloqueo transaccional se va a enchufar dentro de
+`SeleccionButacasService.confirmar()` sin tocar el mapa.
+
 ### Parámetros de ruta: `ActivatedRoute.snapshot`, no `withComponentInputBinding()`
 
 Un segmento de ruta como `:id` se lee con `ActivatedRoute` inyectado y

@@ -61,3 +61,16 @@ export interface ReservaButaca {
   expiraAt: string;
   creadaEn: string;
 }
+
+export interface ButacaElegida {
+  id: string;
+  fila: string;
+  numero: number;
+  tipo: TipoButaca;
+  precio: number;
+}
+
+export interface SeleccionButacas {
+  funcion: FuncionMapa;
+  butacas: ButacaElegida[];
+}
