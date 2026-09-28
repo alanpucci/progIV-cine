@@ -3,6 +3,26 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Refactor: directiva Interactiva] - 2026-09-28
+
+### Added
+- Directiva `Interactiva` (`[appInteractiva]`, en `shared/directivas/`):
+  escucha `mouseenter`/`mouseleave` y, mientras el mouse está encima,
+  eleva el elemento y le cambia sombra y borde con estilos del host. Se usa
+  en las tarjetas de la cartelera.
+
+### Changed
+- `Tarjeta` pierde el input `interactiva`: la elevación al pasar el mouse
+  pasa a la directiva `appInteractiva`, y la caja visual (fondo, borde,
+  sombra) es ahora el `:host` del componente en vez de un `div` interno.
+- `SeleccionButacasService.confirmar()` copia la butaca completa con spread
+  en vez de campo por campo.
+
+### Fixed
+- El `gap` de `.catalogo-inicio__tarjeta` no tenía efecto porque se aplicaba
+  al host de `Tarjeta` y no a la caja interna; con la caja en el `:host`,
+  ahora separa póster e info en la cartelera.
+
 ## [Fase 4.3] - 2026-09-28
 
 ### Added

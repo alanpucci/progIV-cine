@@ -1,4 +1,4 @@
-import { Component, input } from "@angular/core";
+import { Component } from "@angular/core";
 
 @Component({
   imports: [],
@@ -6,6 +6,4 @@ import { Component, input } from "@angular/core";
   styleUrl: "./tarjeta.scss",
   templateUrl: "./tarjeta.html",
 })
-export class Tarjeta {
-  readonly interactiva = input(false);
-}
+export class Tarjeta {}

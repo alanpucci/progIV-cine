@@ -10,10 +10,7 @@ export class SeleccionButacasService {
   confirmar(funcion: FuncionMapa, butacas: Butaca[]): void {
     const elegidas: ButacaElegida[] = butacas
       .map((butaca) => ({
-        id: butaca.id,
-        fila: butaca.fila,
-        numero: butaca.numero,
-        tipo: butaca.tipo,
+        ...butaca,
         precio: Number(funcion.precioBase) + Number(butaca.precioAdicional),
       }))
       .sort((butacaA, butacaB) => butacaA.fila.localeCompare(butacaB.fila, 'es') || butacaA.numero - butacaB.numero);
