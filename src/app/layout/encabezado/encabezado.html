@@ -22,7 +22,12 @@
       [routerLinkActiveOptions]="{ exact: true }"
       >Catálogo</a
     >
-    <a routerLink="/cuenta/registro" routerLinkActive="activo">Crear cuenta</a>
+    @if (auth.haySesion()) {
+      <button type="button" [disabled]="cerrandoSesion()" (click)="cerrarSesion()">Cerrar sesión</button>
+    } @else {
+      <a routerLink="/cuenta/ingreso" routerLinkActive="activo">Ingresar</a>
+      <a routerLink="/cuenta/registro" routerLinkActive="activo">Crear cuenta</a>
+    }
   </nav>
 
   <button
@@ -49,6 +54,11 @@
       (click)="cerrarMenu()"
       >Catálogo</a
     >
-    <a routerLink="/cuenta/registro" routerLinkActive="activo" (click)="cerrarMenu()">Crear cuenta</a>
+    @if (auth.haySesion()) {
+      <button type="button" [disabled]="cerrandoSesion()" (click)="cerrarSesion()">Cerrar sesión</button>
+    } @else {
+      <a routerLink="/cuenta/ingreso" routerLinkActive="activo" (click)="cerrarMenu()">Ingresar</a>
+      <a routerLink="/cuenta/registro" routerLinkActive="activo" (click)="cerrarMenu()">Crear cuenta</a>
+    }
   </nav>
 }

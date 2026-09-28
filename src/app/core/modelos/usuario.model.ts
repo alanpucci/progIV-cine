@@ -17,5 +17,3 @@ export interface DatosRegistro extends DatosPerfilNuevo {
   email: string;
   contrasena: string;
 }
-
-export type ResultadoRegistro = 'sesion-iniciada' | 'confirmacion-pendiente';

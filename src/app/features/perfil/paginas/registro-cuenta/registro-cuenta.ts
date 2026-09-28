@@ -1,9 +1,9 @@
 import { Component, inject, signal } from "@angular/core";
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { AuthService } from "../../../../core/servicios/auth.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
-import { COLORES_OJOS, ColorOjos, ResultadoRegistro, TIPOS_SANGRE, TipoSangre } from "../../../../core/modelos/usuario.model";
+import { COLORES_OJOS, ColorOjos, TIPOS_SANGRE, TipoSangre } from "../../../../core/modelos/usuario.model";
 import { Boton } from "../../../../shared/componentes/boton/boton";
 import {
   FECHA_NACIMIENTO_MINIMA,
@@ -25,6 +25,7 @@ export class RegistroCuenta {
   private readonly auth = inject(AuthService);
   private readonly cargaGlobal = inject(CargaGlobalService);
   private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
 
   protected readonly tiposSangre = TIPOS_SANGRE;
   protected readonly coloresOjos = COLORES_OJOS;
@@ -32,11 +33,8 @@ export class RegistroCuenta {
   protected readonly fechaMinima = FECHA_NACIMIENTO_MINIMA;
   protected readonly fechaMaxima = fechaIsoLocal(new Date());
 
-  protected readonly enviando = signal(false);
   protected readonly intentoEnviar = signal(false);
   protected readonly errorEnvio = signal<string | null>(null);
-  protected readonly resultado = signal<ResultadoRegistro | null>(null);
-  protected readonly emailRegistrado = signal("");
 
   protected readonly formulario = this.fb.group(
     {
@@ -75,15 +73,13 @@ export class RegistroCuenta {
   protected async enviar(): Promise<void> {
     this.intentoEnviar.set(true);
     this.errorEnvio.set(null);
-    if (this.formulario.invalid || this.enviando()) return;
+    if (this.formulario.invalid) return;
 
     const valor = this.formulario.getRawValue();
-    const email = (valor.email ?? "").trim();
-    this.enviando.set(true);
     try {
-      const resultado = await this.cargaGlobal.envolver(() =>
+      await this.cargaGlobal.envolver(() =>
         this.auth.registrar({
-          email,
+          email: (valor.email ?? "").trim(),
           contrasena: valor.contrasena ?? "",
           nombre: (valor.nombre ?? "").trim(),
           apellido: (valor.apellido ?? "").trim(),
@@ -93,12 +89,9 @@ export class RegistroCuenta {
           diasVacacionesAnuales: Number(valor.diasVacacionesAnuales),
         }),
       );
-      this.emailRegistrado.set(email);
-      this.resultado.set(resultado);
+      await this.router.navigateByUrl("/");
     } catch (error) {
       this.errorEnvio.set(error instanceof Error ? error.message : "No se pudo completar el registro.");
-    } finally {
-      this.enviando.set(false);
     }
   }
 }

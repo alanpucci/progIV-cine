@@ -1,0 +1,52 @@
+@use "formularios";
+
+.ingreso {
+  max-width: 26rem;
+  margin: var(--espacio-xl) auto;
+  padding: 0 var(--espacio-md);
+}
+
+.ingreso__panel {
+  @include formularios.panel;
+}
+
+.ingreso__titulo {
+  margin-bottom: var(--espacio-lg);
+  font-size: 2rem;
+}
+
+.ingreso__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.ingreso__campo {
+  @include formularios.campo;
+}
+
+.ingreso__error {
+  @include formularios.error-campo;
+}
+
+.ingreso__error-envio {
+  @include formularios.error-envio;
+}
+
+.ingreso__acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--espacio-sm);
+}
+
+.ingreso__pie {
+  margin: var(--espacio-lg) 0 0;
+  padding-top: var(--espacio-md);
+  border-top: 1px solid var(--color-borde);
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.ingreso__enlace {
+  @include formularios.enlace;
+}

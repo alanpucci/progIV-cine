@@ -76,7 +76,8 @@
   align-items: center;
   gap: var(--espacio-lg);
 
-  a {
+  a,
+  button {
     position: relative;
     padding: var(--espacio-xs) 0;
     color: var(--color-texto-secundario);
@@ -108,6 +109,20 @@
         right: 0;
       }
     }
+  }
+}
+
+.encabezado__nav button,
+.encabezado__nav-movil button {
+  background: none;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: wait;
   }
 }
 
@@ -170,7 +185,8 @@
     border-bottom: 1px solid var(--color-borde);
     box-shadow: var(--sombra-md);
 
-    a {
+    a,
+    button {
       padding: var(--espacio-md) var(--espacio-xl);
       color: var(--color-texto-secundario);
       text-decoration: none;
