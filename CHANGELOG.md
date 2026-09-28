@@ -15,7 +15,7 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   Expone `agregar()`, `cambiarCantidad()`, `quitar()`, `vaciar()`,
   subtotales de entradas y Candy Bar, total y cantidad de ítems.
 - Página `CarritoCompra` (`standalone: false`, declarada en el módulo):
-  rollo de película con la función y las butacas elegidas (con link para
+  detalle con la función y las butacas elegidas (con link para
   modificarlas), líneas del Candy Bar con cantidad +/− y quitar,
   subtotales, total y "Vaciar carrito". Muestra un estado vacío con link
   a la cartelera.
