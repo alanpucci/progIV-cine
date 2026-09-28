@@ -3,6 +3,29 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 4.1] - 2026-09-28
+
+### Added
+- Feature `compra` como `NgModule` clásico: `CompraModule` (lazy con
+  `loadChildren` en `/compra`) + `CompraRoutingModule`
+  (`RouterModule.forChild`). `/compra` redirige a `/compra/carrito`.
+- `CarritoService` (`features/compra/servicios/`): toma las entradas de
+  `SeleccionButacasService` sin duplicarlas y guarda productos y combos en
+  dos signals (`productos`, `combos`) respaldados en `sessionStorage`.
+  Expone `agregar()`, `cambiarCantidad()`, `quitar()`, `vaciar()`,
+  subtotales de entradas y Candy Bar, total y cantidad de ítems.
+- Página `CarritoCompra` (`standalone: false`, declarada en el módulo):
+  detalle con la función y las butacas elegidas (con link para
+  modificarlas), líneas del Candy Bar con cantidad +/− y quitar,
+  subtotales, total y "Vaciar carrito". Muestra un estado vacío con link
+  a la cartelera.
+- `features/compra/modelos/carrito.model.ts` (`ExtraCarrito`,
+  `ExtrasCarrito`).
+
+### Changed
+- El resumen de selección de butacas (`/butacas/funcion/:id/resumen`)
+  suma el botón "Continuar al carrito".
+
 ## [Fase 3.5] - 2026-09-28
 
 ### Added
