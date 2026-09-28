@@ -1,0 +1,48 @@
+<section class="compras">
+  <h2 class="compras__titulo">Mis compras</h2>
+
+  @if (errorCarga(); as mensaje) {
+    <p class="compras__error" role="alert">{{ mensaje }}</p>
+  } @else if (listado(); as compras) {
+    @if (compras.length === 0) {
+      <p class="compras__vacio">
+        Todavía no hiciste compras. <a routerLink="/">Mirá la cartelera</a> y elegí tu próxima función.
+      </p>
+    } @else {
+      <ol class="compras__lista">
+        @for (compra of compras; track compra.id) {
+          <li class="compras__ticket" [class.compras__ticket--cancelada]="compra.estado === 'cancelada'">
+            <div class="compras__cuerpo">
+              <span class="compras__fecha">Compra del {{ fechaCompra(compra) }}</span>
+
+              @if (compra.funcion; as funcion) {
+                @if (funcion.peliculaId) {
+                  <a class="compras__pelicula" [routerLink]="['/pelicula', funcion.peliculaId]">
+                    {{ funcion.peliculaNombre }}
+                  </a>
+                } @else {
+                  <span class="compras__pelicula">{{ funcion.peliculaNombre }}</span>
+                }
+                <span class="compras__detalle">{{ funcionTexto(compra) }}</span>
+                @if (compra.butacas.length > 0) {
+                  <span class="compras__detalle">Butacas: {{ compra.butacas.join(", ") }}</span>
+                }
+              } @else {
+                <span class="compras__pelicula">Candy Bar</span>
+              }
+
+              @if (compra.extras.length > 0) {
+                <span class="compras__extras">{{ extrasTexto(compra) }}</span>
+              }
+            </div>
+
+            <div class="compras__talon">
+              <span class="compras__total">{{ total(compra) }}</span>
+              <span class="compras__estado compras__estado--{{ compra.estado }}">{{ estado(compra) }}</span>
+            </div>
+          </li>
+        }
+      </ol>
+    }
+  }
+</section>

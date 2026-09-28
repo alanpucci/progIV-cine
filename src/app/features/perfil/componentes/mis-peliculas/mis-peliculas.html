@@ -1,0 +1,32 @@
+<section class="mis-peliculas">
+  <h2 class="mis-peliculas__titulo">Mis películas</h2>
+
+  @if (errorCarga(); as mensaje) {
+    <p class="mis-peliculas__error" role="alert">{{ mensaje }}</p>
+  } @else if (peliculas(); as lista) {
+    @if (lista.length === 0) {
+      <p class="mis-peliculas__vacio">Acá van a aparecer las películas que veas en nuestras salas.</p>
+    } @else {
+      <ul class="mis-peliculas__tira">
+        @for (pelicula of lista; track pelicula.id) {
+          <li class="mis-peliculas__cuadro">
+            <a class="mis-peliculas__enlace" [routerLink]="['/pelicula', pelicula.id]">
+              <img class="mis-peliculas__poster" [src]="pelicula.imagenUrl" [alt]="pelicula.nombre" loading="lazy" />
+              <span class="mis-peliculas__nombre">{{ pelicula.nombre }}</span>
+              <span class="mis-peliculas__fecha">{{ fechaVista(pelicula) }}</span>
+              @if (pelicula.estrellas; as estrellas) {
+                <span class="mis-peliculas__estrellas">
+                  @for (posicion of estrellasMaximas; track posicion) {
+                    <span [class.mis-peliculas__estrella--llena]="posicion <= estrellas">★</span>
+                  }
+                </span>
+              } @else {
+                <span class="mis-peliculas__sin-calificar">Sin calificar</span>
+              }
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

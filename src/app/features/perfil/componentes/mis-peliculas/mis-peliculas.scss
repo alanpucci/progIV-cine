@@ -1,0 +1,98 @@
+@use "formularios";
+
+.mis-peliculas {
+  @include formularios.panel;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.mis-peliculas__titulo {
+  font-size: 1.4rem;
+}
+
+.mis-peliculas__error {
+  @include formularios.error-envio;
+}
+
+.mis-peliculas__vacio {
+  margin: 0;
+  padding: var(--espacio-lg);
+  border: 1px dashed var(--color-borde);
+  border-radius: var(--radio-md);
+  color: var(--color-texto-silenciado);
+  text-align: center;
+}
+
+.mis-peliculas__tira {
+  --perforacion: radial-gradient(circle, var(--color-fondo) 0.22rem, transparent 0.24rem);
+
+  display: flex;
+  gap: var(--espacio-sm);
+  margin: 0;
+  padding: 1.1rem var(--espacio-sm);
+  overflow-x: auto;
+  border-radius: var(--radio-sm);
+  background:
+    var(--perforacion) top left / 1.1rem 1.1rem repeat-x,
+    var(--perforacion) bottom left / 1.1rem 1.1rem repeat-x,
+    #06060a;
+  list-style: none;
+  scroll-snap-type: x mandatory;
+}
+
+.mis-peliculas__cuadro {
+  flex: 0 0 8.5rem;
+  scroll-snap-align: start;
+}
+
+.mis-peliculas__enlace {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--color-texto-primario);
+  text-decoration: none;
+
+  &:hover .mis-peliculas__poster {
+    border-color: var(--color-acento-secundario);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--sombra-foco);
+  }
+}
+
+.mis-peliculas__poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  margin-bottom: var(--espacio-xs);
+  object-fit: cover;
+  border: 2px solid transparent;
+  border-radius: var(--radio-sm);
+  transition: border-color var(--transicion-rapida);
+}
+
+.mis-peliculas__nombre {
+  overflow: hidden;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mis-peliculas__fecha,
+.mis-peliculas__sin-calificar {
+  color: var(--color-texto-silenciado);
+  font-size: 0.75rem;
+}
+
+.mis-peliculas__estrellas {
+  color: var(--color-borde);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+}
+
+.mis-peliculas__estrella--llena {
+  color: var(--color-acento-secundario);
+}
