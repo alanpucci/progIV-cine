@@ -6,10 +6,11 @@ import { CargaGlobalService } from "../../../../core/servicios/carga-global.serv
 import { Genero, PeliculaResumen } from "../../../../core/modelos/pelicula.model";
 import { formatearClasificacion, formatearDuracion } from "../../../../core/helpers/pelicula.formato";
 import { Tarjeta } from "../../../../shared/componentes/tarjeta/tarjeta";
+import { Interactiva } from "../../../../shared/directivas/interactiva.directive";
 import { FiltrarPeliculas } from "../../pipes/filtrar-peliculas.pipe";
 
 @Component({
-  imports: [RouterLink, FormsModule, Tarjeta, FiltrarPeliculas],
+  imports: [RouterLink, FormsModule, Tarjeta, Interactiva, FiltrarPeliculas],
   selector: "app-catalogo-inicio",
   styleUrl: "./catalogo-inicio.scss",
   templateUrl: "./catalogo-inicio.html",
