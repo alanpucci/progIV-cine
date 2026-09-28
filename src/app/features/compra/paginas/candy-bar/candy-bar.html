@@ -1,0 +1,106 @@
+<section class="candy-bar">
+  <header class="candy-bar__cabecera">
+    <p class="candy-bar__etiqueta">Antes de la función</p>
+    <h1 class="candy-bar__titulo">Candy Bar</h1>
+    <p class="candy-bar__lema">Sumá pochoclos, bebidas y combos. Los retirás en el mostrador con tu código.</p>
+  </header>
+
+  @if (error()) {
+    <p class="candy-bar__estado candy-bar__estado--error">No se pudo cargar el Candy Bar. Volvé a intentar más tarde.</p>
+  } @else if (carta(); as datos) {
+    <ul class="candy-bar__chips">
+      <li>
+        <button
+          type="button"
+          class="candy-bar__chip"
+          [class.candy-bar__chip--activo]="filtro() === 'todo'"
+          (click)="filtro.set('todo')"
+        >
+          Todo
+        </button>
+      </li>
+      @if (datos.combos.length > 0) {
+        <li>
+          <button
+            type="button"
+            class="candy-bar__chip"
+            [class.candy-bar__chip--activo]="filtro() === 'combos'"
+            (click)="filtro.set('combos')"
+          >
+            Combos
+          </button>
+        </li>
+      }
+      @for (categoria of categoriasConProductos(); track categoria.id) {
+        <li>
+          <button
+            type="button"
+            class="candy-bar__chip"
+            [class.candy-bar__chip--activo]="filtro() === categoria.id"
+            (click)="filtro.set(categoria.id)"
+          >
+            {{ categoria.nombre }}
+          </button>
+        </li>
+      }
+    </ul>
+
+    @if (mostrarCombos()) {
+      <section class="candy-bar__seccion">
+        <h2 class="candy-bar__titulo-seccion">Combos</h2>
+        <div class="candy-bar__grilla">
+          @for (combo of datos.combos; track combo.id) {
+            <app-tarjeta-candy
+              [nombre]="combo.nombre"
+              [descripcion]="combo.descripcion"
+              [precio]="combo.precio"
+              [destacado]="combo.destacado"
+              [cantidad]="cantidad('combo', combo.id)"
+              (sumar)="agregarCombo(combo)"
+              (restar)="restar('combo', combo.id)"
+            />
+          }
+        </div>
+      </section>
+    }
+
+    @for (categoria of categoriasVisibles(); track categoria.id) {
+      <section class="candy-bar__seccion">
+        <h2 class="candy-bar__titulo-seccion">{{ categoria.nombre }}</h2>
+        <div class="candy-bar__grilla">
+          @for (producto of productosDe(categoria.id); track producto.id) {
+            <app-tarjeta-candy
+              [nombre]="producto.nombre"
+              [descripcion]="producto.descripcion"
+              [precio]="producto.precio"
+              [maximo]="producto.stock"
+              [cantidad]="cantidad('producto', producto.id)"
+              (sumar)="agregarProducto(producto)"
+              (restar)="restar('producto', producto.id)"
+            />
+          }
+        </div>
+      </section>
+    }
+
+    @if (!mostrarCombos() && categoriasVisibles().length === 0) {
+      <p class="candy-bar__estado">No hay productos disponibles por ahora.</p>
+    }
+  }
+
+  <aside class="candy-bar__barra">
+    <div class="candy-bar__resumen">
+      <span class="candy-bar__resumen-etiqueta">
+        @if (carrito.cantidadExtras() === 0) {
+          Sin productos elegidos
+        } @else {
+          {{ carrito.cantidadExtras() }} {{ carrito.cantidadExtras() === 1 ? "ítem" : "ítems" }} de Candy
+        }
+      </span>
+      <span class="candy-bar__resumen-total">Total ${{ carrito.total() }}</span>
+    </div>
+    <app-boton (click)="irAlCarrito()">
+      {{ carrito.cantidadExtras() === 0 ? "Seguir sin Candy" : "Ir al carrito" }}
+    </app-boton>
+  </aside>
+</section>

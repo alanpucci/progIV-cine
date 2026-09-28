@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CarritoCompra } from './paginas/carrito-compra/carrito-compra';
+import { CandyBar } from './paginas/candy-bar/candy-bar';
 
 const RUTAS_COMPRA: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'carrito' },
+  { path: 'candy-bar', component: CandyBar },
   { path: 'carrito', component: CarritoCompra },
 ];
 

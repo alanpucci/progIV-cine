@@ -25,6 +25,14 @@ export class CarritoService {
     return [...this.combos(), ...this.productos()];
   }
 
+  cantidadDe(tipo: TipoExtraCarrito, id: string): number {
+    return this.listaPara(tipo)().find((item) => item.id === id)?.cantidad ?? 0;
+  }
+
+  cantidadExtras(): number {
+    return this.extras().reduce((suma, item) => suma + item.cantidad, 0);
+  }
+
   agregar(extra: Omit<ExtraCarrito, 'cantidad'>, cantidad = 1): void {
     const lista = this.listaPara(extra.tipo);
     const existente = lista().find((item) => item.id === extra.id);
@@ -63,7 +71,7 @@ export class CarritoService {
   }
 
   cantidadItems(): number {
-    return this.entradas().length + this.extras().reduce((suma, item) => suma + item.cantidad, 0);
+    return this.entradas().length + this.cantidadExtras();
   }
 
   estaVacio(): boolean {

@@ -44,7 +44,12 @@
       </section>
 
       <section class="carrito-compra__bloque">
-        <h2 class="carrito-compra__subtitulo">Candy Bar</h2>
+        <div class="carrito-compra__encabezado-bloque">
+          <h2 class="carrito-compra__subtitulo">Candy Bar</h2>
+          <a class="carrito-compra__enlace" routerLink="/compra/candy-bar">
+            {{ carrito.extras().length > 0 ? "Sumar más" : "Agregar del Candy Bar" }}
+          </a>
+        </div>
 
         @if (carrito.extras().length > 0) {
           <ul class="carrito-compra__lista">

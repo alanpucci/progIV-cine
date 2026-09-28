@@ -99,18 +99,18 @@ historiales) — sin romper la navegación de invitado.
 > (exige sesión, aplicado al perfil). La confirmación por mail está
 > desactivada en Supabase: el registro deja la sesión iniciada.
 
-### Fase 4 — Compra: entradas + Candy/combos + cupones (M05/M06/M07) ⬜
+### Fase 4 — Compra: entradas + Candy/combos + cupones (M05/M06/M07) 🔄
 Carrito (entradas + productos + combos), cupón, compra anónima vs registrada,
 validación de edad (RN04), pantalla de pago simulada, persistencia de venta.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 4.1 | Estructura `NgModule` de la feature `compra` + `CarritoService` (signals: entradas seleccionadas — tomadas de `SeleccionButacasService` de la 2.6 —, productos, combos) | ⬜ |
-| 4.2 | Candy Bar: listado de productos/combos por categoría, cantidad, agregar/quitar del carrito | ⬜ |
+| 4.1 | Estructura `NgModule` de la feature `compra` + `CarritoService` (signals: entradas seleccionadas — tomadas de `SeleccionButacasService` de la 2.6 —, productos, combos) | ✅ |
+| 4.2 | Candy Bar: listado de productos/combos por categoría, cantidad, agregar/quitar del carrito | ✅ |
 | 4.3 | Aplicación de cupón: validación de tipo (`primera_compra`/`edad`/`general`), vigencia y porcentaje | ⬜ |
 | 4.4 | Checkout: datos de contacto, compra anónima vs registrada, validación de edad (RN04, `fecha_nacimiento_comprador`) | ⬜ |
 | 4.5 | Checkout registrado: uso opcional de crédito/puntos disponibles como medio de pago parcial | ⬜ |
-| 4.6 | Pantalla de pago simulada + RPC transaccional de confirmación (valida butacas, crea `ventas`/`venta_items`/`pagos`, acredita puntos) | ⬜ |
+| 4.6 | Pantalla de pago simulada + RPC transaccional de confirmación (valida butacas, crea `ventas`/`venta_items`/`pagos`, descuenta stock de productos — también los que vienen dentro de combos, vía `combo_items` —, acredita puntos) | ⬜ |
 | 4.7 | Pantalla de confirmación de compra (resumen, entradas emitidas) | ⬜ |
 
 ### Fase 5 — Entradas y QR (M09, vista cliente) ⬜

@@ -1,0 +1,149 @@
+:host {
+  display: block;
+}
+
+.tarjeta-candy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  height: 100%;
+  padding: var(--espacio-lg) var(--espacio-lg) var(--espacio-md);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-superficie);
+  box-shadow: var(--sombra-sm);
+  transition:
+    border-color var(--transicion-base),
+    box-shadow var(--transicion-base);
+
+  &--destacada {
+    border-color: color-mix(in srgb, var(--color-acento-secundario) 45%, var(--color-borde));
+  }
+
+  &--elegida {
+    border-color: var(--color-acento-secundario);
+    box-shadow:
+      0 0 0 1px var(--color-acento-secundario),
+      0 0 18px color-mix(in srgb, var(--color-acento-secundario) 25%, transparent);
+  }
+
+  &--agotada {
+    opacity: 0.55;
+  }
+}
+
+.tarjeta-candy__sello {
+  position: absolute;
+  top: calc(var(--espacio-sm) * -1.25);
+  left: var(--espacio-lg);
+  padding: 0.1rem var(--espacio-sm);
+  border-radius: var(--radio-sm);
+  background: var(--color-acento-secundario);
+  color: var(--color-fondo);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.tarjeta-candy__renglon {
+  display: flex;
+  align-items: baseline;
+  gap: var(--espacio-sm);
+}
+
+.tarjeta-candy__nombre {
+  margin: 0;
+  color: var(--color-texto-primario);
+  font-family: var(--fuente-titulo);
+  font-size: 1.45rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+.tarjeta-candy__puntos {
+  flex: 1;
+  min-width: var(--espacio-md);
+  border-bottom: 2px dotted var(--color-texto-silenciado);
+  transform: translateY(-0.3rem);
+}
+
+.tarjeta-candy__precio {
+  color: var(--color-acento-secundario);
+  font-family: var(--fuente-titulo);
+  font-size: 1.45rem;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.tarjeta-candy__descripcion {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.tarjeta-candy__pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-md);
+  margin-top: auto;
+  padding-top: var(--espacio-md);
+  border-top: 1px dashed var(--color-borde);
+  min-height: 3.25rem;
+}
+
+.tarjeta-candy__agotado {
+  color: var(--color-texto-silenciado);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.tarjeta-candy__cantidad {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--color-acento-secundario);
+  border-radius: var(--radio-completo);
+}
+
+.tarjeta-candy__paso {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: var(--radio-completo);
+  background: transparent;
+  color: var(--color-texto-primario);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background var(--transicion-rapida);
+
+  &:hover:not(:disabled) {
+    background: var(--color-superficie-elevada);
+  }
+
+  &:disabled {
+    color: var(--color-texto-silenciado);
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--sombra-foco);
+  }
+}
+
+.tarjeta-candy__numero {
+  min-width: 1.75rem;
+  color: var(--color-texto-primario);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.tarjeta-candy__subtotal {
+  color: var(--color-texto-primario);
+  font-variant-numeric: tabular-nums;
+}
