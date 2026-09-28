@@ -78,21 +78,22 @@ export class RegistroCuenta {
     if (this.formulario.invalid || this.enviando()) return;
 
     const valor = this.formulario.getRawValue();
+    const email = (valor.email ?? "").trim();
     this.enviando.set(true);
     try {
       const resultado = await this.cargaGlobal.envolver(() =>
         this.auth.registrar({
-          email: valor.email.trim(),
-          contrasena: valor.contrasena,
-          nombre: valor.nombre.trim(),
-          apellido: valor.apellido.trim(),
-          fechaNacimiento: valor.fechaNacimiento,
+          email,
+          contrasena: valor.contrasena ?? "",
+          nombre: (valor.nombre ?? "").trim(),
+          apellido: (valor.apellido ?? "").trim(),
+          fechaNacimiento: valor.fechaNacimiento ?? "",
           tipoSangre: valor.tipoSangre as TipoSangre,
           colorOjos: valor.colorOjos as ColorOjos,
           diasVacacionesAnuales: Number(valor.diasVacacionesAnuales),
         }),
       );
-      this.emailRegistrado.set(valor.email.trim());
+      this.emailRegistrado.set(email);
       this.resultado.set(resultado);
     } catch (error) {
       this.errorEnvio.set(error instanceof Error ? error.message : "No se pudo completar el registro.");
