@@ -106,7 +106,7 @@ aparece un caso que realmente lo necesite, se reevalúa.
 
 ### Formularios simples: `[(ngModel)]` de dos vías contra un signal
 
-El buscador del catálogo (Fase 1.3) usa `[(ngModel)]` de `FormsModule` en vez
+El buscador del catálogo usa `[(ngModel)]` de `FormsModule` en vez
 de leer `$event.target` a mano. La sintaxis de dos vías no funciona escrita
 directo contra el signal (`[(ngModel)]="terminoBusqueda()"` no compila: se
 expandiría a `(ngModelChange)="terminoBusqueda() = $event"`, y el resultado de
@@ -130,7 +130,7 @@ otra lectura de signal en el template), y el `set` es el único lugar que lo
 escribe. El mismo criterio aplica a cualquier campo de formulario que en el
 proyecto respalde su valor en un signal en vez de una propiedad plana.
 
-### Formularios con validación compuesta: Reactive Forms (Fase 3.1)
+### Formularios con validación compuesta: Reactive Forms
 
 El criterio de `[(ngModel)]` de la sección anterior es para campos sueltos
 sin reglas (un buscador). El registro es otro caso: nueve campos, reglas
@@ -150,7 +150,7 @@ eventos marcan la vista para re-renderizar. Lo que ocurre fuera de un
 evento del DOM — el resultado asíncrono de `signUp`, el mensaje de error
 del backend, el flag de envío en curso — sí va a signals.
 
-### Alta de perfil desde el frontend (Fase 3.1)
+### Alta de perfil desde el frontend
 
 Registrarse son dos escrituras: `auth.signUp()` crea el usuario en
 `auth.users` (tabla interna de Supabase Auth) y después `PerfilesService`
@@ -179,7 +179,7 @@ ese caso. Antes esto lo resolvía un trigger sobre `auth.users`
 `AuthService` y `PerfilesService` viven en `core/servicios/` porque los van
 a consumir varias features (perfil, encabezado, compra registrada).
 
-### Sesión: signal cargado con `getSession()` (Fase 3.2)
+### Sesión: signal cargado con `getSession()`
 
 `AuthService.sesion` es un `signal<Session | null>`. Se carga una vez al
 arrancar con `supabase.auth.getSession()`, que lee la sesión que el cliente
@@ -266,24 +266,23 @@ más corta y porque el nombre describe mejor el rol de la clase.
 regla general (ver más arriba) sea "si algo se usa desde una sola feature,
 vive en esa feature". No es una excepción: ambos se van a consumir desde más
 de una feature (el detalle de película de `catalogo` necesita las funciones
-disponibles; `salas-butacas` va a necesitar `FuncionesService` para el mapa de
-butacas de la Fase 2.2+; `administracion` va a necesitar los dos para las
-ABM de las Fases 7.2/7.4; `compra` va a necesitar `FuncionesService` para el
-checkout), así que la regla los sube a `core/` desde que se crean, en vez de
+disponibles; `salas-butacas` necesita `FuncionesService` para el mapa de
+butacas; `administracion` va a necesitar los dos para los ABM de películas y
+funciones; `compra` va a necesitar `FuncionesService` para el checkout), así que la regla los sube a `core/` desde que se crean, en vez de
 nacer en una feature y migrarse después.
 
 Por eso `PeliculasService.obtenerDetalle()` no arma su propia query contra la
-tabla `funciones`: delega en `FuncionesService.obtenerDisponiblesPorPelicula()`
-(Fase 2.1). Mantiene esa tabla con una sola consulta relevante en todo el
-proyecto en vez de duplicarla a medida que más features necesiten "funciones
-de una película" (catálogo hoy, selección de función en la Fase 2.2 después).
+tabla `funciones`: delega en `FuncionesService.obtenerDisponiblesPorPelicula()`.
+Mantiene esa tabla con una sola consulta relevante en todo el proyecto en
+vez de duplicarla a medida que más features necesiten "funciones de una
+película" (el detalle del catálogo y la selección de función).
 
-### Selección de butacas: estado compartido en `core/` y respaldado en `sessionStorage` (Fase 2.6)
+### Selección de butacas: estado compartido en `core/` y respaldado en `sessionStorage`
 
 La selección confirmada en el mapa de butacas (función + butacas elegidas +
 precio de cada una) vive en `SeleccionButacasService` (`core/servicios/`),
 no en la feature `salas-butacas`. Lo va a consumir la feature `compra`
-(`CarritoService`, Fase 4.1), así que aplica la misma regla que a
+(`CarritoService`), así que aplica la misma regla que a
 `FuncionesService`: se sube a `core/` desde que nace. El mapa solo mantiene
 la selección *en curso* como un signal local; recién al confirmar se
 entrega al servicio, que es el contrato entre ambas features.
@@ -295,15 +294,14 @@ efímera: no tiene sentido que sobreviva al cierre de la pestaña ni que se
 comparta entre pestañas. El precio por butaca (`precio_base` de la función
 + `precio_adicional` de la butaca) se calcula en el cliente solo para
 mostrarlo: el monto que se cobra lo recalcula Postgres en la RPC de
-confirmación de compra (Fase 4.6).
+confirmación de compra.
 
-Hasta que se haga la Fase 2.4, esta selección **no bloquea** butacas en la
-base: es puramente del lado del cliente. 2.4 y 2.5 se difirieron a
-propósito (ver `docs/ROADMAP.md`) y 2.4 es prerrequisito de 4.6; el
-bloqueo transaccional se va a enchufar dentro de
-`SeleccionButacasService.confirmar()` sin tocar el mapa.
+Por ahora esta selección **no bloquea** butacas en la base: es puramente
+del lado del cliente. El bloqueo transaccional (`reservas_butaca`) es
+prerrequisito de la RPC de confirmación de compra y se va a enchufar dentro
+de `SeleccionButacasService.confirmar()` sin tocar el mapa.
 
-### Carrito: `CarritoService` dentro de la feature `compra` (Fase 4.1)
+### Carrito: `CarritoService` dentro de la feature `compra`
 
 `features/compra/` es el primer `NgModule` del proyecto: `CompraModule`
 declara sus páginas (`standalone: false`) y se carga lazy desde
@@ -327,15 +325,15 @@ guarda son los productos y combos del Candy Bar, en dos signals separados
 los respalda en `sessionStorage` con el mismo criterio que la selección de
 butacas. Subtotales y total son métodos planos que leen esos signals (sin
 `computed()`). Los precios son solo para mostrar: el monto definitivo lo
-recalcula Postgres en la RPC de la Fase 4.6.
+recalcula Postgres en la RPC de confirmación de compra.
 
-### Candy Bar: carta dentro de `compra` y stock como tope visual (Fase 4.2)
+### Candy Bar: carta dentro de `compra` y stock como tope visual
 
 El flujo de compra queda **butacas → Candy Bar → carrito**: el resumen de
 butacas continúa a `/compra/candy-bar`, que se puede saltear sin agregar
 nada. `CandyBarService` y sus mapeos (`features/compra/helpers/`) viven en
 la feature porque hoy solo los usa `compra`, con la misma regla que
-`CarritoService`. El ABM de la Fase 7.5 va a escribir en las mismas tablas
+`CarritoService`. El ABM del Candy Bar va a escribir en las mismas tablas
 desde `administracion`, pero con otras consultas (incluye inactivos), así
 que no hay nada para compartir todavía.
 
@@ -349,14 +347,15 @@ precio fijo propio, no tiene categoría ni stock, y su composición vive en
 `combo_items`. Por eso el Candy Bar limita la cantidad de un producto a su
 `stock` (y lo muestra "Agotado" en 0), pero no limita los combos. Es solo
 un tope en pantalla: el stock no se descuenta en la base hasta la RPC de
-la Fase 4.6. Esa RPC también tiene que descontar los productos que vienen
+confirmación de compra. Esa RPC también tiene que descontar los productos que vienen
 dentro de cada combo, vía `combo_items`, y rechazar la venta si alguno
 queda sin stock.
 
-### Cupones: validación en el servicio, lectura pública de los activos (Fase 4.3)
+### Cupones: validación en el servicio, lectura pública de los activos
 
-En la Fase 0.6 `cupones` quedó legible solo por admin, para que no se
-pudieran listar los códigos vigentes. Para la 4.3 se reabre esa decisión:
+Originalmente `cupones` quedó legible solo por admin, para que no se
+pudieran listar los códigos vigentes. Al implementar los cupones se reabrió
+esa decisión:
 la migración `lectura_cupones_activos` agrega una política `select` para
 `anon`/`authenticated` sobre los cupones con `activo = true`. Así se evita
 una RPC solo para validar un código. El costo es que alguien podría
@@ -370,8 +369,7 @@ consultar la tabla y ver los códigos, algo aceptable para el alcance del TP.
   canceladas (las lee por la política `ventas_select_propio`);
 - `edad`: exige sesión y compara la edad calculada desde
   `perfiles.fecha_nacimiento` con `edad_minima`. El comprador anónimo
-  todavía no carga su fecha de nacimiento; eso llega con el checkout de la
-  4.4.
+  todavía no carga su fecha de nacimiento; eso llega con el checkout.
 
 Además de escribirse a mano, los cupones de tipo `primera_compra` y `edad`
 se aplican solos: al abrir el carrito con sesión y sin cupón aplicado,
@@ -386,7 +384,8 @@ próxima vez que entre al carrito.
 `CarritoService` guarda el cupón como signal (respaldado en
 `sessionStorage`, igual que los extras). El descuento se calcula sobre el
 subtotal completo (entradas + Candy Bar), redondeado a centavos. La venta
-guarda `cupon_id` y `descuento`, que se persisten en la RPC de la Fase 4.6.
+guarda `cupon_id` y `descuento`, que se persisten en la RPC de confirmación
+de compra.
 
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 
@@ -429,7 +428,7 @@ funciones/RPC en PostgreSQL (Supabase) dentro de una transacción, de modo que
 el estado visual del cliente sea una ayuda a la UX pero nunca la única barrera
 de integridad.
 
-### Esquema SQL versionado y RLS (Fase 0.6)
+### Esquema SQL versionado y RLS
 
 El esquema completo (26 tablas de negocio) vive como migraciones SQL en
 `supabase/migrations/` (`<timestamp>_<nombre>.sql`, convención del CLI de
@@ -451,10 +450,9 @@ criterio parejo:
   por rol.
 - **Tablas transaccionales sensibles** (`ventas`, `venta_items`, `entradas`,
   `pagos`, `reservas_butaca`, `movimientos_puntos`, `movimientos_credito`,
-  `usos_qr`, `logs_actividad`): sin políticas de escritura para el cliente en
-  esta fase. Se escriben desde funciones RPC `security definer` que se
-  agregan fase a fase (bloqueo de butacas en la Fase 2, compra en la Fase 4,
-  validación de QR en la Fase 6, cancelación en la Fase 9) — esas funciones
+  `usos_qr`, `logs_actividad`): sin políticas de escritura para el cliente.
+  Se escriben desde funciones RPC `security definer` (bloqueo de butacas,
+  confirmación de compra, validación de QR, cancelación) — esas funciones
   corren con privilegios propios y no dependen de RLS, así que la ausencia de
   política de escritura ahí es intencional, no un olvido.
 - `perfiles.rol`, `credito_saldo` y `puntos_saldo` están protegidos además
@@ -470,7 +468,7 @@ acá: se corren con `supabase db push` (requiere `supabase link` con
 credenciales propias del proyecto) o pegando el contenido de cada archivo, en
 orden, en el SQL Editor del dashboard.
 
-### Contador cacheado para datos agregados públicos (Fase 1)
+### Contador cacheado para datos agregados públicos
 
 El destacado "3 más vendidas" del catálogo necesita un ranking de películas
 por entradas vendidas, pero `ventas`/`venta_items` son datos personales (cada
@@ -482,9 +480,8 @@ solo el total por película.
 Se resuelve con un contador cacheado: `peliculas.entradas_vendidas`, una
 columna simple que ya es de lectura pública porque `peliculas` ya lo es. Es
 el mismo patrón que `perfiles.puntos_saldo`/`credito_saldo`: el valor se
-mantiene actualizado por un trigger en el momento de la escritura (a agregar
-en la Fase 4, cuando una venta se confirma, y en la Fase 9, cuando se
-cancela), no se recalcula en cada lectura. El frontend hace una consulta
+mantiene actualizado por un trigger en el momento de la escritura (cuando una
+venta se confirma y cuando se cancela), no se recalcula en cada lectura. El frontend hace una consulta
 directa y simple:
 
 ```ts
@@ -526,8 +523,3 @@ cp .env.example .env   # completar SUPABASE_URL y SUPABASE_ANON_KEY
 npm start              # ng serve (genera environment.ts antes de levantar)
 npm test               # vitest
 ```
-
-## Estado del proyecto
-
-El desarrollo avanza en fases incrementales documentadas en `CHANGELOG.md`.
-Cada fase corresponde a uno o más módulos funcionales del análisis.
