@@ -303,6 +303,16 @@ propósito (ver `docs/ROADMAP.md`) y 2.4 es prerrequisito de 4.6; el
 bloqueo transaccional se va a enchufar dentro de
 `SeleccionButacasService.confirmar()` sin tocar el mapa.
 
+### Inputs y outputs: `input()` / `output()` sin `.required`
+
+Los componentes y directivas reciben datos con `input()` y emiten eventos con
+`output()`, que son las APIs vistas en la materia. No se usa
+`input.required()`, por el mismo criterio que excluye
+`computed()`/`resource()`. Por eso todo `input()` lleva un valor por defecto,
+y si el componente depende de que el padre lo pase, revisa que no esté vacío
+antes de usarlo. Un `input()` todavía no tiene su valor en el constructor, así
+que si el componente lo necesita para cargar datos lo lee en `ngOnInit()`.
+
 ### Parámetros de ruta: `ActivatedRoute.snapshot`, no `withComponentInputBinding()`
 
 Un segmento de ruta como `:id` se lee con `ActivatedRoute` inyectado y

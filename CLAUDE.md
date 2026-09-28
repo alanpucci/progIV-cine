@@ -140,6 +140,13 @@ retroactivamente solo por esto.
   render quedan trackeados como dependencia de esa vista, sin necesidad de
   `computed`. Tiene como único costo recalcularse en cada ciclo de detección
   en vez de memoizarse, aceptable para los tamaños de datos de este TP.
+- **Inputs/outputs con `input()` / `output()`** (vistos en la materia),
+  pero **sin `input.required()`** (no visto, mismo criterio que con
+  `computed()`). Todo `input()` lleva un valor por defecto (`input("")`,
+  `input(false)`, `input<Tipo>("valorBase")`) y, si el componente depende de
+  que el padre lo pase, se chequea el valor vacío antes de usarlo. Un
+  `input()` no está disponible en el constructor: si el componente necesita
+  su valor para cargar datos, hacerlo en `ngOnInit()`.
 - Preferir signals/`async` pipe sobre subscribes manuales sin unsubscribe.
 - **No generar tests unitarios** (`*.spec.ts`) salvo que se pida
   explícitamente. Al crear componentes con `ng generate`, usar
