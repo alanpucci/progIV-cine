@@ -1,0 +1,175 @@
+@use "formularios";
+
+.billetera {
+  @include formularios.panel;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.billetera__titulo {
+  font-size: 1.4rem;
+}
+
+.billetera__error {
+  @include formularios.error-envio;
+}
+
+.billetera__saldos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--espacio-md);
+}
+
+.billetera__ficha {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+  padding: var(--espacio-md) var(--espacio-lg);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo-alterno);
+  color: var(--color-texto-primario);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--transicion-rapida),
+    box-shadow var(--transicion-rapida);
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid var(--color-borde);
+    border-radius: 50%;
+    background: var(--color-superficie);
+    transform: translateY(-50%);
+  }
+
+  &::before {
+    left: -0.5rem;
+  }
+
+  &::after {
+    right: -0.5rem;
+  }
+
+  &:hover {
+    border-color: var(--color-texto-silenciado);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--sombra-foco);
+  }
+}
+
+.billetera__ficha--puntos.billetera__ficha--activa {
+  border-color: var(--color-acento-secundario);
+}
+
+.billetera__ficha--credito.billetera__ficha--activa {
+  border-color: var(--color-acento-terciario);
+}
+
+.billetera__ficha-etiqueta {
+  color: var(--color-texto-secundario);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.billetera__ficha-valor {
+  font-family: var(--fuente-titulo);
+  font-size: 2.2rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.billetera__ficha--puntos .billetera__ficha-valor {
+  color: var(--color-acento-secundario);
+}
+
+.billetera__ficha--credito .billetera__ficha-valor {
+  color: var(--color-acento-terciario);
+}
+
+.billetera__ficha-pie {
+  color: var(--color-texto-silenciado);
+  font-size: 0.8rem;
+}
+
+.billetera__subtitulo {
+  margin-top: var(--espacio-sm);
+  color: var(--color-texto-secundario);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.billetera__vacio {
+  margin: 0;
+  padding: var(--espacio-lg);
+  border: 1px dashed var(--color-borde);
+  border-radius: var(--radio-md);
+  color: var(--color-texto-silenciado);
+  text-align: center;
+}
+
+.billetera__historial {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.billetera__movimiento {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-md);
+  padding: var(--espacio-sm) 0;
+  border-bottom: 1px dashed var(--color-borde);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.billetera__movimiento-detalle {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.billetera__movimiento-concepto {
+  font-size: 0.95rem;
+}
+
+.billetera__movimiento-fecha {
+  color: var(--color-texto-silenciado);
+  font-size: 0.8rem;
+}
+
+.billetera__movimiento-cantidad {
+  flex-shrink: 0;
+  color: var(--color-error);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.billetera__movimiento-cantidad--positiva {
+  color: var(--color-exito);
+}
+
+@media (min-width: 40rem) {
+  .billetera__saldos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

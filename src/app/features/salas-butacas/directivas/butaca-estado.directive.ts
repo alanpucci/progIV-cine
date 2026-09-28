@@ -9,6 +9,6 @@ import { TipoButaca } from "../../../core/modelos/funcion.model";
   },
 })
 export class ButacaEstado {
-  readonly tipo = input.required<TipoButaca>({ alias: "appButaca" });
+  readonly tipo = input<TipoButaca>("normal", { alias: "appButaca" });
   readonly seleccionada = input(false);
 }

@@ -3,6 +3,34 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 3.4] - 2026-09-28
+
+### Added
+- Componente `BilleteraCuenta` (`features/perfil/componentes/`), integrado
+  en `/cuenta/perfil` entre el carnet y "Mis datos". Muestra dos fichas con
+  forma de entrada de cine con el saldo de puntos y el de crédito (ARS).
+  Tocar una ficha cambia el historial visible: concepto, fecha y cantidad
+  con signo (verde si suma, rojo si resta), del más nuevo al más viejo.
+  Tiene mensaje para cuando no hay movimientos.
+- `MovimientosService` (`core/servicios/`): `obtenerSaldos()`, que lee
+  `perfiles.puntos_saldo`/`credito_saldo` (los mantiene el trigger de los
+  ledgers), y `obtenerMovimientosPuntos()`/`obtenerMovimientosCredito()`,
+  que traen los últimos 50 de cada ledger. No hizo falta migración: las
+  políticas RLS de lectura propia ya existían.
+- `core/modelos/movimiento.model.ts`, `core/helpers/movimiento.mapeos.ts`
+  (filas snake_case → modelo) y `core/helpers/movimiento.formato.ts`
+  (pesos, puntos, fecha y etiquetas por tipo de movimiento).
+
+### Changed
+- `ButacaEstado`: `input.required<TipoButaca>()` pasa a
+  `input<TipoButaca>("normal")`, siguiendo la convención nueva de no usar
+  `input.required()` (no visto en la materia).
+- `CLAUDE.md`: regla nueva para inputs/outputs. Se usan `input()`/`output()`
+  sin `.required`, con valor por defecto, y se leen en `ngOnInit()`.
+  `README.md` suma la sección "Inputs y outputs" con el mismo criterio.
+- `docs/ROADMAP.md`/`ROADMAP.pdf`: 3.3 y 3.4 pasan a ✅ y se actualiza la
+  nota de guards de sesión (`conSesionGuard` ya existe desde la 3.3).
+
 ## [Fase 3.3] - 2026-09-28
 
 ### Added
