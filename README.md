@@ -513,7 +513,10 @@ necesidad de `@use` en cada archivo — cualquier `.scss` de un componente usa
 
 Sobre esos tokens se construyen primitivas de UI propias en `shared/componentes/`
 (`Boton`, `Tarjeta`, …), consumidas por las features en vez de repetir estilos
-sueltos.
+sueltos. Los comportamientos visuales reutilizables que no necesitan template
+propio van como directivas en `shared/directivas/` (por ejemplo
+`appInteractiva`, el efecto de elevación al pasar el mouse), así se pueden
+aplicar a cualquier elemento en vez de estar atados a un solo componente.
 
 ## Desarrollo
 

@@ -34,6 +34,19 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   La barra del Candy Bar también muestra el total con descuento.
 - `CarritoService.vaciar()` también quita el cupón.
 - `CompraModule` importa `ReactiveFormsModule`.
+- `Tarjeta` pierde el input `interactiva`: la elevación al pasar el mouse
+  pasa a la directiva `appInteractiva`, y la caja visual (fondo, borde,
+  sombra) es ahora el `:host` del componente en vez de un `div` interno.
+  Como efecto, el `gap` de `.catalogo-inicio__tarjeta` empieza a separar
+  póster e info en la cartelera.
+- `SeleccionButacasService.confirmar()` copia la butaca completa con spread
+  en vez de campo por campo.
+
+### Added (refactor UI)
+- Directiva `Interactiva` (`[appInteractiva]`, en `shared/directivas/`):
+  escucha `mouseenter`/`mouseleave` y, mientras el mouse está encima,
+  eleva el elemento y le cambia sombra y borde con estilos del host. Se usa
+  en las tarjetas de la cartelera.
 
 ## [Fase 4.2] - 2026-09-28
 

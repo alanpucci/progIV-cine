@@ -91,7 +91,7 @@
       <div class="catalogo-inicio__grilla">
         @for (pelicula of listadoFiltrado; track pelicula.id) {
           <a class="catalogo-inicio__enlace" [routerLink]="['/pelicula', pelicula.id]">
-            <app-tarjeta class="catalogo-inicio__tarjeta" [interactiva]="true">
+            <app-tarjeta class="catalogo-inicio__tarjeta" appInteractiva>
               <img
                 class="catalogo-inicio__poster"
                 [src]="pelicula.imagenUrl"
