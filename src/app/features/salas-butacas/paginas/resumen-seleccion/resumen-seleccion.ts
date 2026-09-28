@@ -35,4 +35,8 @@ export class ResumenSeleccion {
     this.seleccionButacas.limpiar();
     this.router.navigate(peliculaId ? ["/pelicula", peliculaId] : ["/"]);
   }
+
+  protected continuarAlCarrito(): void {
+    this.router.navigate(["/compra/carrito"]);
+  }
 }

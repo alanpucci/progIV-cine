@@ -303,6 +303,32 @@ propósito (ver `docs/ROADMAP.md`) y 2.4 es prerrequisito de 4.6; el
 bloqueo transaccional se va a enchufar dentro de
 `SeleccionButacasService.confirmar()` sin tocar el mapa.
 
+### Carrito: `CarritoService` dentro de la feature `compra` (Fase 4.1)
+
+`features/compra/` es el primer `NgModule` del proyecto: `CompraModule`
+declara sus páginas (`standalone: false`) y se carga lazy desde
+`app.routes.ts` con `loadChildren` apuntando al módulo;
+`CompraRoutingModule` tiene las rutas hijas con `RouterModule.forChild` y
+reexporta `RouterModule` para que las plantillas del módulo usen
+`routerLink`. Los componentes standalone compartidos (`Boton`) se importan
+en `imports` del módulo como si fueran otro módulo.
+
+`CarritoService` vive en `features/compra/servicios/` y no en `core/`,
+porque hoy solo lo usa esta feature (regla general de más arriba). Sigue
+siendo singleton con `@Service()`, así que no hace falta proveerlo en el
+módulo. Si más adelante el encabezado muestra el contador del carrito, se
+sube a `core/`.
+
+El carrito **no duplica** las entradas: las lee de
+`SeleccionButacasService` (el contrato con `salas-butacas` de la 2.6), así
+que modificar butacas desde el mapa se refleja solo en el carrito. Lo que sí
+guarda son los productos y combos del Candy Bar, en dos signals separados
+(`productos`, `combos`) que coinciden con los `tipo_item` de `venta_items`, y
+los respalda en `sessionStorage` con el mismo criterio que la selección de
+butacas. Subtotales y total son métodos planos que leen esos signals (sin
+`computed()`). Los precios son solo para mostrar: el monto definitivo lo
+recalcula Postgres en la RPC de la Fase 4.6.
+
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 
 Los componentes y directivas reciben datos con `input()` y emiten eventos con

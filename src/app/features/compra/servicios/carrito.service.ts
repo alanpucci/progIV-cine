@@ -1,0 +1,105 @@
+import { inject, Service, signal, WritableSignal } from '@angular/core';
+import { SeleccionButacasService } from '../../../core/servicios/seleccion-butacas.service';
+import { ButacaElegida, SeleccionButacas } from '../../../core/modelos/funcion.model';
+import { ExtraCarrito, ExtrasCarrito, TipoExtraCarrito } from '../modelos/carrito.model';
+
+const CLAVE_ALMACENAMIENTO = 'cine.carrito-extras';
+
+@Service()
+export class CarritoService {
+  private readonly seleccionButacas = inject(SeleccionButacasService);
+  private readonly almacenados = this.leerAlmacenados();
+
+  readonly productos = signal<ExtraCarrito[]>(this.almacenados.productos);
+  readonly combos = signal<ExtraCarrito[]>(this.almacenados.combos);
+
+  seleccion(): SeleccionButacas | null {
+    return this.seleccionButacas.seleccion();
+  }
+
+  entradas(): ButacaElegida[] {
+    return this.seleccion()?.butacas ?? [];
+  }
+
+  extras(): ExtraCarrito[] {
+    return [...this.combos(), ...this.productos()];
+  }
+
+  agregar(extra: Omit<ExtraCarrito, 'cantidad'>, cantidad = 1): void {
+    const lista = this.listaPara(extra.tipo);
+    const existente = lista().find((item) => item.id === extra.id);
+    if (existente) {
+      this.cambiarCantidad(extra.tipo, extra.id, existente.cantidad + cantidad);
+      return;
+    }
+    lista.update((items) => [...items, { ...extra, cantidad }]);
+    this.guardar();
+  }
+
+  cambiarCantidad(tipo: TipoExtraCarrito, id: string, cantidad: number): void {
+    if (cantidad <= 0) {
+      this.quitar(tipo, id);
+      return;
+    }
+    this.listaPara(tipo).update((items) => items.map((item) => (item.id === id ? { ...item, cantidad } : item)));
+    this.guardar();
+  }
+
+  quitar(tipo: TipoExtraCarrito, id: string): void {
+    this.listaPara(tipo).update((items) => items.filter((item) => item.id !== id));
+    this.guardar();
+  }
+
+  subtotalEntradas(): number {
+    return this.seleccionButacas.total();
+  }
+
+  subtotalExtras(): number {
+    return this.extras().reduce((suma, item) => suma + item.precioUnitario * item.cantidad, 0);
+  }
+
+  total(): number {
+    return this.subtotalEntradas() + this.subtotalExtras();
+  }
+
+  cantidadItems(): number {
+    return this.entradas().length + this.extras().reduce((suma, item) => suma + item.cantidad, 0);
+  }
+
+  estaVacio(): boolean {
+    return this.cantidadItems() === 0;
+  }
+
+  vaciar(): void {
+    this.productos.set([]);
+    this.combos.set([]);
+    this.guardar();
+    this.seleccionButacas.limpiar();
+  }
+
+  private listaPara(tipo: TipoExtraCarrito): WritableSignal<ExtraCarrito[]> {
+    return tipo === 'producto' ? this.productos : this.combos;
+  }
+
+  private guardar(): void {
+    const extras: ExtrasCarrito = { productos: this.productos(), combos: this.combos() };
+    try {
+      if (extras.productos.length === 0 && extras.combos.length === 0) {
+        sessionStorage.removeItem(CLAVE_ALMACENAMIENTO);
+      } else {
+        sessionStorage.setItem(CLAVE_ALMACENAMIENTO, JSON.stringify(extras));
+      }
+    } catch {
+      return;
+    }
+  }
+
+  private leerAlmacenados(): ExtrasCarrito {
+    try {
+      const guardados = sessionStorage.getItem(CLAVE_ALMACENAMIENTO);
+      return guardados ? (JSON.parse(guardados) as ExtrasCarrito) : { productos: [], combos: [] };
+    } catch {
+      return { productos: [], combos: [] };
+    }
+  }
+}

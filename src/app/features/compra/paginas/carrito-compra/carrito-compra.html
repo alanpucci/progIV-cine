@@ -1,0 +1,96 @@
+<section class="carrito-compra">
+  <header class="carrito-compra__cabecera">
+    <p class="carrito-compra__etiqueta">Boletería</p>
+    <h1 class="carrito-compra__titulo">Tu carrito</h1>
+  </header>
+
+  @if (carrito.estaVacio()) {
+    <div class="carrito-compra__vacio">
+      <p>Todavía no elegiste ninguna función ni producto.</p>
+      <a class="carrito-compra__enlace" routerLink="/">Ver cartelera</a>
+    </div>
+  } @else {
+    <article class="carrito-compra__rollo">
+      <section class="carrito-compra__bloque">
+        <h2 class="carrito-compra__subtitulo">Entradas</h2>
+
+        @if (carrito.seleccion(); as seleccion) {
+          <div class="carrito-compra__funcion">
+            <p class="carrito-compra__pelicula">{{ seleccion.funcion.peliculaNombre }}</p>
+            <p class="carrito-compra__meta">
+              {{ seleccion.funcion.salaNombre }} · {{ formatearFechaFuncion(seleccion.funcion.inicio) }}
+              {{ formatearHoraFuncion(seleccion.funcion.inicio) }} ·
+              {{ seleccion.funcion.tipoProyeccion }} · {{ seleccion.funcion.idioma }}
+            </p>
+            <a class="carrito-compra__enlace" [routerLink]="['/butacas/funcion', seleccion.funcion.id]">
+              Modificar butacas
+            </a>
+          </div>
+
+          <ul class="carrito-compra__lista">
+            @for (butaca of carrito.entradas(); track butaca.id) {
+              <li class="carrito-compra__linea">
+                <span class="carrito-compra__descripcion">
+                  Fila {{ butaca.fila }} · Butaca {{ butaca.numero }}
+                  <span class="carrito-compra__tipo carrito-compra__tipo--{{ butaca.tipo }}">{{ butaca.tipo }}</span>
+                </span>
+                <span class="carrito-compra__monto">${{ butaca.precio }}</span>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="carrito-compra__aviso">No hay entradas en el carrito.</p>
+        }
+      </section>
+
+      <section class="carrito-compra__bloque">
+        <h2 class="carrito-compra__subtitulo">Candy Bar</h2>
+
+        @if (carrito.extras().length > 0) {
+          <ul class="carrito-compra__lista">
+            @for (extra of carrito.extras(); track extra.tipo + extra.id) {
+              <li class="carrito-compra__linea carrito-compra__linea--extra">
+                <span class="carrito-compra__descripcion">
+                  {{ extra.nombre }}
+                  @if (extra.tipo === "combo") {
+                    <span class="carrito-compra__tipo carrito-compra__tipo--combo">combo</span>
+                  }
+                </span>
+                <span class="carrito-compra__cantidad">
+                  <button type="button" class="carrito-compra__paso" (click)="restar(extra)">−</button>
+                  <span class="carrito-compra__numero">{{ extra.cantidad }}</span>
+                  <button type="button" class="carrito-compra__paso" (click)="sumar(extra)">+</button>
+                </span>
+                <span class="carrito-compra__monto">${{ extra.precioUnitario * extra.cantidad }}</span>
+                <button type="button" class="carrito-compra__quitar" (click)="carrito.quitar(extra.tipo, extra.id)">
+                  Quitar
+                </button>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="carrito-compra__aviso">No agregaste productos ni combos.</p>
+        }
+      </section>
+
+      <footer class="carrito-compra__totales">
+        <div class="carrito-compra__subtotal">
+          <span>Entradas</span>
+          <span>${{ carrito.subtotalEntradas() }}</span>
+        </div>
+        <div class="carrito-compra__subtotal">
+          <span>Candy Bar</span>
+          <span>${{ carrito.subtotalExtras() }}</span>
+        </div>
+        <div class="carrito-compra__total">
+          <span>Total</span>
+          <span class="carrito-compra__total-monto">${{ carrito.total() }}</span>
+        </div>
+      </footer>
+    </article>
+
+    <div class="carrito-compra__acciones">
+      <app-boton variante="fantasma" (click)="vaciarCarrito()">Vaciar carrito</app-boton>
+    </div>
+  }
+</section>
