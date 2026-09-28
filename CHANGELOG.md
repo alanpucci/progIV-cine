@@ -3,6 +3,25 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 3.5] - 2026-09-28
+
+### Added
+- Componente `MisPeliculas` (`features/perfil/componentes/`), integrado en
+  `/cuenta/perfil` debajo de la billetera (RF-034). Muestra una tira de
+  película con el póster, la fecha de la última función vista y la
+  calificación propia (estrellas de `resenas`, o "Sin calificar"). Cada
+  cuadro es un acceso rápido al detalle de la película.
+- Componente `HistorialCompras`: lista de compras propias como tickets con
+  talón: fecha de compra, película (link al detalle), función, sala,
+  butacas, productos/combos, total y estado (pagada/cancelada). Las ventas
+  `pendiente` no se muestran porque son checkouts sin terminar.
+- `ComprasService` (`core/servicios/`): `obtenerComprasPropias()` (últimas
+  50 `ventas` con sus `venta_items` y relaciones) y
+  `obtenerPeliculasVistas()`, que cuenta como vista una película con
+  entrada no cancelada, de una venta pagada y con función ya empezada.
+  No hizo falta migración: las políticas RLS de lectura propia ya existían.
+- `core/modelos/compra.model.ts` y `core/helpers/compra.mapeos.ts`.
+
 ## [Fase 3.4] - 2026-09-28
 
 ### Added

@@ -12,6 +12,8 @@ import {
 } from "../../../../core/modelos/usuario.model";
 import { Boton } from "../../../../shared/componentes/boton/boton";
 import { BilleteraCuenta } from "../../componentes/billetera-cuenta/billetera-cuenta";
+import { HistorialCompras } from "../../componentes/historial-compras/historial-compras";
+import { MisPeliculas } from "../../componentes/mis-peliculas/mis-peliculas";
 import {
   FECHA_NACIMIENTO_MINIMA,
   fechaIsoLocal,
@@ -20,7 +22,7 @@ import {
 } from "../../validadores/registro.validadores";
 
 @Component({
-  imports: [ReactiveFormsModule, Boton, BilleteraCuenta],
+  imports: [ReactiveFormsModule, Boton, BilleteraCuenta, MisPeliculas, HistorialCompras],
   selector: "app-perfil-cuenta",
   styleUrl: "./perfil-cuenta.scss",
   templateUrl: "./perfil-cuenta.html",

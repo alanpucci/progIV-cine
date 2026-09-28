@@ -1,0 +1,131 @@
+@use "formularios";
+
+.compras {
+  @include formularios.panel;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.compras__titulo {
+  font-size: 1.4rem;
+}
+
+.compras__error {
+  @include formularios.error-envio;
+}
+
+.compras__vacio {
+  margin: 0;
+  padding: var(--espacio-lg);
+  border: 1px dashed var(--color-borde);
+  border-radius: var(--radio-md);
+  color: var(--color-texto-silenciado);
+  text-align: center;
+
+  a {
+    color: var(--color-acento-secundario);
+  }
+}
+
+.compras__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.compras__ticket {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo-alterno);
+}
+
+.compras__ticket--cancelada {
+  opacity: 0.6;
+
+  .compras__pelicula {
+    text-decoration: line-through;
+  }
+}
+
+.compras__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--espacio-sm) var(--espacio-md);
+}
+
+.compras__fecha {
+  color: var(--color-texto-silenciado);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.compras__pelicula {
+  color: var(--color-texto-primario);
+  font-family: var(--fuente-titulo);
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+a.compras__pelicula:hover {
+  color: var(--color-acento-secundario);
+}
+
+.compras__detalle,
+.compras__extras {
+  color: var(--color-texto-secundario);
+  font-size: 0.85rem;
+}
+
+.compras__extras {
+  color: var(--color-texto-silenciado);
+}
+
+.compras__talon {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--espacio-xs);
+  padding: var(--espacio-sm) var(--espacio-md);
+  border-left: 2px dashed var(--color-borde);
+}
+
+.compras__total {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.compras__estado {
+  padding: 1px var(--espacio-sm);
+  border: 1px solid currentColor;
+  border-radius: var(--radio-completo);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.compras__estado--pagada {
+  color: var(--color-exito);
+}
+
+.compras__estado--cancelada {
+  color: var(--color-error);
+}
+
+.compras__estado--pendiente {
+  color: var(--color-advertencia);
+}
