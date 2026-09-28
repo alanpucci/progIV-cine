@@ -353,6 +353,41 @@ la Fase 4.6. Esa RPC también tiene que descontar los productos que vienen
 dentro de cada combo, vía `combo_items`, y rechazar la venta si alguno
 queda sin stock.
 
+### Cupones: validación en el servicio, lectura pública de los activos (Fase 4.3)
+
+En la Fase 0.6 `cupones` quedó legible solo por admin, para que no se
+pudieran listar los códigos vigentes. Para la 4.3 se reabre esa decisión:
+la migración `lectura_cupones_activos` agrega una política `select` para
+`anon`/`authenticated` sobre los cupones con `activo = true`. Así se evita
+una RPC solo para validar un código. El costo es que alguien podría
+consultar la tabla y ver los códigos, algo aceptable para el alcance del TP.
+
+`CuponesService` (en `features/compra/`, misma regla que
+`CarritoService`) busca el código y valida en el frontend:
+
+- vigencia: `fecha_inicio`/`fecha_fin`, cada extremo abierto si es `null`;
+- `primera_compra`: exige sesión y que el usuario no tenga ventas no
+  canceladas (las lee por la política `ventas_select_propio`);
+- `edad`: exige sesión y compara la edad calculada desde
+  `perfiles.fecha_nacimiento` con `edad_minima`. El comprador anónimo
+  todavía no carga su fecha de nacimiento; eso llega con el checkout de la
+  4.4.
+
+Además de escribirse a mano, los cupones de tipo `primera_compra` y `edad`
+se aplican solos: al abrir el carrito con sesión y sin cupón aplicado,
+`buscarCuponAutomatico()` trae los activos de esos tipos ordenados por
+porcentaje y se queda con el primero que esté vigente y cuyas condiciones
+cumpla el usuario. Una venta lleva un solo cupón (`ventas.cupon_id`), así
+que no se acumulan. Los `general` quedan manuales: aplican a cualquiera,
+así que aplicarlos solos los dejaría de hacer funcionar como código
+promocional. Si el usuario quita el cupón automático, vuelve a aplicarse la
+próxima vez que entre al carrito.
+
+`CarritoService` guarda el cupón como signal (respaldado en
+`sessionStorage`, igual que los extras). El descuento se calcula sobre el
+subtotal completo (entradas + Candy Bar), redondeado a centavos. La venta
+guarda `cupon_id` y `descuento`, que se persisten en la RPC de la Fase 4.6.
+
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 
 Los componentes y directivas reciben datos con `input()` y emiten eventos con

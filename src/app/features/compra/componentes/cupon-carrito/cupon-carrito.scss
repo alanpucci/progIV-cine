@@ -1,0 +1,49 @@
+.cupon {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+}
+
+.cupon__titulo {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+.cupon__form {
+  display: flex;
+  gap: var(--espacio-sm);
+
+  input {
+    flex: 1;
+    padding: var(--espacio-sm) var(--espacio-md);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-sm);
+    background: var(--color-fondo-alterno);
+    color: var(--color-texto-primario);
+    font: inherit;
+    text-transform: uppercase;
+  }
+}
+
+.cupon__aplicado {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  color: var(--color-acento-secundario);
+}
+
+.cupon__quitar {
+  border: none;
+  background: none;
+  color: var(--color-texto-silenciado);
+  cursor: pointer;
+}
+
+.cupon__error {
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.85rem;
+}

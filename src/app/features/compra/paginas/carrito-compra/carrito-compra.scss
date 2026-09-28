@@ -237,6 +237,10 @@
   color: var(--color-texto-secundario);
   font-size: 0.9rem;
   font-variant-numeric: tabular-nums;
+
+  &--descuento {
+    color: var(--color-acento-secundario);
+  }
 }
 
 .carrito-compra__total {

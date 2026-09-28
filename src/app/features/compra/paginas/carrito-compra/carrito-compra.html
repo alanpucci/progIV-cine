@@ -78,6 +78,10 @@
         }
       </section>
 
+      <div class="carrito-compra__bloque">
+        <app-cupon-carrito />
+      </div>
+
       <footer class="carrito-compra__totales">
         <div class="carrito-compra__subtotal">
           <span>Entradas</span>
@@ -87,6 +91,12 @@
           <span>Candy Bar</span>
           <span>${{ carrito.subtotalExtras() }}</span>
         </div>
+        @if (carrito.cupon(); as cupon) {
+          <div class="carrito-compra__subtotal carrito-compra__subtotal--descuento">
+            <span>Descuento {{ cupon.codigo }} ({{ cupon.porcentaje }}%)</span>
+            <span>−${{ carrito.descuento() }}</span>
+          </div>
+        }
         <div class="carrito-compra__total">
           <span>Total</span>
           <span class="carrito-compra__total-monto">${{ carrito.total() }}</span>
