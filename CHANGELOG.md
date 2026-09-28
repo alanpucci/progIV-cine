@@ -3,6 +3,54 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 3.1] - 2026-09-27
+
+### Added
+- `AuthService` (`core/servicios/auth.service.ts`) con `registrar()`: llama a
+  `auth.signUp()` y, con el `id` del usuario creado, inserta la fila de
+  `perfiles` vía `PerfilesService.crear()` (`core/servicios/`). El perfil se
+  crea aunque falte confirmar el mail. Distingue si Supabase devolvió sesión
+  (`'sesion-iniciada'`) o si falta confirmar el mail
+  (`'confirmacion-pendiente'`), traduce los códigos de error de Auth a
+  mensajes en español y detecta el caso "mail ya registrado" que Supabase
+  devuelve sin error cuando la confirmación por mail está activa
+  (`identities` vacío).
+- Migración `20260928120000_alta_perfil_desde_frontend.sql`: elimina el
+  trigger `al_crear_usuario`/`manejar_nuevo_usuario` y agrega la política
+  `perfiles_insert_alta` (anon/authenticated) más la función
+  `es_usuario_recien_registrado()`. El INSERT solo pasa para un usuario de
+  Auth creado hace menos de 15 minutos, propio si hay sesión, con
+  `rol = 'cliente'` y saldos en 0.
+- Modelos `DatosPerfilNuevo`/`DatosRegistro` y catálogos `TIPOS_SANGRE`/`COLORES_OJOS`
+  (`core/modelos/usuario.model.ts`).
+- Feature `perfil` (standalone) montada en `/cuenta`, con la página
+  `RegistroCuenta` en `/cuenta/registro`: formulario reactivo en tres
+  bloques (acceso, datos personales, otros datos) con todos los
+  campos de RF-001 obligatorios, errores por campo al perder foco o al
+  intentar enviar, validadores propios en
+  `features/perfil/validadores/registro.validadores.ts` (fecha de
+  nacimiento no futura ni anterior a 1900, sin campos de solo espacios,
+  contraseñas coincidentes a nivel de grupo) y pantalla de éxito según el
+  resultado del registro.
+- Campo "Días de vacaciones anuales" como `type="text"` +
+  `inputmode="numeric"` con `maxlength="3"`: el handler
+  `dejarSoloDigitos()` descarta todo lo que no sea dígito (tipeado o
+  pegado). No se usa `type="number"` porque el navegador acepta `e`, `-`,
+  `+` y `.` como parte de un número válido. El tope de 365 lo sigue
+  validando el formulario.
+- Enlace "Crear cuenta" en el encabezado (escritorio y menú móvil). Por
+  ahora es estático; reflejar la sesión es la Fase 3.6.
+
+### Fixed
+- `ButacasInicio` y `ResumenSeleccion` usaban `formatearFechaFuncion`/
+  `formatearHoraFuncion` en el template sin exponerlos en la clase (quedó
+  así tras el merge de la 2.6), lo que rompía `ng build` en `main`.
+
+### Changed
+- `README.md`: nueva sección sobre cuándo se usan Reactive Forms en vez de
+  `[(ngModel)]` y cómo encajan con zoneless, y otra sobre el alta de perfil
+  desde el frontend (reemplaza la mención al trigger de alta automática).
+
 ## [Fase 2.6] - 2026-09-27
 
 ### Added

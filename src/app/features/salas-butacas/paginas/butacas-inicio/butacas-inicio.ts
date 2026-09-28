@@ -6,6 +6,7 @@ import { SeleccionButacasService } from "../../../../core/servicios/seleccion-bu
 import { Boton } from "../../../../shared/componentes/boton/boton";
 import { ButacaSeleccionada } from "../../directivas/butaca-seleccionada.directive";
 import { Butaca, FuncionMapa } from "../../../../core/modelos/funcion.model";
+import { formatearFechaFuncion, formatearHoraFuncion } from "../../../../core/helpers/pelicula.formato";
 
 interface FilaDeButacas {
   fila: string;
@@ -25,6 +26,8 @@ export class ButacasInicio {
   private readonly router = inject(Router);
   private readonly seleccionButacas = inject(SeleccionButacasService);
 
+  protected readonly formatearFechaFuncion = formatearFechaFuncion;
+  protected readonly formatearHoraFuncion = formatearHoraFuncion;
   protected readonly funcion = signal<FuncionMapa | null>(null);
   protected readonly butacas = signal<Butaca[]>([]);
   protected readonly cargando = signal(true);
