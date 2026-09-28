@@ -36,6 +36,14 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   sesión iniciada, así que `AuthService.registrar()` devuelve `void` y
   guarda la sesión en el signal. `RegistroCuenta` navega al catálogo al
   terminar, igual que el login.
+- La directiva `ButacaSeleccionada` pasa a llamarse `ButacaEstado`
+  (`features/salas-butacas/directivas/butaca-estado.directive.ts`, selector
+  `[appButaca]`). Además de la selección (`[seleccionada]` →
+  `aria-pressed`), recibe el tipo de butaca (`[appButaca]="butaca.tipo"` →
+  `data-tipo`). Reemplaza los dos `[class...--accesible/--vip]` del mapa.
+  También se usa en las muestras de la leyenda, así que los colores por
+  tipo y de selección quedan en un solo bloque del SCSS, compartido entre
+  butaca y muestra (antes estaban duplicados como modificadores `--*`).
 - `README.md`: nueva sección sobre el manejo de sesión, el guard y el
   partial de formularios. La sección del alta de perfil ya no asume
   confirmación por mail.

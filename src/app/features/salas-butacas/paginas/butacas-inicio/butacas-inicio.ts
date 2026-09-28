@@ -4,7 +4,7 @@ import { FuncionesService } from "../../../../core/servicios/funciones.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
 import { SeleccionButacasService } from "../../../../core/servicios/seleccion-butacas.service";
 import { Boton } from "../../../../shared/componentes/boton/boton";
-import { ButacaSeleccionada } from "../../directivas/butaca-seleccionada.directive";
+import { ButacaEstado } from "../../directivas/butaca-estado.directive";
 import { Butaca, FuncionMapa } from "../../../../core/modelos/funcion.model";
 import { formatearFechaFuncion, formatearHoraFuncion } from "../../../../core/helpers/pelicula.formato";
 
@@ -14,7 +14,7 @@ interface FilaDeButacas {
 }
 
 @Component({
-  imports: [RouterLink, Boton, ButacaSeleccionada],
+  imports: [RouterLink, Boton, ButacaEstado],
   selector: "app-butacas-inicio",
   styleUrl: "./butacas-inicio.scss",
   templateUrl: "./butacas-inicio.html",

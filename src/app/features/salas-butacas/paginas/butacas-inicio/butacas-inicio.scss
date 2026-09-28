@@ -123,26 +123,6 @@
     outline: none;
     box-shadow: var(--sombra-foco);
   }
-
-  &--accesible {
-    border-color: var(--color-acento-terciario);
-    background: color-mix(in srgb, var(--color-acento-terciario) 25%, var(--color-superficie-elevada));
-    color: var(--color-texto-primario);
-  }
-
-  &--vip {
-    border-color: var(--color-acento-secundario);
-    background: color-mix(in srgb, var(--color-acento-secundario) 25%, var(--color-superficie-elevada));
-    color: var(--color-texto-primario);
-  }
-
-  &[aria-pressed="true"] {
-    border-color: var(--color-acento-hover);
-    background: var(--color-acento);
-    box-shadow: 0 0 10px color-mix(in srgb, var(--color-acento) 60%, transparent);
-    color: var(--color-acento-texto);
-    font-weight: 700;
-  }
 }
 
 .butacas-mapa__leyenda {
@@ -168,20 +148,28 @@
   border: 1px solid var(--color-borde);
   border-radius: var(--radio-sm);
   background: var(--color-superficie-elevada);
+}
 
-  &--accesible {
+.butacas-mapa__butaca,
+.butacas-mapa__muestra {
+  &[data-tipo="accesible"] {
     border-color: var(--color-acento-terciario);
     background: color-mix(in srgb, var(--color-acento-terciario) 25%, var(--color-superficie-elevada));
+    color: var(--color-texto-primario);
   }
 
-  &--vip {
+  &[data-tipo="vip"] {
     border-color: var(--color-acento-secundario);
     background: color-mix(in srgb, var(--color-acento-secundario) 25%, var(--color-superficie-elevada));
+    color: var(--color-texto-primario);
   }
 
-  &--seleccionada {
+  &[aria-pressed="true"] {
     border-color: var(--color-acento-hover);
     background: var(--color-acento);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--color-acento) 60%, transparent);
+    color: var(--color-acento-texto);
+    font-weight: 700;
   }
 }
 
