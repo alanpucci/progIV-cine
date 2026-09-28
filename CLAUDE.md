@@ -56,7 +56,12 @@ caso borde en una línea en vez de resolverlo.
 - **`CHANGELOG.md`**: agregar una entrada nueva por cada PR/entrega
   (Added/Changed/Fixed) antes de darla por terminada.
 - **`README.md`**: actualizar cuando una fase introduce una decisión de
-  arquitectura nueva — no esperar al final del proyecto.
+  arquitectura nueva — no esperar al final del proyecto. El README documenta
+  solo arquitectura y decisiones técnicas: **nunca referenciar fases ni
+  sub-tareas** (ni "Fase 4.3" en títulos, ni "en la Fase X se va a…"). Si
+  hace falta mencionar algo futuro, describirlo por lo que es (p. ej. "la RPC
+  de confirmación de compra"). El seguimiento por fase va en `CHANGELOG.md`
+  y `docs/ROADMAP.md`.
 - **`docs/ROADMAP.md`** y **`docs/ROADMAP.pdf`**: **preguntar antes de
   tocarlos**, ya sea por un cambio de estado o al armar un PR. Nunca
   modificarlos automáticamente — no siempre hace falta. Si la respuesta es

@@ -3,6 +3,21 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Docs: README sin fases] - 2026-09-28
+
+### Changed
+- `README.md`: se quitan todas las referencias a fases y sub-tareas. Los
+  títulos de sección pierden el "(Fase X.Y)" y lo pendiente se nombra por
+  lo que es (por ejemplo, "la RPC de confirmación de compra" en vez de "la
+  RPC de la Fase 4.6"). El README queda solo con arquitectura y decisiones
+  técnicas; el seguimiento por fase sigue en `CHANGELOG.md` y
+  `docs/ROADMAP.md`.
+- `CLAUDE.md`: se agrega la regla de no referenciar fases en el README.
+
+### Removed
+- Sección "Estado del proyecto" del README, que solo describía el avance
+  por fases.
+
 ## [Refactor: directiva Interactiva] - 2026-09-28
 
 ### Added
