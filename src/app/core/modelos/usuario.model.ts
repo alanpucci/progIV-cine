@@ -4,7 +4,7 @@ export const COLORES_OJOS = ['Marrón', 'Negro', 'Verde', 'Azul', 'Otro'] as con
 export type TipoSangre = (typeof TIPOS_SANGRE)[number];
 export type ColorOjos = (typeof COLORES_OJOS)[number];
 
-export interface DatosPerfilNuevo {
+export interface DatosPerfil {
   nombre: string;
   apellido: string;
   fechaNacimiento: string;
@@ -13,7 +13,7 @@ export interface DatosPerfilNuevo {
   diasVacacionesAnuales: number;
 }
 
-export interface DatosRegistro extends DatosPerfilNuevo {
+export interface DatosRegistro extends DatosPerfil {
   email: string;
   contrasena: string;
 }

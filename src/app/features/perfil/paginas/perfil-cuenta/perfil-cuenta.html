@@ -1,0 +1,155 @@
+<section class="perfil">
+  @if (errorCarga(); as mensaje) {
+    <p class="perfil__error-envio" role="alert">{{ mensaje }}</p>
+  } @else if (perfil(); as datos) {
+    <header class="perfil__carnet">
+      <div class="perfil__carnet-talon">
+        <span class="perfil__iniciales">{{ iniciales() }}</span>
+      </div>
+      <div class="perfil__carnet-cuerpo">
+        <span class="perfil__carnet-etiqueta">Carnet de socio</span>
+        <h1 class="perfil__nombre">{{ datos.nombre }} {{ datos.apellido }}</h1>
+        <span class="perfil__email">{{ email() }}</span>
+      </div>
+    </header>
+
+    <div class="perfil__panel">
+      <h2 class="perfil__titulo">Mis datos</h2>
+
+      <form class="perfil__formulario" [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+        <fieldset class="perfil__grupo">
+          <legend class="perfil__leyenda">Datos personales</legend>
+
+          <div class="perfil__campo">
+            <label for="perfil-nombre">Nombre</label>
+            <input
+              id="perfil-nombre"
+              type="text"
+              formControlName="nombre"
+              autocomplete="given-name"
+              [attr.aria-invalid]="mostrarError(formulario.controls.nombre)"
+            />
+            @if (mostrarError(formulario.controls.nombre)) {
+              <p class="perfil__error">
+                {{ formulario.controls.nombre.hasError("maxlength") ? "Máximo 60 caracteres." : "Ingresá tu nombre." }}
+              </p>
+            }
+          </div>
+
+          <div class="perfil__campo">
+            <label for="perfil-apellido">Apellido</label>
+            <input
+              id="perfil-apellido"
+              type="text"
+              formControlName="apellido"
+              autocomplete="family-name"
+              [attr.aria-invalid]="mostrarError(formulario.controls.apellido)"
+            />
+            @if (mostrarError(formulario.controls.apellido)) {
+              <p class="perfil__error">
+                {{ formulario.controls.apellido.hasError("maxlength") ? "Máximo 60 caracteres." : "Ingresá tu apellido." }}
+              </p>
+            }
+          </div>
+
+          <div class="perfil__campo perfil__campo--ancho">
+            <label for="perfil-fecha">Fecha de nacimiento</label>
+            <input
+              id="perfil-fecha"
+              type="date"
+              formControlName="fechaNacimiento"
+              autocomplete="bday"
+              [min]="fechaMinima"
+              [max]="fechaMaxima"
+              [attr.aria-invalid]="mostrarError(formulario.controls.fechaNacimiento)"
+            />
+            @if (mostrarError(formulario.controls.fechaNacimiento)) {
+              <p class="perfil__error">
+                @if (formulario.controls.fechaNacimiento.hasError("fechaFutura")) {
+                  La fecha no puede ser posterior a hoy.
+                } @else if (formulario.controls.fechaNacimiento.hasError("fechaImprobable")) {
+                  Revisá el año ingresado.
+                } @else {
+                  Ingresá tu fecha de nacimiento.
+                }
+              </p>
+            }
+          </div>
+        </fieldset>
+
+        <fieldset class="perfil__grupo">
+          <legend class="perfil__leyenda">Otros datos</legend>
+
+          <div class="perfil__campo">
+            <label for="perfil-sangre">Tipo de sangre</label>
+            <select
+              id="perfil-sangre"
+              formControlName="tipoSangre"
+              [attr.aria-invalid]="mostrarError(formulario.controls.tipoSangre)"
+            >
+              <option value="" disabled>Elegí una opción</option>
+              @for (tipo of tiposSangre; track tipo) {
+                <option [value]="tipo">{{ tipo }}</option>
+              }
+            </select>
+            @if (mostrarError(formulario.controls.tipoSangre)) {
+              <p class="perfil__error">Elegí tu tipo de sangre.</p>
+            }
+          </div>
+
+          <div class="perfil__campo">
+            <label for="perfil-ojos">Color de ojos</label>
+            <select
+              id="perfil-ojos"
+              formControlName="colorOjos"
+              [attr.aria-invalid]="mostrarError(formulario.controls.colorOjos)"
+            >
+              <option value="" disabled>Elegí una opción</option>
+              @for (color of coloresOjos; track color) {
+                <option [value]="color">{{ color }}</option>
+              }
+            </select>
+            @if (mostrarError(formulario.controls.colorOjos)) {
+              <p class="perfil__error">Elegí tu color de ojos.</p>
+            }
+          </div>
+
+          <div class="perfil__campo perfil__campo--ancho">
+            <label for="perfil-vacaciones">Días de vacaciones anuales</label>
+            <input
+              id="perfil-vacaciones"
+              type="text"
+              inputmode="numeric"
+              maxlength="3"
+              formControlName="diasVacacionesAnuales"
+              (input)="dejarSoloDigitos($event)"
+              [attr.aria-invalid]="mostrarError(formulario.controls.diasVacacionesAnuales)"
+            />
+            @if (mostrarError(formulario.controls.diasVacacionesAnuales)) {
+              <p class="perfil__error">
+                {{
+                  formulario.controls.diasVacacionesAnuales.hasError("required")
+                    ? "Ingresá la cantidad de días."
+                    : "Ingresá un número entero entre 0 y 365."
+                }}
+              </p>
+            }
+          </div>
+        </fieldset>
+
+        @if (errorEnvio(); as mensaje) {
+          <p class="perfil__error-envio" role="alert">{{ mensaje }}</p>
+        } @else if (guardadoOk() && formulario.pristine) {
+          <p class="perfil__exito" role="status">Tus datos se guardaron correctamente.</p>
+        }
+
+        <div class="perfil__acciones">
+          <app-boton variante="fantasma" [deshabilitado]="formulario.pristine" (click)="descartar()">
+            Descartar cambios
+          </app-boton>
+          <app-boton tipo="submit" [deshabilitado]="formulario.pristine">Guardar cambios</app-boton>
+        </div>
+      </form>
+    </div>
+  }
+</section>
