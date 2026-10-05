@@ -533,6 +533,89 @@ usuario registrado sí puede leer sus ventas y entradas de Supabase (políticas
 `*_select_propio`), así que fuera de este flujo se le pueden mostrar desde
 la base.
 
+### Código QR de las entradas: generado en el cliente
+
+`entradas.codigo_qr` guarda solo el texto del código (32 caracteres
+hexadecimales aleatorios, generados al confirmar la compra). La imagen del QR
+no se guarda en ningún lado: se genera en el navegador cada vez que se
+muestra, con la librería `qrcode` (`generarQr()` en
+`core/helpers/qr.helpers.ts`, que devuelve un data URL PNG). Así no hace falta
+Storage ni otra columna, y el QR siempre coincide con el código de la base.
+
+El componente `CodigoQr` vive en `shared/componentes/` porque lo usan el
+comprobante de compra y la pantalla de entradas del usuario. Genera la imagen
+en `ngOnInit()` (el `input()` todavía no tiene valor en el constructor) y la
+guarda en un signal. Los colores son fijos (módulos oscuros sobre fondo
+crema) y no salen de los tokens: un QR necesita contraste alto para que la
+cámara lo lea, aunque la interfaz sea oscura.
+
+`qrcode` se publica como CommonJS, así que está en
+`allowedCommonJsDependencies` de `angular.json` para que el build no avise.
+Como solo lo importan componentes de features con lazy loading, no suma peso
+a la carga inicial.
+
+### PDF de entradas: jsPDF cargado bajo demanda
+
+El PDF de las entradas se arma en el navegador con `jspdf`, dibujando cada
+entrada a mano (rectángulos, texto e imagen del QR) en una página de
+200 × 90 mm con forma de ticket. Se descartó `window.print()` con una hoja de
+estilos de impresión porque no genera un archivo: deja al usuario en el
+diálogo de impresión y el resultado depende del navegador. También se
+descartó convertir el HTML del ticket a PDF (`jsPDF.html()` con
+`html2canvas`): rasteriza la pantalla, pesa más y el texto no se puede
+seleccionar.
+
+`PdfEntradasService` vive en `core/servicios/` porque lo usan el
+comprobante de compra y el listado de entradas del usuario. No toca Supabase:
+recibe la función (`FuncionEntrada`) y las entradas (`EntradaImprimible`) ya
+cargadas. Esos dos modelos de `core/modelos/entrada.model.ts` piden solo lo
+que se imprime, así que les sirven tanto `FuncionMapa` del comprobante como
+las entradas que se leen de la base. El QR reutiliza `generarQr()`, el mismo
+helper que dibuja el QR en pantalla.
+
+`jspdf` pesa unos 110 kB comprimido, así que el servicio lo importa con
+`await import('jspdf')` dentro de `descargar()`: queda en un chunk aparte que
+se baja recién la primera vez que alguien descarga un PDF, no al abrir la
+confirmación. El `import type` de arriba del archivo solo aporta el tipo y
+desaparece al compilar. Las dependencias opcionales de `jspdf` (`html2canvas`,
+`canvg`) también quedan en chunks propios que nunca se piden, porque no se usa
+`.html()`. Son CommonJS, así que están en `allowedCommonJsDependencies`.
+
+La fuente es Helvetica, una de las estándar de PDF, que no hace falta
+incrustar y cubre los acentos y la ñ. Un título que no entra en dos líneas
+se corta con puntos suspensivos.
+
+### Mis entradas: una consulta embebida y agrupación en el cliente
+
+`/mis-entradas` es la feature standalone `entradas`, con lazy loading
+(`loadChildren` a `entradas.routes.ts`) y protegida con `conSesionGuard`.
+`EntradasService` vive en la feature porque solo la usa ella.
+
+Los datos salen de una sola consulta a `entradas` con las relaciones
+embebidas (`venta_items` → `butacas`, `funciones` → `salas`/`peliculas`, y
+`ventas`). `venta_items!inner` y `ventas!inner` permiten filtrar por
+columnas de la venta (`venta_items.ventas.usuario_id`,
+`venta_items.ventas.estado`) y descartar las entradas que no cumplen. Las
+ventas `pendiente` se excluyen: son compras que fallaron a mitad de camino y
+que igual pueden tener entradas insertadas. El filtro por usuario es
+explícito aunque RLS (`entradas_select_propio`) ya lo garantice, porque un
+empleado o admin lee todas las entradas y la pantalla tiene que mostrar solo
+las propias.
+
+La agrupación por función y la separación en próximas/pasadas se hacen en
+el cliente: PostgREST no agrupa sin una vista o función, y la cantidad de
+entradas de un usuario es chica. Una función cuenta como "próxima" hasta que
+termina (`funciones.fin`), no hasta que empieza, para que la entrada siga
+visible con su QR si alguien llega tarde. Si RLS oculta la función (por
+ejemplo, porque se canceló) o la butaca (porque se desactivó), esa entrada
+no se muestra.
+
+`TicketEntrada` está en `shared/componentes/` como standalone porque lo usan
+el comprobante de compra (`CompraModule` lo importa en `imports`, igual que
+`Boton`) y esta pantalla. Recibe la función y la entrada con los modelos de
+`core/modelos/entrada.model.ts` y el estado por un `input()` aparte, que en
+el comprobante queda en su valor por defecto (`emitida`).
+
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 
 Los componentes y directivas reciben datos con `input()` y emiten eventos con

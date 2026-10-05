@@ -15,6 +15,10 @@ export const routes: Routes = [
     loadChildren: () => import('./features/compra/compra.module').then((m) => m.CompraModule),
   },
   {
+    path: 'mis-entradas',
+    loadChildren: () => import('./features/entradas/entradas.routes').then((m) => m.RUTAS_ENTRADAS),
+  },
+  {
     path: 'cuenta',
     loadChildren: () => import('./features/perfil/perfil.routes').then((m) => m.RUTAS_PERFIL),
   },

@@ -113,14 +113,14 @@ validación de edad (RN04), pantalla de pago simulada, persistencia de venta.
 | 4.6 | Pantalla de pago simulada + confirmación de compra desde el frontend (crea `ventas`/`venta_items`/`entradas`/`pagos`, descuenta stock de productos — también los que vienen dentro de combos, vía `combo_items` —, acredita puntos) | ✅ |
 | 4.7 | Pantalla de confirmación de compra (resumen, entradas emitidas) | ✅ |
 
-### Fase 5 — Entradas y QR (M09, vista cliente) ⬜
+### Fase 5 — Entradas y QR (M09, vista cliente) ✅
 PDF de entrada + QR, pantalla "Mis entradas".
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 5.1 | Componente de visualización de QR por entrada (`entradas.codigo_qr`) | ⬜ |
-| 5.2 | Generación de PDF de entrada (función, sala, butaca, QR) | ⬜ |
-| 5.3 | Pantalla "Mis entradas": listado propio, separación próximas/pasadas, estado (`emitida`/`validada`/`cancelada`) | ⬜ |
+| 5.1 | Componente de visualización de QR por entrada (`entradas.codigo_qr`, generado en el cliente con `qrcode`) | ✅ |
+| 5.2 | Generación de PDF de entrada (función, sala, butaca, QR), con `jspdf` cargado bajo demanda | ✅ |
+| 5.3 | Pantalla "Mis entradas": listado propio, separación próximas/pasadas, estado (`emitida`/`validada`/`cancelada`) | ✅ |
 
 ### Fase 6 — Panel de empleado: validación (M09, operación) ⬜
 Escaneo/ingreso manual de código, validación de entrada y retiro de Candy,

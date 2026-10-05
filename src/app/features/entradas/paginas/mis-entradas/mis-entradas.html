@@ -1,0 +1,85 @@
+<section class="entradas">
+  <header class="entradas__cabecera">
+    <p class="entradas__etiqueta">Boletería</p>
+    <h1 class="entradas__titulo">Mis entradas</h1>
+  </header>
+
+  @if (errorCarga(); as mensaje) {
+    <p class="entradas__error" role="alert">{{ mensaje }}</p>
+  } @else if (grupos() !== null) {
+    <div class="entradas__pestanas">
+      <button
+        type="button"
+        class="entradas__pestana"
+        [class.entradas__pestana--activa]="vista() === 'proximas'"
+        (click)="vista.set('proximas')"
+      >
+        Próximas <span class="entradas__contador">{{ proximas().length }}</span>
+      </button>
+      <button
+        type="button"
+        class="entradas__pestana"
+        [class.entradas__pestana--activa]="vista() === 'pasadas'"
+        (click)="vista.set('pasadas')"
+      >
+        Pasadas <span class="entradas__contador">{{ pasadas().length }}</span>
+      </button>
+    </div>
+
+    <ol class="entradas__funciones">
+      @for (grupo of gruposVisibles(); track grupo.id) {
+        <li class="funcion" [class.funcion--pasada]="vista() === 'pasadas'">
+          <header class="funcion__cabecera">
+            <div class="funcion__fecha">
+              <span class="funcion__dia">{{ dia(grupo.funcion.inicio) }}</span>
+              <span class="funcion__mes">{{ mes(grupo.funcion.inicio) }}</span>
+            </div>
+            <div class="funcion__datos">
+              <h2 class="funcion__pelicula">{{ grupo.funcion.peliculaNombre }}</h2>
+              <p class="funcion__meta">
+                {{ formatearFechaFuncion(grupo.funcion.inicio) }} · {{ formatearHoraFuncion(grupo.funcion.inicio) }} ·
+                {{ grupo.funcion.salaNombre }} · {{ grupo.entradas.length }}
+                {{ grupo.entradas.length === 1 ? "entrada" : "entradas" }}
+              </p>
+            </div>
+            @if (vista() === "proximas" && emitidas(grupo).length > 0) {
+              <app-boton variante="secundario" tamano="chico" (click)="descargarPdf(grupo)">Descargar PDF</app-boton>
+            }
+          </header>
+
+          @if (errorPdf() === grupo.id) {
+            <p class="entradas__error" role="alert">No se pudo generar el PDF. Intentá de nuevo.</p>
+          }
+
+          @if (vista() === "proximas") {
+            <ul class="funcion__tickets">
+              @for (entrada of grupo.entradas; track entrada.id) {
+                <li>
+                  <app-ticket-entrada [funcion]="grupo.funcion" [entrada]="entrada" [estado]="entrada.estado" />
+                </li>
+              }
+            </ul>
+          } @else {
+            <ul class="funcion__butacas">
+              @for (entrada of grupo.entradas; track entrada.id) {
+                <li class="funcion__butaca funcion__butaca--{{ entrada.estado }}">
+                  <span class="funcion__ubicacion">{{ entrada.fila }}{{ entrada.numero }}</span>
+                  <span class="funcion__estado">{{ etiquetaEstado(entrada) }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </li>
+      } @empty {
+        <li class="entradas__vacio">
+          @if (vista() === "proximas") {
+            <p>No tenés entradas para próximas funciones.</p>
+            <a class="entradas__enlace" routerLink="/">Ver cartelera</a>
+          } @else {
+            <p>Todavía no tenés entradas de funciones pasadas.</p>
+          }
+        </li>
+      }
+    </ol>
+  }
+</section>

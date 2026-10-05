@@ -3,6 +3,74 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 5.3] - 2026-10-05
+
+### Added
+- Feature standalone `entradas` con la página `/mis-entradas` (`MisEntradas`,
+  protegida con `conSesionGuard`): entradas del usuario agrupadas por
+  función, separadas en pestañas "Próximas" (la función todavía no
+  terminó) y "Pasadas", con contador en cada una. Las próximas muestran el
+  ticket completo con QR y estado, y un botón para descargar el PDF de las
+  entradas `emitida` de esa función. Las pasadas muestran un resumen
+  compacto por butaca con su estado (`Sin usar`/`Validada`/`Cancelada`).
+- `EntradasService.obtenerEntradasPropias()` (`features/entradas/servicios/`):
+  una sola consulta a `entradas` con `venta_items`, `butacas`, `funciones`,
+  `salas`, `peliculas` y `ventas` embebidas, filtrada por el usuario y sin
+  ventas `pendiente`. `agruparPorFuncion()` arma los grupos en el cliente.
+- Enlace "Mis entradas" en el encabezado (con sesión) y "Ver mis entradas"
+  en la confirmación de compra registrada.
+- `EstadoEntrada` en `core/modelos/entrada.model.ts`.
+
+### Changed
+- `TicketEntrada` pasa de `features/compra/componentes/` (declarado en
+  `CompraModule`) a `shared/componentes/` como componente standalone, porque
+  ahora lo usan dos features. Suma el `input()` `estado`: la etiqueta y el
+  color cambian según el estado, y una entrada validada o cancelada atenúa el
+  QR (la cancelada además tacha película y código). La butaca queda alineada
+  abajo del ticket.
+- `Relacion<T>` y `unico()` pasan de `compra.mapeos.ts` a
+  `core/helpers/relacion.helpers.ts` para reutilizarlos.
+- En la confirmación, el botón de PDF queda debajo del aviso de documento.
+
+## [Fase 5.2] - 2026-10-05
+
+### Added
+- `PdfEntradasService` (`core/servicios/`): `descargar(funcion, entradas)`
+  arma un PDF con una página de 200 × 90 mm por entrada, con forma de
+  ticket: marca, película, sala, fecha y hora, proyección, idioma,
+  clasificación, butaca y tipo, aviso de documento si la película es +13/+18,
+  y en el talón el QR con el código en texto. Lo descarga como
+  `entradas-<pelicula>-<fecha>.pdf`.
+- Modelos `FuncionEntrada` y `EntradaImprimible` (`core/modelos/entrada.model.ts`):
+  los datos mínimos para imprimir una entrada, que cumplen tanto el
+  comprobante de compra como las entradas leídas de Supabase.
+- Botón "Descargar entradas en PDF" en `/compra/confirmacion`, con el
+  spinner global mientras se genera y un mensaje si falla.
+- Dependencia `jspdf` (`^4.2.1`; las versiones anteriores tienen avisos de
+  seguridad críticos).
+
+### Changed
+- `angular.json`: `allowedCommonJsDependencies` suma las dependencias
+  opcionales de `jspdf` (`html2canvas`, `canvg`, `core-js`, `raf`,
+  `rgbcolor`), que solo se cargan si se usa `.html()`.
+
+## [Fase 5.1] - 2026-10-05
+
+### Added
+- Componente standalone `CodigoQr` (`shared/componentes/codigo-qr/`):
+  recibe el `codigo` por `input()` y dibuja el QR como imagen; mientras se
+  genera muestra un recuadro rayado.
+- Helper `generarQr()` (`core/helpers/qr.helpers.ts`): genera el QR del
+  código como data URL PNG, con módulos oscuros sobre fondo crema.
+- Dependencia `qrcode` (y `@types/qrcode`), declarada en
+  `allowedCommonJsDependencies` de `angular.json` porque no se publica como
+  ESM.
+
+### Changed
+- `TicketEntrada` muestra el QR de la entrada en el talón, arriba del código
+  en texto; `CompraModule` importa `CodigoQr`.
+- La confirmación de compra pide mostrar el QR (no el código) en el ingreso.
+
 ## [Fase 4.7] - 2026-10-05
 
 ### Added

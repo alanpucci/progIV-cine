@@ -1,6 +1,5 @@
 import { Compra, EstadoVenta, ExtraCompra, PeliculaVista } from '../modelos/compra.model';
-
-type Relacion<T> = T | T[] | null;
+import { Relacion, unico } from './relacion.helpers';
 
 interface FilaFuncionCompra {
   inicio: string;
@@ -60,10 +59,6 @@ export const COLUMNAS_PELICULA_VISTA = `
   funciones!inner ( inicio, peliculas!inner ( id, nombre, imagen_url ) ),
   ventas!inner ( usuario_id, estado )
 `;
-
-function unico<T>(relacion: Relacion<T>): T | null {
-  return Array.isArray(relacion) ? (relacion[0] ?? null) : relacion;
-}
 
 function nombreExtra(item: FilaItemCompra): string {
   if (item.tipo_item === 'recompensa') return 'Recompensa canjeada';
