@@ -108,8 +108,8 @@ validación de edad (RN04), pantalla de pago simulada, persistencia de venta.
 | 4.1 | Estructura `NgModule` de la feature `compra` + `CarritoService` (signals: entradas seleccionadas — tomadas de `SeleccionButacasService` de la 2.6 —, productos, combos) | ✅ |
 | 4.2 | Candy Bar: listado de productos/combos por categoría, cantidad, agregar/quitar del carrito | ✅ |
 | 4.3 | Aplicación de cupón: validación de tipo (`primera_compra`/`edad`/`general`), vigencia y porcentaje; aplicación automática de `primera_compra`/`edad` si el usuario cumple las condiciones | ✅ |
-| 4.4 | Checkout: datos de contacto, compra anónima vs registrada, validación de edad (RN04, `fecha_nacimiento_comprador`) | ⬜ |
-| 4.5 | Checkout registrado: uso opcional de crédito/puntos disponibles como medio de pago parcial | ⬜ |
+| 4.4 | Checkout: datos de contacto, compra anónima vs registrada, validación de edad (RN04, `fecha_nacimiento_comprador`) | ✅ |
+| 4.5 | Checkout registrado: uso opcional de crédito/puntos disponibles como medio de pago parcial (1 punto = $1, combinable con crédito) | ✅ |
 | 4.6 | Pantalla de pago simulada + RPC transaccional de confirmación (valida butacas, crea `ventas`/`venta_items`/`pagos`, descuenta stock de productos — también los que vienen dentro de combos, vía `combo_items` —, acredita puntos) | ⬜ |
 | 4.7 | Pantalla de confirmación de compra (resumen, entradas emitidas) | ⬜ |
 

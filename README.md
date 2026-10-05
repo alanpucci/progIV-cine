@@ -418,6 +418,29 @@ Esta validación en el frontend es solo UX: la RPC de confirmación de compra
 tiene que repetirla en Postgres, con la fecha del perfil o la declarada,
 antes de crear la venta.
 
+### Crédito y puntos como pago parcial
+
+Con sesión, el checkout muestra el saldo de `perfiles.credito_saldo` y
+`perfiles.puntos_saldo` (leídos con `MovimientosService.obtenerSaldos()`,
+el mismo servicio del perfil) y deja usar cualquier parte de cada uno como
+pago parcial. Un punto vale $1 (`VALOR_PUNTO_EN_PESOS`), simétrico con la
+acreditación de 1 punto por peso; el análisis funcional no definía la
+equivalencia y quedó registrada en el modelo de datos.
+
+`CarritoService.saldosAplicados` guarda lo que el usuario pidió usar
+(signal respaldado en `sessionStorage`, igual que el cupón y el comprador).
+Los importes efectivos se derivan en cada lectura: `creditoUsado()` se
+topea en el total y `puntosUsados()` en lo que queda después del crédito,
+así que si el carrito cambia después de aplicar el saldo nunca se usa más
+de lo necesario. `totalAPagar()` es lo que resta cobrar con el medio de
+pago simulado, y es la base sobre la que se acreditan puntos. Sin sesión
+los saldos aplicados se descartan.
+
+Como con la edad, el tope por saldo disponible es solo UX: la RPC de
+confirmación de compra tiene que revalidar el saldo en Postgres y registrar
+el uso en `movimientos_credito`/`movimientos_puntos` dentro de la misma
+transacción que crea la venta.
+
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 
 Los componentes y directivas reciben datos con `input()` y emiten eventos con
