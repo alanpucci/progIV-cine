@@ -1,0 +1,160 @@
+@use "formularios";
+
+.datos-comprador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xl);
+  max-width: 36rem;
+  margin: 0 auto;
+  padding: var(--espacio-xl);
+}
+
+.datos-comprador__cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+}
+
+.datos-comprador__etiqueta {
+  margin: 0;
+  color: var(--color-acento-secundario);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.datos-comprador__titulo {
+  margin: 0;
+  color: var(--color-texto-primario);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+}
+
+.datos-comprador__vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-sm);
+  color: var(--color-texto-secundario);
+}
+
+.datos-comprador__enlace {
+  @include formularios.enlace;
+}
+
+.datos-comprador__funcion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+  padding-left: var(--espacio-md);
+  border-left: 3px solid var(--color-acento-secundario);
+}
+
+.datos-comprador__pelicula {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  margin: 0;
+  color: var(--color-texto-primario);
+  font-family: var(--fuente-titulo);
+  font-size: 1.75rem;
+  letter-spacing: 0.03em;
+}
+
+.datos-comprador__clasificacion {
+  padding: 0.1rem var(--espacio-sm);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radio-sm);
+  color: var(--color-error);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.datos-comprador__meta {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.datos-comprador__panel {
+  @include formularios.panel;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+.datos-comprador__modo {
+  display: flex;
+  align-items: baseline;
+  gap: var(--espacio-sm);
+  margin: 0;
+  padding-bottom: var(--espacio-md);
+  border-bottom: 1px dashed var(--color-borde);
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.datos-comprador__sello {
+  flex-shrink: 0;
+  padding: 0.1rem var(--espacio-sm);
+  border: 1px solid var(--color-acento-secundario);
+  border-radius: var(--radio-completo);
+  color: var(--color-acento-secundario);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  &--invitado {
+    border-color: var(--color-borde);
+    color: var(--color-texto-secundario);
+  }
+}
+
+.datos-comprador__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+.datos-comprador__campo {
+  @include formularios.campo;
+
+  input:disabled {
+    color: var(--color-texto-silenciado);
+    cursor: not-allowed;
+  }
+}
+
+.datos-comprador__ayuda {
+  margin: 0;
+  color: var(--color-texto-silenciado);
+  font-size: 0.8rem;
+}
+
+.datos-comprador__error {
+  @include formularios.error-campo;
+}
+
+.datos-comprador__error-envio {
+  @include formularios.error-envio;
+}
+
+.datos-comprador__confirmado {
+  margin: 0;
+  color: var(--color-acento-secundario);
+  font-size: 0.9rem;
+}
+
+.datos-comprador__acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-md);
+}
+
+@media (max-width: 720px) {
+  .datos-comprador {
+    padding: var(--espacio-lg) var(--espacio-md);
+  }
+}

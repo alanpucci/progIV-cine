@@ -7,3 +7,7 @@ export function calcularEdad(fechaNacimiento: string): number {
     (hoy.getMonth() === nacimiento.getMonth() && hoy.getDate() >= nacimiento.getDate());
   return cumplioEsteAnio ? edad : edad - 1;
 }
+
+export function cumpleEdadMinima(fechaNacimiento: string, edadMinima: number | null): boolean {
+  return edadMinima === null || calcularEdad(fechaNacimiento) >= edadMinima;
+}

@@ -3,6 +3,31 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 4.4] - 2026-09-28
+
+### Added
+- Página `/compra/datos-comprador` (`DatosComprador`, declarada en
+  `CompraModule`): mail de contacto y fecha de nacimiento del comprador.
+  Con sesión precarga el mail y toma la fecha del perfil; sin sesión pide
+  la fecha obligatoriamente y ofrece ingresar para comprar con cuenta.
+- Validación de edad (RN04) contra la clasificación de la película antes
+  de continuar (`cumpleEdadMinima` en `edad.helpers.ts`).
+- `CarritoService.comprador` (signal + `sessionStorage`) con los datos
+  confirmados, y `edadMinimaRequerida()`.
+- Botón "Continuar" en el carrito, habilitado solo si hay entradas.
+- Parámetro `volverA` en `/cuenta/ingreso` para volver al checkout después
+  de iniciar sesión.
+
+### Changed
+- `FuncionMapa` incluye `clasificacionEdad`, traída en el mismo join a
+  `peliculas` de `obtenerParaMapa()`.
+- `fechaNacimientoValida`, `fechaIsoLocal` y `FECHA_NACIMIENTO_MINIMA` se
+  mueven de `features/perfil/validadores/` a `shared/validadores/`.
+- `CarritoService` unifica la persistencia en `sessionStorage` del cupón y
+  del comprador en un par de métodos genéricos.
+- Ingreso, registro y perfil leen el formulario con `.value` en vez de
+  `getRawValue()`.
+
 ## [Docs: README sin fases] - 2026-09-28
 
 ### Changed

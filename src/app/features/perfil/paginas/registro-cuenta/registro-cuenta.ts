@@ -7,11 +7,10 @@ import { COLORES_OJOS, ColorOjos, TIPOS_SANGRE, TipoSangre } from "../../../../c
 import { Boton } from "../../../../shared/componentes/boton/boton";
 import {
   FECHA_NACIMIENTO_MINIMA,
-  contrasenasCoinciden,
   fechaIsoLocal,
   fechaNacimientoValida,
-  sinEspaciosVacios,
-} from "../../validadores/registro.validadores";
+} from "../../../../shared/validadores/fecha.validadores";
+import { contrasenasCoinciden, sinEspaciosVacios } from "../../validadores/registro.validadores";
 
 const LARGO_MINIMO_CONTRASENA = 8;
 
@@ -75,7 +74,7 @@ export class RegistroCuenta {
     this.errorEnvio.set(null);
     if (this.formulario.invalid) return;
 
-    const valor = this.formulario.getRawValue();
+    const valor = this.formulario.value;
     try {
       await this.cargaGlobal.envolver(() =>
         this.auth.registrar({

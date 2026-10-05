@@ -24,7 +24,7 @@ export class FuncionesService {
     const { data, error } = await this.supabase
       .from('funciones')
       .select(
-        'id, pelicula_id, sala_id, peliculas ( nombre ), salas ( nombre ), inicio, tipo_proyeccion, idioma, precio_base',
+        'id, pelicula_id, sala_id, peliculas ( nombre, clasificacion_edad ), salas ( nombre ), inicio, tipo_proyeccion, idioma, precio_base',
       )
       .eq('id', funcionId)
       .maybeSingle();

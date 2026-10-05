@@ -141,7 +141,9 @@ reglas quedarían dispersas en atributos del template y la cruzada no tiene
 un lugar natural; con `ReactiveFormsModule` el formulario entero se declara
 en el componente (`FormBuilder.nonNullable.group`), los validadores propios
 son funciones puras testeables en `features/perfil/validadores/`, y la regla
-cruzada es un validador de grupo.
+cruzada es un validador de grupo. Los validadores de fecha de nacimiento
+(`fechaNacimientoValida`, `fechaIsoLocal`) viven en `shared/validadores/`
+porque también los usa el formulario de datos del comprador en `compra`.
 
 Encaje con zoneless: el estado del `FormGroup` (errores, `touched`) no es
 un signal, pero sólo cambia como consecuencia de eventos del DOM
@@ -369,7 +371,9 @@ consultar la tabla y ver los códigos, algo aceptable para el alcance del TP.
   canceladas (las lee por la política `ventas_select_propio`);
 - `edad`: exige sesión y compara la edad calculada desde
   `perfiles.fecha_nacimiento` con `edad_minima`. El comprador anónimo
-  todavía no carga su fecha de nacimiento; eso llega con el checkout.
+  no puede usarlo: el cupón se aplica en el carrito, antes de que declare
+  su fecha de nacimiento, y validarlo contra un dato autodeclarado lo
+  volvería un descuento para cualquiera.
 
 Además de escribirse a mano, los cupones de tipo `primera_compra` y `edad`
 se aplican solos: al abrir el carrito con sesión y sin cupón aplicado,
@@ -386,6 +390,33 @@ próxima vez que entre al carrito.
 subtotal completo (entradas + Candy Bar), redondeado a centavos. La venta
 guarda `cupon_id` y `descuento`, que se persisten en la RPC de confirmación
 de compra.
+
+### Datos del comprador y restricción de edad (RN04)
+
+Antes del pago, `/compra/datos-comprador` pide el mail de contacto
+(`ventas.email_contacto`) y la fecha de nacimiento. La página se habilita
+solo si el carrito tiene entradas: una venta sin entradas no tiene QR con
+el que retirar el Candy Bar.
+
+- **Con sesión**: el mail se precarga desde la sesión (editable, es solo
+  de contacto) y la fecha se toma de `perfiles.fecha_nacimiento`, en un
+  campo deshabilitado.
+- **Sin sesión**: la fecha es obligatoria siempre, no solo en películas
+  restringidas, para que el flujo sea uno solo; se guarda como
+  `ventas.fecha_nacimiento_comprador`. Un enlace a `/cuenta/ingreso` con
+  `?volverA=/compra/datos-comprador` permite pasar a compra registrada sin
+  perder el carrito (ingreso redirige a `volverA` si es una ruta interna).
+
+Para validar la edad, la clasificación de la película viaja con la función
+elegida: `FuncionMapa` incluye `clasificacionEdad` (se trae en el mismo
+join a `peliculas` que ya traía el nombre), así que el checkout no hace otra
+consulta. La edad se compara contra la fecha de hoy. Los datos confirmados
+quedan en `CarritoService.comprador` (signal respaldado en
+`sessionStorage`, igual que el cupón) y `vaciar()` los descarta.
+
+Esta validación en el frontend es solo UX: la RPC de confirmación de compra
+tiene que repetirla en Postgres, con la fecha del perfil o la declarada,
+antes de crear la venta.
 
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 

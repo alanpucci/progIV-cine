@@ -18,8 +18,8 @@ import {
   FECHA_NACIMIENTO_MINIMA,
   fechaIsoLocal,
   fechaNacimientoValida,
-  sinEspaciosVacios,
-} from "../../validadores/registro.validadores";
+} from "../../../../shared/validadores/fecha.validadores";
+import { sinEspaciosVacios } from "../../validadores/registro.validadores";
 
 @Component({
   imports: [ReactiveFormsModule, Boton, BilleteraCuenta, MisPeliculas, HistorialCompras],
@@ -96,7 +96,7 @@ export class PerfilCuenta {
     const usuarioId = this.auth.sesion()?.user.id;
     if (this.formulario.invalid || !usuarioId) return;
 
-    const valor = this.formulario.getRawValue();
+    const valor = this.formulario.value;
     const datos: DatosPerfil = {
       nombre: (valor.nombre ?? "").trim(),
       apellido: (valor.apellido ?? "").trim(),

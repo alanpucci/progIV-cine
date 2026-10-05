@@ -25,7 +25,10 @@ export function mapearFuncionMapa(fila: {
   id: string;
   pelicula_id: string;
   sala_id: string;
-  peliculas: { nombre: string } | { nombre: string }[] | null;
+  peliculas:
+    | { nombre: string; clasificacion_edad: number | null }
+    | { nombre: string; clasificacion_edad: number | null }[]
+    | null;
   salas: { nombre: string } | { nombre: string }[] | null;
   inicio: string;
   tipo_proyeccion: TipoProyeccion;
@@ -38,6 +41,7 @@ export function mapearFuncionMapa(fila: {
     id: fila.id,
     peliculaId: fila.pelicula_id,
     peliculaNombre: pelicula?.nombre ?? '',
+    clasificacionEdad: pelicula?.clasificacion_edad ?? null,
     salaId: fila.sala_id,
     salaNombre: sala?.nombre ?? '',
     inicio: fila.inicio,

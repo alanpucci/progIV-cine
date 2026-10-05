@@ -24,6 +24,11 @@ export class CarritoCompra {
     this.carrito.cambiarCantidad(extra.tipo, extra.id, extra.cantidad - 1);
   }
 
+  protected continuar(): void {
+    if (this.carrito.entradas().length === 0) return;
+    this.router.navigate(["/compra/datos-comprador"]);
+  }
+
   protected vaciarCarrito(): void {
     this.carrito.vaciar();
     this.router.navigate(["/"]);

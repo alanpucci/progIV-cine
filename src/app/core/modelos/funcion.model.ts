@@ -45,6 +45,7 @@ export interface FuncionMapa {
   id: string;
   peliculaId: string;
   peliculaNombre: string;
+  clasificacionEdad: number | null;
   salaId: string;
   salaNombre: string;
   inicio: string;
