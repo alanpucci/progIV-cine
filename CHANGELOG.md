@@ -19,6 +19,14 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   antes que el listado: las dos secciones se muestran juntas cuando
   terminan ambas cargas.
 
+## [Refactor: catálogo sin @let] - 2026-10-05
+
+### Changed
+- `CatalogoInicio` deja de usar `@let` en el template: el pipe
+  `filtrarPeliculas` se aplica directamente en la condición de "sin
+  resultados" y en el `@for` de la grilla, en vez de guardar el resultado
+  en una variable local del template.
+
 ## [Fase 5.3] - 2026-10-05
 
 ### Added
