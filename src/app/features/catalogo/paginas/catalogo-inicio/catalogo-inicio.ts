@@ -17,14 +17,12 @@ import { FiltrarPeliculas } from "../../pipes/filtrar-peliculas.pipe";
 })
 export class CatalogoInicio {
   private readonly peliculasService = inject(PeliculasService);
-  private readonly cargaGlobal = inject(CargaGlobalService);
+  protected readonly cargaGlobal = inject(CargaGlobalService);
 
   protected readonly destacadas = signal<PeliculaResumen[]>([]);
-  protected readonly cargandoDestacadas = signal(true);
   protected readonly errorDestacadas = signal(false);
 
   protected readonly listado = signal<PeliculaResumen[]>([]);
-  protected readonly cargandoListado = signal(true);
   protected readonly errorListado = signal(false);
 
   protected readonly terminoBusqueda = signal("");
@@ -80,8 +78,6 @@ export class CatalogoInicio {
       this.destacadas.set(resultado);
     } catch {
       this.errorDestacadas.set(true);
-    } finally {
-      this.cargandoDestacadas.set(false);
     }
   }
 
@@ -91,8 +87,6 @@ export class CatalogoInicio {
       this.listado.set(resultado);
     } catch {
       this.errorListado.set(true);
-    } finally {
-      this.cargandoListado.set(false);
     }
   }
 }

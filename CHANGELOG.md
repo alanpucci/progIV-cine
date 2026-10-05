@@ -3,6 +3,22 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Refactor: carga global como fuente de verdad] - 2026-10-05
+
+### Removed
+- Flags de carga propios de las pantallas: `cargando` de
+  `PeliculaDetallePagina` y `ButacasInicio`, `cargandoDestacadas` y
+  `cargandoListado` de `CatalogoInicio`, y `cargado` de `DatosComprador`.
+
+### Changed
+- `PeliculaDetallePagina`, `ButacasInicio`, `CatalogoInicio` y
+  `DatosComprador` deciden si mostrar su contenido (o el aviso de "no
+  encontrado"/"sin resultados") según `CargaGlobalService.visible()`:
+  mientras haya cualquier carga global en curso no muestran nada y solo se
+  ve el spinner global. En `CatalogoInicio`, las destacadas ya no aparecen
+  antes que el listado: las dos secciones se muestran juntas cuando
+  terminan ambas cargas.
+
 ## [Refactor: catálogo sin @let] - 2026-10-05
 
 ### Changed

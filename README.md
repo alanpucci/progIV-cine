@@ -241,6 +241,17 @@ promesa con `cargaGlobal.envolver(() => servicio.metodo())`, que garantiza
 el `ocultar()` incluso si la promesa rechaza (bloque `finally`), para que
 ningún error deje el spinner trabado en pantalla.
 
+`visible()` es además la única fuente de verdad para decidir si una
+pantalla ya puede mostrar su contenido: los componentes no mantienen un
+flag `cargando` propio en paralelo, sino que condicionan el template con
+`!cargaGlobal.visible()` (inyectando el servicio como `protected` para
+poder leerlo desde la vista). Eso evita que un "no encontrado" o "sin
+resultados" aparezca un instante antes de que llegue la respuesta, y evita
+que haya dos estados de carga que puedan desincronizarse. El costo es que
+la pantalla espera a que termine *cualquier* carga global en curso, no solo
+las suyas; con las cargas cortas de este proyecto, ese acoplamiento es
+aceptable.
+
 ### Acceso a datos: capa de servicios sobre Supabase
 
 Ningún componente llama a Supabase directamente. Existe un `SupabaseService`
