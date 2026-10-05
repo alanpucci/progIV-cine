@@ -11,9 +11,10 @@ import { Pago } from './paginas/pago/pago';
 import { Confirmacion } from './paginas/confirmacion/confirmacion';
 import { TicketEntrada } from './componentes/ticket-entrada/ticket-entrada';
 import { Boton } from '../../shared/componentes/boton/boton';
+import { CodigoQr } from '../../shared/componentes/codigo-qr/codigo-qr';
 
 @NgModule({
   declarations: [CarritoCompra, CandyBar, TarjetaCandy, CuponCarrito, DatosComprador, SaldosCompra, Pago, Confirmacion, TicketEntrada],
-  imports: [CompraRoutingModule, ReactiveFormsModule, Boton],
+  imports: [CompraRoutingModule, ReactiveFormsModule, Boton, CodigoQr],
 })
 export class CompraModule {}

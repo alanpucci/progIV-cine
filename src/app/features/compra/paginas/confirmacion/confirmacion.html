@@ -23,7 +23,7 @@
       <section class="confirmacion__entradas">
         <header class="confirmacion__encabezado">
           <h2 class="confirmacion__subtitulo">Tus entradas ({{ compra.entradas.length }})</h2>
-          <p class="confirmacion__indicacion">Mostrá el código de cada entrada en el ingreso a la sala.</p>
+          <p class="confirmacion__indicacion">Mostrá el QR de cada entrada en el ingreso a la sala.</p>
           @if (compra.funcion.clasificacionEdad !== null) {
             <p class="confirmacion__advertencia">
               Película {{ formatearClasificacion(compra.funcion.clasificacionEdad) }}: en el ingreso se pide documento.

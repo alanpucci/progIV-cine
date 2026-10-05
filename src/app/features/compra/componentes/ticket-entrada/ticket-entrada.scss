@@ -69,6 +69,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
   gap: var(--espacio-xs);
   padding: var(--espacio-lg);
@@ -102,6 +103,12 @@
   text-transform: uppercase;
 }
 
+.ticket__qr {
+  width: 100%;
+  max-width: 9rem;
+  margin: var(--espacio-xs) 0;
+}
+
 .ticket__rotulo {
   color: var(--color-texto-silenciado);
   font-size: 0.7rem;
@@ -115,6 +122,7 @@
   font-size: 0.85rem;
   letter-spacing: 0.06em;
   line-height: 1.5;
+  text-align: center;
   word-spacing: 0.2em;
 }
 

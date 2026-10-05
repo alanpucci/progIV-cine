@@ -3,6 +3,23 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 5.1] - 2026-10-05
+
+### Added
+- Componente standalone `CodigoQr` (`shared/componentes/codigo-qr/`):
+  recibe el `codigo` por `input()` y dibuja el QR como imagen; mientras se
+  genera muestra un recuadro rayado.
+- Helper `generarQr()` (`core/helpers/qr.helpers.ts`): genera el QR del
+  código como data URL PNG, con módulos oscuros sobre fondo crema.
+- Dependencia `qrcode` (y `@types/qrcode`), declarada en
+  `allowedCommonJsDependencies` de `angular.json` porque no se publica como
+  ESM.
+
+### Changed
+- `TicketEntrada` muestra el QR de la entrada en el talón, arriba del código
+  en texto; `CompraModule` importa `CodigoQr`.
+- La confirmación de compra pide mostrar el QR (no el código) en el ingreso.
+
 ## [Fase 4.7] - 2026-10-05
 
 ### Added

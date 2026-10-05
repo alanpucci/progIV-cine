@@ -533,6 +533,27 @@ usuario registrado sí puede leer sus ventas y entradas de Supabase (políticas
 `*_select_propio`), así que fuera de este flujo se le pueden mostrar desde
 la base.
 
+### Código QR de las entradas: generado en el cliente
+
+`entradas.codigo_qr` guarda solo el texto del código (32 caracteres
+hexadecimales aleatorios, generados al confirmar la compra). La imagen del QR
+no se guarda en ningún lado: se genera en el navegador cada vez que se
+muestra, con la librería `qrcode` (`generarQr()` en
+`core/helpers/qr.helpers.ts`, que devuelve un data URL PNG). Así no hace falta
+Storage ni otra columna, y el QR siempre coincide con el código de la base.
+
+El componente `CodigoQr` vive en `shared/componentes/` porque lo usan el
+comprobante de compra y la pantalla de entradas del usuario. Genera la imagen
+en `ngOnInit()` (el `input()` todavía no tiene valor en el constructor) y la
+guarda en un signal. Los colores son fijos (módulos oscuros sobre fondo
+crema) y no salen de los tokens: un QR necesita contraste alto para que la
+cámara lo lea, aunque la interfaz sea oscura.
+
+`qrcode` se publica como CommonJS, así que está en
+`allowedCommonJsDependencies` de `angular.json` para que el build no avise.
+Como solo lo importan componentes de features con lazy loading, no suma peso
+a la carga inicial.
+
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 
 Los componentes y directivas reciben datos con `input()` y emiten eventos con

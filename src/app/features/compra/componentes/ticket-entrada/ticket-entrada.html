@@ -14,6 +14,7 @@
       </div>
       <div class="ticket__talon">
         <span class="ticket__estado">Emitida</span>
+        <app-codigo-qr class="ticket__qr" [codigo]="entrada.codigoQr" />
         <span class="ticket__rotulo">Código</span>
         <code class="ticket__codigo">{{ formatearCodigo(entrada.codigoQr) }}</code>
       </div>

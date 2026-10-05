@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+.qr {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radio-sm);
+  image-rendering: pixelated;
+
+  &--cargando {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--color-superficie-elevada) 0 0.5rem,
+      var(--color-borde) 0.5rem 1rem
+    );
+  }
+}
