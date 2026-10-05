@@ -71,6 +71,7 @@ clara), disponibilidad en tiempo real, selección de función desde el detalle.
 | 2.4 | Bloqueo temporal de butacas en selección: alta/baja en `reservas_butaca` desde el frontend + expiración por `expira_at` — **diferida** | ⬜ |
 | 2.5 | Disponibilidad en tiempo real (Supabase Realtime) reflejada en el mapa mientras otro usuario selecciona — **diferida**, se retoma después de 2.4 | ⬜ |
 | 2.6 | Selección de butacas en el mapa + confirmación → entrega el estado al carrito de la Fase 4 | ✅ |
+| 2.7 | Butacas ya vendidas bloqueadas en el mapa: política RLS de lectura pública sobre los `venta_items` de entrada no cancelados + estado "vendida" no seleccionable | ✅ |
 
 > **2.4 y 2.5 diferidas.** Se adelanta 2.6 para cerrar el flujo
 > película → función → butacas sin esperar el bloqueo en Postgres ni
@@ -79,6 +80,12 @@ clara), disponibilidad en tiempo real, selección de función desde el detalle.
 > 2.4: el índice único `ux_butaca_por_funcion` impide vender dos veces la
 > misma butaca, y un conflicto aparece recién al pagar. 2.4 se enchufa en
 > `SeleccionButacasService.confirmar()` sin tocar el mapa.
+>
+> **2.7 agregada durante el desarrollo.** Ninguna sub-tarea cubría las
+> butacas *ya vendidas*: 2.4 y 2.5 tratan solo las que están en proceso de
+> selección. El mapa ahora muestra como no seleccionables las butacas con
+> una entrada vendida para esa función, con el mismo criterio que el índice
+> `ux_butaca_por_funcion`.
 
 ### Fase 3 — Autenticación y perfil (M01) 🔄
 Registro (mail, nombre, apellido, fecha nacimiento, tipo de sangre, color de

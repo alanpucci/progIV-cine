@@ -45,4 +45,16 @@ export class FuncionesService {
     if (error) throw error;
     return (data ?? []).map(mapearButaca);
   }
+
+  async obtenerIdsButacasVendidas(funcionId: string): Promise<string[]> {
+    const { data, error } = await this.supabase
+      .from('venta_items')
+      .select('butaca_id')
+      .eq('funcion_id', funcionId)
+      .eq('tipo_item', 'entrada')
+      .eq('cancelado', false);
+
+    if (error) throw error;
+    return (data ?? []).map((item) => item.butaca_id as string);
+  }
 }

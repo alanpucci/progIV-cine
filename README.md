@@ -316,6 +316,40 @@ enchufar dentro de `SeleccionButacasService.confirmar()` sin tocar el mapa.
 Mientras tanto, lo único que impide vender dos veces la misma butaca es el
 índice único `ux_butaca_por_funcion` al confirmar la compra.
 
+### Butacas vendidas: lectura pública de las entradas en `venta_items`
+
+El mapa marca como no seleccionables las butacas que ya tienen una entrada
+vendida para la función. Para eso cualquier visitante, con o sin sesión,
+tiene que poder leer las entradas vendidas de otros usuarios. Originalmente
+`venta_items` quedó legible solo por el dueño de la venta (y por
+admin/empleado). La migración `lectura_butacas_vendidas` agrega una
+política `select` para `anon`/`authenticated`:
+
+```sql
+using (tipo_item = 'entrada' and cancelado = false)
+```
+
+Es el mismo filtro que el índice único `ux_butaca_por_funcion`: una butaca
+se ve ocupada exactamente cuando la base no deja volver a venderla. Las
+políticas `select` son permisivas y se combinan con OR, así que la de
+"propio" sigue valiendo para los productos, combos y recompensas.
+
+`FuncionesService.obtenerIdsButacasVendidas()` trae solo `butaca_id` de esa
+función, y el mapa lo pide en paralelo con la distribución de la sala. Una
+butaca vendida se deshabilita, se pinta con un rayado propio (atributo
+`data-vendida` de la directiva `ButacaEstado`) y se descarta de una
+selección previa guardada en `sessionStorage`.
+
+Costo aceptado: RLS filtra filas, no columnas, así que la fila completa de
+cada entrada vendida queda legible, incluido el precio pagado. No expone
+quién compró: `venta_id` apunta a `ventas`, que sigue limitada a las ventas
+propias. Se descartó una vista que expusiera solo `funcion_id`/`butaca_id`
+(eso habría ocultado el precio) porque sumaba un objeto más a mantener en
+la base para proteger un dato que no es sensible en el alcance del TP. A partir de esta
+política, toda consulta nueva sobre `venta_items` que deba devolver solo lo
+del usuario tiene que filtrarlo explícitamente (por ejemplo con
+`ventas!inner ( usuario_id )`), sin depender de RLS.
+
 ### Carrito: `CarritoService` dentro de la feature `compra`
 
 `features/compra/` es el primer `NgModule` del proyecto: `CompraModule`
@@ -691,7 +725,8 @@ criterio parejo:
 - **Datos personales** (ventas, entradas, pagos, ledgers de puntos/crédito,
   notificaciones): cada usuario lee solo lo propio (`usuario_id = auth.uid()`
   o join hasta `ventas`); `admin`/`empleado` ven todo lo que les corresponde
-  por rol.
+  por rol. Excepción: las entradas no canceladas de `venta_items` son de
+  lectura pública para pintar las butacas vendidas (ver "Butacas vendidas").
 - **Tablas transaccionales** (`ventas`, `venta_items`, `entradas`, `pagos`,
   `reservas_butaca`, `movimientos_puntos`, `movimientos_credito`, `usos_qr`,
   `logs_actividad`): arrancaron sin políticas de escritura para el cliente,
@@ -713,11 +748,11 @@ orden, en el SQL Editor del dashboard.
 ### Contador cacheado para datos agregados públicos
 
 El destacado "3 más vendidas" del catálogo necesita un ranking de películas
-por entradas vendidas, pero `ventas`/`venta_items` son datos personales (cada
-usuario lee solo lo propio) — el catálogo público no puede leerlas ni para
-agregarlas, porque RLS filtra filas, no columnas: dar `SELECT` público sobre
-esas tablas expondría también email, montos y qué compró cada usuario, no
-solo el total por película.
+por entradas vendidas. `ventas` es un dato personal (cada usuario lee solo
+lo propio) y de `venta_items` solo las entradas son de lectura pública (ver
+"Butacas vendidas"), sin la película a mano: habría que traer todas las
+entradas vendidas y cruzarlas con `funciones` en cada carga del catálogo
+para contarlas.
 
 Se resuelve con un contador cacheado: `peliculas.entradas_vendidas`, una
 columna simple que ya es de lectura pública porque `peliculas` ya lo es. Es

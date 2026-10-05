@@ -30,6 +30,7 @@ export class ButacasInicio {
   protected readonly formatearHoraFuncion = formatearHoraFuncion;
   protected readonly funcion = signal<FuncionMapa | null>(null);
   protected readonly butacas = signal<Butaca[]>([]);
+  protected readonly idsVendidos = signal<string[]>([]);
   protected readonly error = signal(false);
   protected readonly idsSeleccionados = signal<string[]>([]);
 
@@ -65,6 +66,10 @@ export class ButacasInicio {
     return this.idsSeleccionados().includes(butacaId);
   }
 
+  protected estaVendida(butacaId: string): boolean {
+    return this.idsVendidos().includes(butacaId);
+  }
+
   protected alternarButaca(butacaId: string): void {
     this.idsSeleccionados.update((ids) =>
       ids.includes(butacaId) ? ids.filter((id) => id !== butacaId) : [...ids, butacaId],
@@ -96,16 +101,21 @@ export class ButacasInicio {
     this.error.set(false);
     this.funcion.set(null);
     this.butacas.set([]);
+    this.idsVendidos.set([]);
     this.idsSeleccionados.set([]);
     try {
       const funcion = await this.cargaGlobal.envolver(() => this.funcionesService.obtenerParaMapa(funcionId));
       this.funcion.set(funcion);
       if (!funcion) return;
-      const butacas = await this.cargaGlobal.envolver(() =>
-        this.funcionesService.obtenerButacasPorSala(funcion.salaId),
+      const [butacas, idsVendidos] = await this.cargaGlobal.envolver(() =>
+        Promise.all([
+          this.funcionesService.obtenerButacasPorSala(funcion.salaId),
+          this.funcionesService.obtenerIdsButacasVendidas(funcionId),
+        ]),
       );
       this.butacas.set(butacas);
-      const idsDisponibles = butacas.map((butaca) => butaca.id);
+      this.idsVendidos.set(idsVendidos);
+      const idsDisponibles = butacas.map((butaca) => butaca.id).filter((id) => !idsVendidos.includes(id));
       this.idsSeleccionados.set(
         this.seleccionButacas.idsElegidosPara(funcionId).filter((id) => idsDisponibles.includes(id)),
       );
