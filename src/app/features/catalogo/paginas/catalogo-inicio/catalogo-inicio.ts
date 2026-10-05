@@ -42,14 +42,6 @@ export class CatalogoInicio {
     return this.terminoBusqueda().trim() !== "" || this.generosSeleccionados().length > 0;
   }
 
-  protected get terminoBusquedaValor(): string {
-    return this.terminoBusqueda();
-  }
-
-  protected set terminoBusquedaValor(valor: string) {
-    this.terminoBusqueda.set(valor);
-  }
-
   protected readonly formatearDuracion = formatearDuracion;
   protected readonly formatearClasificacion = formatearClasificacion;
 

@@ -3,6 +3,18 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Refactor: buscador con ngModel sobre el signal] - 2026-10-05
+
+### Removed
+- Accessor `get`/`set` `terminoBusquedaValor` de `CatalogoInicio`.
+
+### Changed
+- El buscador del catálogo enlaza `[(ngModel)]="terminoBusqueda"`
+  directo al `WritableSignal`, sin accessor intermedio.
+- `README.md`: la sección de `[(ngModel)]` contra un signal documenta el
+  enlace directo al `WritableSignal` y por qué el estado sigue en un signal
+  y no en una propiedad plana.
+
 ## [Refactor: carga global como fuente de verdad] - 2026-10-05
 
 ### Removed

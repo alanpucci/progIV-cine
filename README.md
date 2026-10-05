@@ -107,28 +107,30 @@ aparece un caso que realmente lo necesite, se reevalúa.
 ### Formularios simples: `[(ngModel)]` de dos vías contra un signal
 
 El buscador del catálogo usa `[(ngModel)]` de `FormsModule` en vez
-de leer `$event.target` a mano. La sintaxis de dos vías no funciona escrita
-directo contra el signal (`[(ngModel)]="terminoBusqueda()"` no compila: se
-expandiría a `(ngModelChange)="terminoBusqueda() = $event"`, y el resultado de
-invocar una función no es asignable), así que el componente expone un
-accessor `get`/`set` (`terminoBusquedaValor`) que lee y escribe el signal por
-detrás:
+de leer `$event.target` a mano, enlazado directo al signal escribible y
+**sin invocarlo**:
 
-```ts
-protected get terminoBusquedaValor(): string {
-  return this.terminoBusqueda();
-}
-protected set terminoBusquedaValor(valor: string) {
-  this.terminoBusqueda.set(valor);
-}
+```html
+<input [(ngModel)]="terminoBusqueda" />
 ```
 
-`[(ngModel)]="terminoBusquedaValor"` se expande entonces contra una propiedad
-de verdad, así que compila y funciona como dos vías reales. El `get` sigue
-leyendo el signal en el momento del render (se trackea igual que cualquier
-otra lectura de signal en el template), y el `set` es el único lugar que lo
-escribe. El mismo criterio aplica a cualquier campo de formulario que en el
-proyecto respalde su valor en un signal en vez de una propiedad plana.
+Angular reconoce que la expresión es un `WritableSignal` y resuelve las dos
+vías por su cuenta: lee el valor con `terminoBusqueda()` y escribe con
+`terminoBusqueda.set($event)`. Escrito con paréntesis
+(`[(ngModel)]="terminoBusqueda()"`) no compila, porque la mitad de salida se
+expandiría a una asignación sobre el resultado de invocar una función. No
+hace falta un accessor `get`/`set` intermedio. El mismo criterio aplica a
+cualquier campo de formulario que en el proyecto respalde su valor en un
+signal en vez de una propiedad plana.
+
+El estado queda en un signal y no en una propiedad `string` plana aunque, en
+este caso puntual, la propiedad también refrescaría la vista: en zoneless,
+un listener de evento del template (como el `input` que escucha `ngModel`)
+marca la vista para revisar. Se mantiene el signal para cumplir la regla
+general del proyecto (todo estado que se refleja en la UI es un signal), que
+no depende de dónde se modifica el valor: una propiedad plana dejaría de
+refrescar apenas se escribiera desde fuera de un evento del template, por
+ejemplo después de un `await` o con un debounce.
 
 ### Formularios con validación compuesta: Reactive Forms
 
