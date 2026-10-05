@@ -5,9 +5,9 @@
     <p class="pelicula-detalle__estado pelicula-detalle__estado--error">
       No se pudo cargar la película. Volvé a intentar más tarde.
     </p>
-  } @else if (!cargando() && !detalle()) {
+  } @else if (!cargaGlobal.visible() && !detalle()) {
     <p class="pelicula-detalle__estado">No encontramos esa película en cartelera.</p>
-  } @else if (!cargando() && detalle(); as pelicula) {
+  } @else if (!cargaGlobal.visible() && detalle(); as pelicula) {
     <article class="pelicula-detalle__ficha">
       <img class="pelicula-detalle__poster" [src]="pelicula.imagenUrl" [alt]="pelicula.nombre" />
 

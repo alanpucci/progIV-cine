@@ -3,6 +3,16 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Refactor: detalle de película con carga global] - 2026-10-05
+
+### Removed
+- Signal `cargando` de `PeliculaDetallePagina`.
+
+### Changed
+- `PeliculaDetallePagina` decide si mostrar la ficha o el aviso de
+  película no encontrada según `CargaGlobalService.visible()`: mientras
+  haya cualquier carga global en curso no muestra ninguno de los dos.
+
 ## [Fase 5.3] - 2026-10-05
 
 ### Added

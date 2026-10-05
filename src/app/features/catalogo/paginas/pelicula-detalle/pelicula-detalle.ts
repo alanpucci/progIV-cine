@@ -28,10 +28,9 @@ export class PeliculaDetallePagina {
   private readonly ruta = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly peliculasService = inject(PeliculasService);
-  private readonly cargaGlobal = inject(CargaGlobalService);
+  protected readonly cargaGlobal = inject(CargaGlobalService);
 
   protected readonly detalle = signal<PeliculaDetalle | null>(null);
-  protected readonly cargando = signal(true);
   protected readonly error = signal(false);
   protected readonly funcionSeleccionada = signal<string | null>(null);
 
@@ -73,7 +72,6 @@ export class PeliculaDetallePagina {
   }
 
   private async cargarDetalle(id: string): Promise<void> {
-    this.cargando.set(true);
     this.error.set(false);
     this.detalle.set(null);
     this.funcionSeleccionada.set(null);
@@ -82,8 +80,6 @@ export class PeliculaDetallePagina {
       this.detalle.set(resultado);
     } catch {
       this.error.set(true);
-    } finally {
-      this.cargando.set(false);
     }
   }
 }
