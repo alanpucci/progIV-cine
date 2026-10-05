@@ -206,45 +206,6 @@
   gap: var(--espacio-md);
 }
 
-.pago__confirmada {
-  @include formularios.panel;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--espacio-md);
-  max-width: 36rem;
-}
-
-.pago__sello {
-  padding: var(--espacio-xs) var(--espacio-md);
-  border: 2px solid var(--color-exito);
-  border-radius: var(--radio-sm);
-  color: var(--color-exito);
-  font-family: var(--fuente-titulo);
-  font-size: 1.5rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  transform: rotate(-4deg);
-}
-
-.pago__mensaje {
-  margin: 0;
-  color: var(--color-texto-primario);
-}
-
-.pago__operacion {
-  margin: 0;
-  color: var(--color-texto-secundario);
-  font-size: 0.9rem;
-
-  strong {
-    color: var(--color-acento-secundario);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.08em;
-  }
-}
-
 @media (max-width: 720px) {
   .pago {
     padding: var(--espacio-lg) var(--espacio-md);

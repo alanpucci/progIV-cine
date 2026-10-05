@@ -1,5 +1,6 @@
 import { Component, inject, signal } from "@angular/core";
 import { AbstractControl, FormBuilder, FormControl, Validators } from "@angular/forms";
+import { Router } from "@angular/router";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
 import { formatearPesos, formatearPuntos } from "../../../../core/helpers/movimiento.formato";
 import { formatearFechaFuncion, formatearHoraFuncion } from "../../../../core/helpers/pelicula.formato";
@@ -25,6 +26,7 @@ export class Pago {
   private readonly ventas = inject(VentasService);
   private readonly cargaGlobal = inject(CargaGlobalService);
   private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
   protected readonly carrito = inject(CarritoService);
 
   protected readonly formatearPesos = formatearPesos;
@@ -34,7 +36,6 @@ export class Pago {
 
   protected readonly intentoEnviar = signal(false);
   protected readonly errorPago = signal<string | null>(null);
-  protected readonly ventaConfirmada = signal<string | null>(null);
 
   protected readonly formulario = this.fb.group({
     titular: ["", Validators.required],
@@ -77,12 +78,14 @@ export class Pago {
     if (!solicitud) return;
 
     try {
-      const ventaId = await this.cargaGlobal.envolver(() => this.ventas.confirmarCompra(solicitud));
-      this.carrito.vaciar();
-      this.ventaConfirmada.set(ventaId);
+      const registro = await this.cargaGlobal.envolver(() => this.ventas.confirmarCompra(solicitud));
+      this.carrito.guardarComprobante(registro);
     } catch (error) {
       this.errorPago.set((error as Error).message);
+      return;
     }
+    await this.router.navigate(["/compra/confirmacion"]);
+    this.carrito.vaciar();
   }
 
   private formatearCampo(

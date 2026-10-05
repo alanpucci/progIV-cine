@@ -1,0 +1,22 @@
+@if (funcion(); as funcion) {
+  @if (entrada(); as entrada) {
+    <article class="ticket">
+      <div class="ticket__cuerpo">
+        <p class="ticket__pelicula">{{ funcion.peliculaNombre }}</p>
+        <p class="ticket__meta">
+          {{ funcion.salaNombre }} · {{ formatearFechaFuncion(funcion.inicio) }} {{ formatearHoraFuncion(funcion.inicio) }}
+        </p>
+        <p class="ticket__meta">{{ funcion.tipoProyeccion }} · {{ funcion.idioma }}</p>
+        <div class="ticket__butaca">
+          <span class="ticket__ubicacion">{{ entrada.fila }}{{ entrada.numero }}</span>
+          <span class="ticket__tipo ticket__tipo--{{ entrada.tipo }}">{{ entrada.tipo }}</span>
+        </div>
+      </div>
+      <div class="ticket__talon">
+        <span class="ticket__estado">Emitida</span>
+        <span class="ticket__rotulo">Código</span>
+        <code class="ticket__codigo">{{ formatearCodigo(entrada.codigoQr) }}</code>
+      </div>
+    </article>
+  }
+}

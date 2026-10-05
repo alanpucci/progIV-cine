@@ -2,15 +2,17 @@ import { Service, inject } from '@angular/core';
 import { PostgrestError } from '@supabase/supabase-js';
 import { SupabaseService } from '../../../core/servicios/supabase.service';
 import { AuthService } from '../../../core/servicios/auth.service';
-import { SolicitudCompra } from '../modelos/pago.model';
+import { CompraRegistrada, SolicitudCompra } from '../modelos/pago.model';
 import {
   FilaComboItem,
+  codigosQrPorButaca,
   filaVenta,
   filasEntradas,
   filasItemsVenta,
   filasMovimientosPuntos,
   filasPagos,
   productosRequeridos,
+  puntosAcreditados,
 } from '../helpers/venta.filas';
 
 const CODIGO_REGISTRO_DUPLICADO = '23505';
@@ -22,18 +24,19 @@ export class VentasService {
   private readonly supabase = inject(SupabaseService).cliente;
   private readonly auth = inject(AuthService);
 
-  async confirmarCompra(solicitud: SolicitudCompra): Promise<string> {
+  async confirmarCompra(solicitud: SolicitudCompra): Promise<CompraRegistrada> {
     await this.auth.cargarSesion();
     const usuarioId = this.auth.sesion()?.user.id ?? null;
     const stockRestante = await this.calcularStockRestante(solicitud);
 
     const ventaId = crypto.randomUUID();
     const items = filasItemsVenta(ventaId, solicitud);
+    const entradas = filasEntradas(items, solicitud.adultoRequerido);
     const pagos = filasPagos(ventaId, solicitud);
 
     await this.ejecutar(this.supabase.from('ventas').insert(filaVenta(ventaId, usuarioId, solicitud)));
     await this.ejecutar(this.supabase.from('venta_items').insert(items));
-    await this.ejecutar(this.supabase.from('entradas').insert(filasEntradas(items, solicitud.adultoRequerido)));
+    await this.ejecutar(this.supabase.from('entradas').insert(entradas));
     if (pagos.length > 0) {
       await this.ejecutar(this.supabase.from('pagos').insert(pagos));
     }
@@ -44,7 +47,12 @@ export class VentasService {
       await this.ejecutar(this.supabase.from('productos').update({ stock }).eq('id', productoId));
     }
     await this.ejecutar(this.supabase.from('ventas').update({ estado: 'pagada' }).eq('id', ventaId));
-    return ventaId;
+    return {
+      ventaId,
+      registrada: usuarioId !== null,
+      codigosQr: codigosQrPorButaca(items, entradas),
+      puntosAcreditados: usuarioId ? puntosAcreditados(solicitud) : 0,
+    };
   }
 
   private async calcularStockRestante(solicitud: SolicitudCompra): Promise<Map<string, number>> {

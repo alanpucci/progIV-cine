@@ -1,0 +1,227 @@
+@use "formularios";
+
+.confirmacion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xl);
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: var(--espacio-xl);
+}
+
+.confirmacion__cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+}
+
+.confirmacion__etiqueta {
+  margin: 0;
+  color: var(--color-acento-secundario);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.confirmacion__titulo {
+  margin: 0;
+  color: var(--color-texto-primario);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+}
+
+.confirmacion__vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-sm);
+  color: var(--color-texto-secundario);
+}
+
+.confirmacion__enlace {
+  @include formularios.enlace;
+}
+
+.confirmacion__aviso {
+  @include formularios.panel;
+
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-xl);
+}
+
+.confirmacion__sello {
+  flex-shrink: 0;
+  padding: var(--espacio-xs) var(--espacio-md);
+  border: 2px solid var(--color-exito);
+  border-radius: var(--radio-sm);
+  color: var(--color-exito);
+  font-family: var(--fuente-titulo);
+  font-size: 1.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transform: rotate(-6deg);
+}
+
+.confirmacion__datos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+}
+
+.confirmacion__mensaje {
+  margin: 0;
+  color: var(--color-texto-primario);
+}
+
+.confirmacion__meta {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+
+  strong {
+    color: var(--color-acento-secundario);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+  }
+}
+
+.confirmacion__puntos {
+  margin: 0;
+  color: var(--color-acento-secundario);
+  font-size: 0.9rem;
+}
+
+.confirmacion__grilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+  align-items: start;
+  gap: var(--espacio-xl);
+}
+
+.confirmacion__entradas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+.confirmacion__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+}
+
+.confirmacion__subtitulo {
+  margin: 0;
+  color: var(--color-texto-primario);
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+}
+
+.confirmacion__indicacion {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.confirmacion__advertencia {
+  margin: 0;
+  color: var(--color-advertencia);
+  font-size: 0.85rem;
+}
+
+.confirmacion__lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.confirmacion__resumen {
+  @include formularios.panel;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.confirmacion__lineas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+  margin: 0;
+  padding: 0 0 var(--espacio-md);
+  border-bottom: 1px dashed var(--color-borde);
+  list-style: none;
+}
+
+.confirmacion__linea {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espacio-md);
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.confirmacion__importes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  margin: 0;
+}
+
+.confirmacion__importe {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--espacio-md);
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+
+  dt,
+  dd {
+    margin: 0;
+  }
+
+  &--resta dd {
+    color: var(--color-acento-secundario);
+  }
+
+  &--total {
+    margin-top: var(--espacio-sm);
+    padding-top: var(--espacio-sm);
+    border-top: 1px solid var(--color-borde);
+    color: var(--color-texto-primario);
+    font-family: var(--fuente-titulo);
+    font-size: 1.4rem;
+    letter-spacing: 0.04em;
+  }
+}
+
+.confirmacion__acciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  padding-top: var(--espacio-md);
+  border-top: 1px dashed var(--color-borde);
+}
+
+@media (max-width: 860px) {
+  .confirmacion__grilla {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .confirmacion {
+    padding: var(--espacio-lg) var(--espacio-md);
+  }
+
+  .confirmacion__aviso {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espacio-md);
+  }
+}

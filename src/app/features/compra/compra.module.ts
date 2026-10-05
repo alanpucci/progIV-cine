@@ -8,10 +8,12 @@ import { CuponCarrito } from './componentes/cupon-carrito/cupon-carrito';
 import { DatosComprador } from './paginas/datos-comprador/datos-comprador';
 import { SaldosCompra } from './componentes/saldos-compra/saldos-compra';
 import { Pago } from './paginas/pago/pago';
+import { Confirmacion } from './paginas/confirmacion/confirmacion';
+import { TicketEntrada } from './componentes/ticket-entrada/ticket-entrada';
 import { Boton } from '../../shared/componentes/boton/boton';
 
 @NgModule({
-  declarations: [CarritoCompra, CandyBar, TarjetaCandy, CuponCarrito, DatosComprador, SaldosCompra, Pago],
+  declarations: [CarritoCompra, CandyBar, TarjetaCandy, CuponCarrito, DatosComprador, SaldosCompra, Pago, Confirmacion, TicketEntrada],
   imports: [CompraRoutingModule, ReactiveFormsModule, Boton],
 })
 export class CompraModule {}

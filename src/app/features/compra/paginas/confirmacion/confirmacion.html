@@ -1,0 +1,101 @@
+<section class="confirmacion">
+  <header class="confirmacion__cabecera">
+    <p class="confirmacion__etiqueta">Boletería</p>
+    <h1 class="confirmacion__titulo">Compra confirmada</h1>
+  </header>
+
+  @if (carrito.ultimaCompra(); as compra) {
+    <div class="confirmacion__aviso">
+      <span class="confirmacion__sello">Pagada</span>
+      <div class="confirmacion__datos">
+        <p class="confirmacion__mensaje">Tu compra quedó registrada y las entradas ya están emitidas.</p>
+        <p class="confirmacion__meta">
+          Operación <strong>{{ numeroOperacion(compra.ventaId) }}</strong> ·
+          {{ formatearFechaMovimiento(compra.confirmadaEn) }} · {{ compra.emailContacto }}
+        </p>
+        @if (compra.puntosAcreditados > 0) {
+          <p class="confirmacion__puntos">Sumaste {{ formatearPuntos(compra.puntosAcreditados) }} puntos con esta compra.</p>
+        }
+      </div>
+    </div>
+
+    <div class="confirmacion__grilla">
+      <section class="confirmacion__entradas">
+        <header class="confirmacion__encabezado">
+          <h2 class="confirmacion__subtitulo">Tus entradas ({{ compra.entradas.length }})</h2>
+          <p class="confirmacion__indicacion">Mostrá el código de cada entrada en el ingreso a la sala.</p>
+          @if (compra.funcion.clasificacionEdad !== null) {
+            <p class="confirmacion__advertencia">
+              Película {{ formatearClasificacion(compra.funcion.clasificacionEdad) }}: en el ingreso se pide documento.
+            </p>
+          }
+        </header>
+
+        <ul class="confirmacion__lista">
+          @for (entrada of compra.entradas; track entrada.id) {
+            <li>
+              <app-ticket-entrada [funcion]="compra.funcion" [entrada]="entrada" />
+            </li>
+          }
+        </ul>
+      </section>
+
+      <aside class="confirmacion__resumen">
+        <h2 class="confirmacion__subtitulo">Resumen</h2>
+
+        <ul class="confirmacion__lineas">
+          <li class="confirmacion__linea">
+            <span>{{ compra.entradas.length }} {{ compra.entradas.length === 1 ? "entrada" : "entradas" }}</span>
+          </li>
+          @for (extra of compra.extras; track extra.tipo + extra.id) {
+            <li class="confirmacion__linea">
+              <span>{{ extra.cantidad }} × {{ extra.nombre }}</span>
+              <span>{{ formatearPesos(extra.precioUnitario * extra.cantidad) }}</span>
+            </li>
+          }
+        </ul>
+
+        <dl class="confirmacion__importes">
+          <div class="confirmacion__importe">
+            <dt>Subtotal</dt>
+            <dd>{{ formatearPesos(compra.subtotal) }}</dd>
+          </div>
+          @if (compra.cuponCodigo) {
+            <div class="confirmacion__importe confirmacion__importe--resta">
+              <dt>Cupón {{ compra.cuponCodigo }}</dt>
+              <dd>−{{ formatearPesos(compra.descuento) }}</dd>
+            </div>
+          }
+          @if (compra.credito > 0) {
+            <div class="confirmacion__importe confirmacion__importe--resta">
+              <dt>Crédito</dt>
+              <dd>−{{ formatearPesos(compra.credito) }}</dd>
+            </div>
+          }
+          @if (compra.puntos > 0) {
+            <div class="confirmacion__importe confirmacion__importe--resta">
+              <dt>{{ formatearPuntos(compra.puntos) }} puntos</dt>
+              <dd>−{{ formatearPesos(compra.montoPuntos) }}</dd>
+            </div>
+          }
+          <div class="confirmacion__importe confirmacion__importe--total">
+            <dt>Pagado con tarjeta</dt>
+            <dd>{{ formatearPesos(compra.totalAPagar) }}</dd>
+          </div>
+        </dl>
+
+        <div class="confirmacion__acciones">
+          <a class="confirmacion__enlace" routerLink="/">Volver a la cartelera</a>
+          @if (compra.registrada) {
+            <a class="confirmacion__enlace" routerLink="/cuenta/perfil">Ir a mi perfil</a>
+          }
+        </div>
+      </aside>
+    </div>
+  } @else {
+    <div class="confirmacion__vacio">
+      <p>No hay ninguna compra reciente para mostrar.</p>
+      <a class="confirmacion__enlace" routerLink="/">Ver cartelera</a>
+    </div>
+  }
+</section>
