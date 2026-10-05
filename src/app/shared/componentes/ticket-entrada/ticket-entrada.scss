@@ -39,7 +39,8 @@
   display: flex;
   align-items: center;
   gap: var(--espacio-sm);
-  margin-top: var(--espacio-sm);
+  margin-top: auto;
+  padding-top: var(--espacio-sm);
 }
 
 .ticket__ubicacion {
@@ -101,6 +102,32 @@
   font-size: 0.7rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
+}
+
+.ticket--validada,
+.ticket--cancelada {
+  .ticket__cuerpo {
+    border-left-color: var(--color-borde);
+  }
+
+  .ticket__qr {
+    opacity: 0.25;
+  }
+}
+
+.ticket--validada .ticket__estado {
+  color: var(--color-acento-terciario);
+}
+
+.ticket--cancelada {
+  .ticket__estado {
+    color: var(--color-error);
+  }
+
+  .ticket__pelicula,
+  .ticket__codigo {
+    text-decoration: line-through;
+  }
 }
 
 .ticket__qr {

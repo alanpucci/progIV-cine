@@ -1,5 +1,7 @@
 import { Idioma, TipoButaca, TipoProyeccion } from './funcion.model';
 
+export type EstadoEntrada = 'emitida' | 'validada' | 'cancelada';
+
 export interface FuncionEntrada {
   peliculaNombre: string;
   clasificacionEdad: number | null;

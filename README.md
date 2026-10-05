@@ -585,6 +585,37 @@ La fuente es Helvetica, una de las estándar de PDF, que no hace falta
 incrustar y cubre los acentos y la ñ. Un título que no entra en dos líneas
 se corta con puntos suspensivos.
 
+### Mis entradas: una consulta embebida y agrupación en el cliente
+
+`/mis-entradas` es la feature standalone `entradas`, con lazy loading
+(`loadChildren` a `entradas.routes.ts`) y protegida con `conSesionGuard`.
+`EntradasService` vive en la feature porque solo la usa ella.
+
+Los datos salen de una sola consulta a `entradas` con las relaciones
+embebidas (`venta_items` → `butacas`, `funciones` → `salas`/`peliculas`, y
+`ventas`). `venta_items!inner` y `ventas!inner` permiten filtrar por
+columnas de la venta (`venta_items.ventas.usuario_id`,
+`venta_items.ventas.estado`) y descartar las entradas que no cumplen. Las
+ventas `pendiente` se excluyen: son compras que fallaron a mitad de camino y
+que igual pueden tener entradas insertadas. El filtro por usuario es
+explícito aunque RLS (`entradas_select_propio`) ya lo garantice, porque un
+empleado o admin lee todas las entradas y la pantalla tiene que mostrar solo
+las propias.
+
+La agrupación por función y la separación en próximas/pasadas se hacen en
+el cliente: PostgREST no agrupa sin una vista o función, y la cantidad de
+entradas de un usuario es chica. Una función cuenta como "próxima" hasta que
+termina (`funciones.fin`), no hasta que empieza, para que la entrada siga
+visible con su QR si alguien llega tarde. Si RLS oculta la función (por
+ejemplo, porque se canceló) o la butaca (porque se desactivó), esa entrada
+no se muestra.
+
+`TicketEntrada` está en `shared/componentes/` como standalone porque lo usan
+el comprobante de compra (`CompraModule` lo importa en `imports`, igual que
+`Boton`) y esta pantalla. Recibe la función y la entrada con los modelos de
+`core/modelos/entrada.model.ts` y el estado por un `input()` aparte, que en
+el comprobante queda en su valor por defecto (`emitida`).
+
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 
 Los componentes y directivas reciben datos con `input()` y emiten eventos con

@@ -1,6 +1,6 @@
 @if (funcion(); as funcion) {
   @if (entrada(); as entrada) {
-    <article class="ticket">
+    <article class="ticket ticket--{{ estado() }}">
       <div class="ticket__cuerpo">
         <p class="ticket__pelicula">{{ funcion.peliculaNombre }}</p>
         <p class="ticket__meta">
@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="ticket__talon">
-        <span class="ticket__estado">Emitida</span>
+        <span class="ticket__estado">{{ etiquetaEstado() }}</span>
         <app-codigo-qr class="ticket__qr" [codigo]="entrada.codigoQr" />
         <span class="ticket__rotulo">Código</span>
         <code class="ticket__codigo">{{ formatearCodigo(entrada.codigoQr) }}</code>
