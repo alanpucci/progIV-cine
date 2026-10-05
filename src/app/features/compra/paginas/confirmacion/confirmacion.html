@@ -24,6 +24,12 @@
         <header class="confirmacion__encabezado">
           <h2 class="confirmacion__subtitulo">Tus entradas ({{ compra.entradas.length }})</h2>
           <p class="confirmacion__indicacion">Mostrá el QR de cada entrada en el ingreso a la sala.</p>
+          <div class="confirmacion__descarga">
+            <app-boton variante="secundario" tamano="chico" (click)="descargarPdf(compra)">Descargar entradas en PDF</app-boton>
+            @if (errorPdf(); as mensaje) {
+              <p class="confirmacion__error" role="alert">{{ mensaje }}</p>
+            }
+          </div>
           @if (compra.funcion.clasificacionEdad !== null) {
             <p class="confirmacion__advertencia">
               Película {{ formatearClasificacion(compra.funcion.clasificacionEdad) }}: en el ingreso se pide documento.

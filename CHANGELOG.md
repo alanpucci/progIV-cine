@@ -3,6 +3,28 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 5.2] - 2026-10-05
+
+### Added
+- `PdfEntradasService` (`core/servicios/`): `descargar(funcion, entradas)`
+  arma un PDF con una página de 200 × 90 mm por entrada, con forma de
+  ticket: marca, película, sala, fecha y hora, proyección, idioma,
+  clasificación, butaca y tipo, aviso de documento si la película es +13/+18,
+  y en el talón el QR con el código en texto. Lo descarga como
+  `entradas-<pelicula>-<fecha>.pdf`.
+- Modelos `FuncionEntrada` y `EntradaImprimible` (`core/modelos/entrada.model.ts`):
+  los datos mínimos para imprimir una entrada, que cumplen tanto el
+  comprobante de compra como las entradas leídas de Supabase.
+- Botón "Descargar entradas en PDF" en `/compra/confirmacion`, con el
+  spinner global mientras se genera y un mensaje si falla.
+- Dependencia `jspdf` (`^4.2.1`; las versiones anteriores tienen avisos de
+  seguridad críticos).
+
+### Changed
+- `angular.json`: `allowedCommonJsDependencies` suma las dependencias
+  opcionales de `jspdf` (`html2canvas`, `canvg`, `core-js`, `raf`,
+  `rgbcolor`), que solo se cargan si se usa `.html()`.
+
 ## [Fase 5.1] - 2026-10-05
 
 ### Added

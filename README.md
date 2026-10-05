@@ -554,6 +554,37 @@ cámara lo lea, aunque la interfaz sea oscura.
 Como solo lo importan componentes de features con lazy loading, no suma peso
 a la carga inicial.
 
+### PDF de entradas: jsPDF cargado bajo demanda
+
+El PDF de las entradas se arma en el navegador con `jspdf`, dibujando cada
+entrada a mano (rectángulos, texto e imagen del QR) en una página de
+200 × 90 mm con forma de ticket. Se descartó `window.print()` con una hoja de
+estilos de impresión porque no genera un archivo: deja al usuario en el
+diálogo de impresión y el resultado depende del navegador. También se
+descartó convertir el HTML del ticket a PDF (`jsPDF.html()` con
+`html2canvas`): rasteriza la pantalla, pesa más y el texto no se puede
+seleccionar.
+
+`PdfEntradasService` vive en `core/servicios/` porque lo usan el
+comprobante de compra y el listado de entradas del usuario. No toca Supabase:
+recibe la función (`FuncionEntrada`) y las entradas (`EntradaImprimible`) ya
+cargadas. Esos dos modelos de `core/modelos/entrada.model.ts` piden solo lo
+que se imprime, así que les sirven tanto `FuncionMapa` del comprobante como
+las entradas que se leen de la base. El QR reutiliza `generarQr()`, el mismo
+helper que dibuja el QR en pantalla.
+
+`jspdf` pesa unos 110 kB comprimido, así que el servicio lo importa con
+`await import('jspdf')` dentro de `descargar()`: queda en un chunk aparte que
+se baja recién la primera vez que alguien descarga un PDF, no al abrir la
+confirmación. El `import type` de arriba del archivo solo aporta el tipo y
+desaparece al compilar. Las dependencias opcionales de `jspdf` (`html2canvas`,
+`canvg`) también quedan en chunks propios que nunca se piden, porque no se usa
+`.html()`. Son CommonJS, así que están en `allowedCommonJsDependencies`.
+
+La fuente es Helvetica, una de las estándar de PDF, que no hace falta
+incrustar y cubre los acentos y la ñ. Un título que no entra en dos líneas
+se corta con puntos suspensivos.
+
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 
 Los componentes y directivas reciben datos con `input()` y emiten eventos con

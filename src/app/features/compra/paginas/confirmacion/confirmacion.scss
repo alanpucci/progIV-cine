@@ -123,6 +123,20 @@
   font-size: 0.9rem;
 }
 
+.confirmacion__descarga {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-sm) var(--espacio-md);
+  margin-top: var(--espacio-xs);
+}
+
+.confirmacion__error {
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.85rem;
+}
+
 .confirmacion__advertencia {
   margin: 0;
   color: var(--color-advertencia);
