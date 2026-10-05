@@ -32,6 +32,8 @@
                 class="butacas-mapa__butaca"
                 [appButaca]="butaca.tipo"
                 [seleccionada]="estaSeleccionada(butaca.id)"
+                [vendida]="estaVendida(butaca.id)"
+                [disabled]="estaVendida(butaca.id)"
                 [style.grid-column]="butaca.numero"
                 [attr.aria-label]="'Fila ' + grupo.fila + ', butaca ' + butaca.numero + ', tipo ' + butaca.tipo"
                 (click)="alternarButaca(butaca.id)"
@@ -54,6 +56,9 @@
       </li>
       <li class="butacas-mapa__leyenda-item">
         <span class="butacas-mapa__muestra" appButaca="normal" [seleccionada]="true"></span> Tu selección
+      </li>
+      <li class="butacas-mapa__leyenda-item">
+        <span class="butacas-mapa__muestra" appButaca="normal" [vendida]="true"></span> Vendida
       </li>
     </ul>
 

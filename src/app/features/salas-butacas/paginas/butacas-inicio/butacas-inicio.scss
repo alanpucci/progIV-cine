@@ -171,6 +171,21 @@
     color: var(--color-acento-texto);
     font-weight: 700;
   }
+
+  &[data-vendida="true"] {
+    border-color: var(--color-borde);
+    border-style: dashed;
+    background: repeating-linear-gradient(
+      135deg,
+      var(--color-fondo),
+      var(--color-fondo) 3px,
+      var(--color-fondo-alterno) 3px,
+      var(--color-fondo-alterno) 6px
+    );
+    color: var(--color-texto-silenciado);
+    cursor: not-allowed;
+    transform: none;
+  }
 }
 
 .butacas-mapa__resumen {

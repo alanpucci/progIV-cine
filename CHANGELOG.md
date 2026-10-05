@@ -3,6 +3,27 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 2.7] - 2026-10-05
+
+### Added
+- Migración `lectura_butacas_vendidas`: política
+  `venta_items_select_entradas_vendidas`, que deja leer a `anon` y
+  `authenticated` los `venta_items` de tipo `entrada` no cancelados (mismo
+  filtro que el índice `ux_butaca_por_funcion`).
+- `FuncionesService.obtenerIdsButacasVendidas(funcionId)`.
+- `ButacaEstado` suma el `input()` `vendida`, que se refleja en el atributo
+  `data-vendida`.
+- Ítem "Vendida" en la leyenda del mapa.
+
+### Changed
+- `ButacasInicio` pide las butacas vendidas en paralelo con la
+  distribución de la sala: las vendidas quedan deshabilitadas, con un
+  rayado propio, y se descartan de una selección previa guardada.
+- `README.md`: nueva sección "Butacas vendidas"; se actualizan el criterio
+  de RLS de datos personales y la justificación del contador
+  `peliculas.entradas_vendidas`.
+- `docs/ROADMAP.md` / `docs/ROADMAP.pdf`: se agrega la sub-tarea 2.7.
+
 ## [Refactor: buscador con ngModel sobre el signal] - 2026-10-05
 
 ### Removed
