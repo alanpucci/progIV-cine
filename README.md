@@ -295,13 +295,13 @@ Se eligió `sessionStorage` y no `localStorage` porque la selección es
 efímera: no tiene sentido que sobreviva al cierre de la pestaña ni que se
 comparta entre pestañas. El precio por butaca (`precio_base` de la función
 + `precio_adicional` de la butaca) se calcula en el cliente solo para
-mostrarlo: el monto que se cobra lo recalcula Postgres en la RPC de
-confirmación de compra.
+mostrarlo y se guarda tal cual en `venta_items` al confirmar la compra.
 
 Por ahora esta selección **no bloquea** butacas en la base: es puramente
-del lado del cliente. El bloqueo transaccional (`reservas_butaca`) es
-prerrequisito de la RPC de confirmación de compra y se va a enchufar dentro
-de `SeleccionButacasService.confirmar()` sin tocar el mapa.
+del lado del cliente. El bloqueo temporal (`reservas_butaca`) se va a
+enchufar dentro de `SeleccionButacasService.confirmar()` sin tocar el mapa.
+Mientras tanto, lo único que impide vender dos veces la misma butaca es el
+índice único `ux_butaca_por_funcion` al confirmar la compra.
 
 ### Carrito: `CarritoService` dentro de la feature `compra`
 
@@ -326,8 +326,8 @@ guarda son los productos y combos del Candy Bar, en dos signals separados
 (`productos`, `combos`) que coinciden con los `tipo_item` de `venta_items`, y
 los respalda en `sessionStorage` con el mismo criterio que la selección de
 butacas. Subtotales y total son métodos planos que leen esos signals (sin
-`computed()`). Los precios son solo para mostrar: el monto definitivo lo
-recalcula Postgres en la RPC de confirmación de compra.
+`computed()`). Esos importes son los que se guardan en la venta al
+confirmar la compra.
 
 ### Candy Bar: carta dentro de `compra` y stock como tope visual
 
@@ -348,10 +348,9 @@ usan la misma tarjeta y no sabe a qué tabla pertenece el ítem.
 precio fijo propio, no tiene categoría ni stock, y su composición vive en
 `combo_items`. Por eso el Candy Bar limita la cantidad de un producto a su
 `stock` (y lo muestra "Agotado" en 0), pero no limita los combos. Es solo
-un tope en pantalla: el stock no se descuenta en la base hasta la RPC de
-confirmación de compra. Esa RPC también tiene que descontar los productos que vienen
-dentro de cada combo, vía `combo_items`, y rechazar la venta si alguno
-queda sin stock.
+un tope en pantalla: el stock se descuenta en la base recién al confirmar
+la compra, incluyendo los productos que vienen dentro de cada combo (vía
+`combo_items`), y la compra se rechaza si alguno queda sin stock.
 
 ### Cupones: validación en el servicio, lectura pública de los activos
 
@@ -359,8 +358,8 @@ Originalmente `cupones` quedó legible solo por admin, para que no se
 pudieran listar los códigos vigentes. Al implementar los cupones se reabrió
 esa decisión:
 la migración `lectura_cupones_activos` agrega una política `select` para
-`anon`/`authenticated` sobre los cupones con `activo = true`. Así se evita
-una RPC solo para validar un código. El costo es que alguien podría
+`anon`/`authenticated` sobre los cupones con `activo = true`. Así el código
+se valida con una consulta común a la tabla. El costo es que alguien podría
 consultar la tabla y ver los códigos, algo aceptable para el alcance del TP.
 
 `CuponesService` (en `features/compra/`, misma regla que
@@ -388,8 +387,7 @@ próxima vez que entre al carrito.
 `CarritoService` guarda el cupón como signal (respaldado en
 `sessionStorage`, igual que los extras). El descuento se calcula sobre el
 subtotal completo (entradas + Candy Bar), redondeado a centavos. La venta
-guarda `cupon_id` y `descuento`, que se persisten en la RPC de confirmación
-de compra.
+guarda `cupon_id` y `descuento` al confirmar la compra.
 
 ### Datos del comprador y restricción de edad (RN04)
 
@@ -414,9 +412,104 @@ consulta. La edad se compara contra la fecha de hoy. Los datos confirmados
 quedan en `CarritoService.comprador` (signal respaldado en
 `sessionStorage`, igual que el cupón) y `vaciar()` los descarta.
 
-Esta validación en el frontend es solo UX: la RPC de confirmación de compra
-tiene que repetirla en Postgres, con la fecha del perfil o la declarada,
-antes de crear la venta.
+La validación vive solo en el frontend: la compra se confirma con llamadas
+directas a las tablas, sin lógica de servidor que la repita.
+
+### Crédito y puntos como pago parcial
+
+Con sesión, el checkout muestra el saldo de `perfiles.credito_saldo` y
+`perfiles.puntos_saldo` (leídos con `MovimientosService.obtenerSaldos()`,
+el mismo servicio del perfil) y deja usar cualquier parte de cada uno como
+pago parcial. Un punto vale $1 (`VALOR_PUNTO_EN_PESOS`), simétrico con la
+acreditación de 1 punto por peso; el análisis funcional no definía la
+equivalencia y quedó registrada en el modelo de datos.
+
+`CarritoService.saldosAplicados` guarda lo que el usuario pidió usar
+(signal respaldado en `sessionStorage`, igual que el cupón y el comprador).
+Los importes efectivos se derivan en cada lectura: `creditoUsado()` se
+topea en el total y `puntosUsados()` en lo que queda después del crédito,
+así que si el carrito cambia después de aplicar el saldo nunca se usa más
+de lo necesario. `totalAPagar()` es lo que resta cobrar con el medio de
+pago simulado, y es la base sobre la que se acreditan puntos. Sin sesión
+los saldos aplicados se descartan.
+
+Al confirmar la compra, el uso se registra en
+`movimientos_credito`/`movimientos_puntos`, y los triggers de esos ledgers
+actualizan el saldo cacheado en `perfiles`.
+
+### Pago simulado y confirmación de compra desde el frontend
+
+`/compra/pago` (`Pago`, en `CompraModule`) muestra el resumen como un
+ticket y, si queda algo por cobrar después del crédito y los puntos, pide
+una tarjeta. El pago es un mock: el formulario valida formato (16 dígitos,
+`MM/AA` no vencido, CVV de 3 o 4 dígitos) y `simularAutorizacion()`
+(`features/compra/helpers/tarjeta.helpers.ts`) aprueba cualquier tarjeta
+salvo las terminadas en `0000`, para poder mostrar un rechazo. La
+autorización devuelve una referencia `SIM-<últimos 4>-<marca de tiempo>`
+que se guarda en `pagos.referencia_externa`. Si el crédito y los puntos
+cubren el total, no se pide tarjeta.
+
+Todas las llamadas a Supabase salen del frontend, con la API de tablas de
+supabase-js (`insert`/`update`). `CarritoService.solicitudDeCompra()`
+arma la compra con los importes que ya calcula el carrito, y
+`VentasService.confirmarCompra()` (en `features/compra/`) la graba en este
+orden:
+
+1. calcula el stock que necesita la compra, sumando los productos que vienen
+   dentro de los combos (`combo_items`), y corta si alguno no alcanza;
+2. inserta la venta en estado `pendiente`;
+3. inserta los `venta_items`. Si alguna butaca ya se vendió, el índice
+   único `ux_butaca_por_funcion` rechaza el insert;
+4. inserta una `entradas` por butaca, con un `codigo_qr` aleatorio, y una
+   fila de `pagos` por cada medio usado (`credito`, `puntos`, `tarjeta`);
+5. con sesión, registra el uso de crédito y puntos y acredita 1 punto por
+   peso pagado con tarjeta (RN08: sin generar puntos sobre crédito ni
+   puntos);
+6. actualiza el stock de los productos;
+7. pasa la venta a `pagada`.
+
+Los ids de la venta y de sus ítems se generan en el cliente
+(`crypto.randomUUID()`): así las filas siguientes pueden referenciarlos sin
+volver a leer la venta, algo que el comprador anónimo no puede hacer. Si un
+paso falla, la compra se corta ahí y la venta queda en `pendiente`; el
+historial de compras ya ignora las ventas pendientes. No hay transacción
+entre los pasos: es el costo de no tener lógica del lado del servidor.
+
+Para que esos inserts pasen, la migración `compra_desde_frontend` agrega
+políticas RLS de escritura:
+
+- `ventas`: insertar solo como `pendiente` y con el `usuario_id` de la
+  sesión (o `null` sin sesión), y pasarla de `pendiente` a `pagada`;
+- `venta_items` y `pagos`: insertar solo sobre una venta `pendiente`
+  visible para quien inserta;
+- `entradas`: insertar en estado `emitida`;
+- `movimientos_credito`/`movimientos_puntos`: insertar solo movimientos
+  propios;
+- `productos`: actualizar los activos sin dejar stock negativo.
+
+Postgres solo deja hacer un `update` si quien lo hace puede leer la fila
+nueva. Para que el comprador anónimo pueda pasar su venta a `pagada`, `anon`
+lee las ventas anónimas, pero con permiso solo sobre `id`, `usuario_id` y
+`estado` (`grant select (...)`): sin mails ni importes.
+
+El costo de esta decisión: precios, cupón, edad y saldos se validan solo en
+el frontend, y las políticas de escritura permiten que alguien con la clave
+pública inserte ventas o movimientos de puntos propios con los importes que
+quiera. Las garantías que quedan en Postgres son el índice único de
+butacas, las FK, los `check` de cada tabla, el trigger que impide editar
+los saldos de `perfiles` directamente y la regla de que cada usuario solo
+mueve sus propios saldos.
+
+El mapa de butacas todavía no marca las vendidas: con solo la selección del
+lado del cliente, un conflicto con otra compra recién aparece al pagar.
+
+La misma migración corrige `proteger_campos_sensibles_perfil`: bloqueaba
+también los `update` de saldo que hacen los triggers de
+`movimientos_credito`/`movimientos_puntos`, porque mira el rol del usuario
+de la sesión y no quién hace el cambio. Ahora solo controla los `update`
+directos (`pg_trigger_depth() = 1`). También agrega el trigger que mantiene
+`peliculas.entradas_vendidas` (suma al insertar entradas y resta cuando un
+ítem se cancela).
 
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 
@@ -451,13 +544,15 @@ de la de `CargaGlobalService`, que es un singleton `@Service()` y vive y
 muere con la app), esa versión necesitaría además `OnDestroy` para darla de
 baja explícitamente al destruirse el componente.
 
-### Concurrencia y validación de negocio en el backend
+### Llamadas a Supabase solo desde el frontend
 
-Reglas críticas como "no vender la misma butaca dos veces" o "no solapar
-funciones en una sala" **no** se validan solo en el frontend: se resuelven con
-funciones/RPC en PostgreSQL (Supabase) dentro de una transacción, de modo que
-el estado visual del cliente sea una ayuda a la UX pero nunca la única barrera
-de integridad.
+Todas las lecturas y escrituras salen del frontend, desde los servicios, con
+la API de tablas de supabase-js (`.from(...)`); no se invocan funciones de
+Postgres desde el cliente (no se vio en la materia).
+Las reglas críticas que no pueden depender solo del cliente se apoyan en lo
+que Postgres hace por su cuenta: constraints e índices únicos (no vender la
+misma butaca dos veces, no solapar funciones en una sala), triggers y
+políticas RLS que acotan quién puede escribir qué.
 
 ### Esquema SQL versionado y RLS
 
@@ -479,13 +574,11 @@ criterio parejo:
   notificaciones): cada usuario lee solo lo propio (`usuario_id = auth.uid()`
   o join hasta `ventas`); `admin`/`empleado` ven todo lo que les corresponde
   por rol.
-- **Tablas transaccionales sensibles** (`ventas`, `venta_items`, `entradas`,
-  `pagos`, `reservas_butaca`, `movimientos_puntos`, `movimientos_credito`,
-  `usos_qr`, `logs_actividad`): sin políticas de escritura para el cliente.
-  Se escriben desde funciones RPC `security definer` (bloqueo de butacas,
-  confirmación de compra, validación de QR, cancelación) — esas funciones
-  corren con privilegios propios y no dependen de RLS, así que la ausencia de
-  política de escritura ahí es intencional, no un olvido.
+- **Tablas transaccionales** (`ventas`, `venta_items`, `entradas`, `pagos`,
+  `reservas_butaca`, `movimientos_puntos`, `movimientos_credito`, `usos_qr`,
+  `logs_actividad`): arrancaron sin políticas de escritura para el cliente,
+  y cada funcionalidad agrega las que necesita, acotadas (ver la
+  confirmación de compra más arriba).
 - `perfiles.rol`, `credito_saldo` y `puntos_saldo` están protegidos además
   por un trigger (no solo por RLS): ni siquiera con una política de UPDATE
   "propio" un usuario puede autopromoverse a admin o cargarse saldo, porque

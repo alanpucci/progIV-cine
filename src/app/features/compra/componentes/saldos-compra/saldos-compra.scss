@@ -1,0 +1,142 @@
+@use "formularios";
+
+.saldos {
+  @include formularios.panel;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+.saldos__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-sm);
+  padding-bottom: var(--espacio-md);
+  border-bottom: 1px dashed var(--color-borde);
+}
+
+.saldos__titulo {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+.saldos__disponible {
+  display: flex;
+  gap: var(--espacio-md);
+  margin: 0;
+  color: var(--color-texto-silenciado);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+
+  strong {
+    color: var(--color-acento-secundario);
+    font-weight: 600;
+  }
+}
+
+.saldos__vacio {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.saldos__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.saldos__campos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-md);
+}
+
+.saldos__campo {
+  @include formularios.campo;
+}
+
+.saldos__ayuda {
+  margin: 0;
+  color: var(--color-texto-silenciado);
+  font-size: 0.8rem;
+}
+
+.saldos__error {
+  @include formularios.error-envio;
+}
+
+.saldos__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--espacio-sm);
+}
+
+.saldos__quitar {
+  margin-right: auto;
+  border: none;
+  background: none;
+  color: var(--color-texto-silenciado);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-error);
+  }
+}
+
+.saldos__desglose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+  margin: 0;
+}
+
+.saldos__linea {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+
+  dt,
+  dd {
+    margin: 0;
+  }
+
+  &--descuento {
+    color: var(--color-acento-secundario);
+  }
+
+  &--total {
+    align-items: baseline;
+    margin-top: var(--espacio-sm);
+    padding-top: var(--espacio-md);
+    border-top: 2px dashed var(--color-borde);
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+
+    dd {
+      color: var(--color-acento-secundario);
+      font-family: var(--fuente-titulo);
+      font-size: 1.75rem;
+      letter-spacing: 0.04em;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .saldos__campos {
+    grid-template-columns: 1fr;
+  }
+}

@@ -31,9 +31,11 @@ cine), nunca un look de librería reconocible a simple vista.
   `README.md`): SCSS propio sin Angular Material ni Tailwind, pagos
   simulados/mock, despliegue en Vercel, standalone components + NgModules
   combinados caso a caso, signals + servicios sin NgRx, capa de servicios
-  sobre Supabase (nunca acceso directo desde un componente), validación de
-  concurrencia/reglas críticas en Postgres (RPC/transacción) y no solo en el
-  frontend. No las vuelvas a preguntar. Si en el camino conviene reabrir
+  sobre Supabase (nunca acceso directo desde un componente), todas las
+  llamadas a Supabase salen del frontend con la API de tablas de supabase-js
+  (`.from(...)`), y las reglas críticas que no pueden quedar solo en el cliente
+  se cubren en Postgres con constraints, índices únicos, triggers y RLS. No
+  las vuelvas a preguntar. Si en el camino conviene reabrir
   alguna, decilo explícitamente y explicá por qué.
 - Se trabaja **fase por fase / sub-tarea por sub-tarea**, según
   `docs/ROADMAP.md`. No implementar fases futuras sin que se pida
@@ -44,8 +46,8 @@ cine), nunca un look de librería reconocible a simple vista.
 No hace falta cubrir todas las casuísticas posibles ni validar absolutamente
 todo. Implementar el camino principal de cada funcionalidad más las
 validaciones que pide el análisis funcional o que son obvias para el usuario
-(campos obligatorios, formatos básicos, reglas de negocio críticas en
-Postgres). No agregar protecciones defensivas para casos borde improbables
+(campos obligatorios, formatos básicos, reglas de negocio críticas
+cubiertas por constraints/índices en Postgres). No agregar protecciones defensivas para casos borde improbables
 (dobles envíos por teclado, carreras de render, estados globales ajenos,
 etc.) ni extras de accesibilidad (ARIA, lectores de pantalla) si no se piden
 explícitamente. Ante la duda, preferir el código más simple y mencionar el
@@ -59,8 +61,8 @@ caso borde en una línea en vez de resolverlo.
   arquitectura nueva — no esperar al final del proyecto. El README documenta
   solo arquitectura y decisiones técnicas: **nunca referenciar fases ni
   sub-tareas** (ni "Fase 4.3" en títulos, ni "en la Fase X se va a…"). Si
-  hace falta mencionar algo futuro, describirlo por lo que es (p. ej. "la RPC
-  de confirmación de compra"). El seguimiento por fase va en `CHANGELOG.md`
+  hace falta mencionar algo futuro, describirlo por lo que es (p. ej. "la
+  confirmación de compra"). El seguimiento por fase va en `CHANGELOG.md`
   y `docs/ROADMAP.md`.
 - **`docs/ROADMAP.md`** y **`docs/ROADMAP.pdf`**: **preguntar antes de
   tocarlos**, ya sea por un cambio de estado o al armar un PR. Nunca
@@ -126,9 +128,12 @@ retroactivamente solo por esto.
 - Estado con signals de Angular + servicios inyectables. Sin NgRx.
 - Ningún componente llama a Supabase directo: siempre a través de un servicio
   de dominio que usa `SupabaseService` (en `core/`).
-- Reglas de negocio con impacto en integridad (no vender la misma butaca dos
-  veces, no solapar funciones en una sala, no reutilizar un QR) se validan en
-  Postgres, no solo en el frontend.
+- Toda llamada a Supabase se hace desde el frontend, a través de los
+  servicios, **solo** con `.from(...).select/insert/update/delete`: no se
+  invocan funciones de Postgres desde el cliente (no se vio en la materia). Las reglas con impacto en integridad
+  (no vender la misma butaca dos veces, no solapar funciones en una sala, no
+  reutilizar un QR) se apoyan en constraints/índices únicos, triggers y
+  políticas RLS de Postgres, además de la validación del frontend.
 - Estructura por *feature* (`features/<dominio>/`), no por tipo técnico
   (`/components`, `/services` planos a nivel raíz) — justificación completa en
   `README.md`.

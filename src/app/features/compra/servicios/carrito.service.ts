@@ -1,14 +1,22 @@
 import { inject, Service, signal, WritableSignal } from '@angular/core';
 import { SeleccionButacasService } from '../../../core/servicios/seleccion-butacas.service';
 import { ButacaElegida, SeleccionButacas } from '../../../core/modelos/funcion.model';
-import { ExtraCarrito, ExtrasCarrito, TipoExtraCarrito } from '../modelos/carrito.model';
+import {
+  ExtraCarrito,
+  ExtrasCarrito,
+  SaldosAplicados,
+  TipoExtraCarrito,
+  VALOR_PUNTO_EN_PESOS,
+} from '../modelos/carrito.model';
 import { CuponAplicado } from '../modelos/cupon.model';
 import { Comprador } from '../modelos/comprador.model';
+import { SolicitudCompra } from '../modelos/pago.model';
 import { CuponesService } from './cupones.service';
 
 const CLAVE_ALMACENAMIENTO = 'cine.carrito-extras';
 const CLAVE_CUPON = 'cine.carrito-cupon';
 const CLAVE_COMPRADOR = 'cine.carrito-comprador';
+const CLAVE_SALDOS = 'cine.carrito-saldos';
 
 @Service()
 export class CarritoService {
@@ -20,6 +28,7 @@ export class CarritoService {
   readonly combos = signal<ExtraCarrito[]>(this.almacenados.combos);
   readonly cupon = signal<CuponAplicado | null>(this.leerDeSesion<CuponAplicado>(CLAVE_CUPON));
   readonly comprador = signal<Comprador | null>(this.leerDeSesion<Comprador>(CLAVE_COMPRADOR));
+  readonly saldosAplicados = signal<SaldosAplicados | null>(this.leerDeSesion<SaldosAplicados>(CLAVE_SALDOS));
 
   seleccion(): SeleccionButacas | null {
     return this.seleccionButacas.seleccion();
@@ -92,6 +101,23 @@ export class CarritoService {
     return this.subtotal() - this.descuento();
   }
 
+  creditoUsado(): number {
+    return Math.min(this.saldosAplicados()?.credito ?? 0, this.total());
+  }
+
+  puntosUsados(): number {
+    const restante = this.total() - this.creditoUsado();
+    return Math.min(this.saldosAplicados()?.puntos ?? 0, Math.floor(restante / VALOR_PUNTO_EN_PESOS));
+  }
+
+  montoCubiertoPorPuntos(): number {
+    return this.puntosUsados() * VALOR_PUNTO_EN_PESOS;
+  }
+
+  totalAPagar(): number {
+    return Math.round((this.total() - this.creditoUsado() - this.montoCubiertoPorPuntos()) * 100) / 100;
+  }
+
   async aplicarCupon(codigo: string): Promise<void> {
     const cupon = await this.cupones.validar(codigo.trim().toUpperCase());
     this.cupon.set(cupon);
@@ -116,6 +142,35 @@ export class CarritoService {
     this.guardarEnSesion(CLAVE_COMPRADOR, comprador);
   }
 
+  aplicarSaldos(saldos: SaldosAplicados | null): void {
+    const aplicados = saldos && (saldos.credito > 0 || saldos.puntos > 0) ? saldos : null;
+    this.saldosAplicados.set(aplicados);
+    this.guardarEnSesion(CLAVE_SALDOS, aplicados);
+  }
+
+  solicitudDeCompra(referenciaPago: string | null): SolicitudCompra | null {
+    const seleccion = this.seleccion();
+    const comprador = this.comprador();
+    if (!seleccion || !comprador) return null;
+    return {
+      funcionId: seleccion.funcion.id,
+      adultoRequerido: seleccion.funcion.clasificacionEdad !== null,
+      entradas: seleccion.butacas.map((butaca) => ({ butacaId: butaca.id, precio: butaca.precio })),
+      productos: this.productos().map(({ id, cantidad, precioUnitario }) => ({ id, cantidad, precioUnitario })),
+      combos: this.combos().map(({ id, cantidad, precioUnitario }) => ({ id, cantidad, precioUnitario })),
+      cuponId: this.cupon()?.id ?? null,
+      emailContacto: comprador.emailContacto,
+      fechaNacimiento: comprador.fechaNacimiento,
+      subtotal: this.subtotal(),
+      descuento: this.descuento(),
+      credito: this.creditoUsado(),
+      puntos: this.puntosUsados(),
+      total: this.total(),
+      totalAPagar: this.totalAPagar(),
+      referenciaPago,
+    };
+  }
+
   cantidadItems(): number {
     return this.entradas().length + this.cantidadExtras();
   }
@@ -130,6 +185,7 @@ export class CarritoService {
     this.guardar();
     this.quitarCupon();
     this.guardarComprador(null);
+    this.aplicarSaldos(null);
     this.seleccionButacas.limpiar();
   }
 
