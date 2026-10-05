@@ -1,0 +1,66 @@
+<div class="saldos">
+  <header class="saldos__cabecera">
+    <h2 class="saldos__titulo">Saldo de tu cuenta</h2>
+    @if (saldos(); as saldos) {
+      <p class="saldos__disponible">
+        <span>Crédito <strong>{{ formatearPesos(saldos.credito) }}</strong></span>
+        <span>Puntos <strong>{{ formatearPuntos(saldos.puntos) }}</strong></span>
+      </p>
+    }
+  </header>
+
+  @if (saldos() && !tieneSaldo()) {
+    <p class="saldos__vacio">Todavía no tenés crédito ni puntos para usar. Esta compra te suma puntos.</p>
+  } @else if (saldos()) {
+    <form class="saldos__formulario" [formGroup]="formulario" (ngSubmit)="aplicar()" novalidate>
+      <div class="saldos__campos">
+        <div class="saldos__campo">
+          <label for="saldos-credito">Crédito a usar ($)</label>
+          <input id="saldos-credito" type="number" min="0" step="0.01" formControlName="credito" />
+        </div>
+        <div class="saldos__campo">
+          <label for="saldos-puntos">Puntos a usar</label>
+          <input id="saldos-puntos" type="number" min="0" step="1" formControlName="puntos" />
+        </div>
+      </div>
+      <p class="saldos__ayuda">Cada punto vale ${{ valorPunto }}. Podés combinarlos con otro medio de pago.</p>
+
+      @if (error()) {
+        <p class="saldos__error">{{ error() }}</p>
+      }
+
+      <div class="saldos__acciones">
+        @if (carrito.saldosAplicados()) {
+          <button type="button" class="saldos__quitar" (click)="quitar()">Quitar saldo</button>
+        }
+        <app-boton variante="fantasma" (click)="usarTodo()">Usar todo</app-boton>
+        <app-boton tipo="submit" variante="secundario">Aplicar</app-boton>
+      </div>
+    </form>
+  } @else if (error()) {
+    <p class="saldos__error">{{ error() }}</p>
+  }
+
+  <dl class="saldos__desglose">
+    <div class="saldos__linea">
+      <dt>Total de la compra</dt>
+      <dd>{{ formatearPesos(carrito.total()) }}</dd>
+    </div>
+    @if (carrito.creditoUsado() > 0) {
+      <div class="saldos__linea saldos__linea--descuento">
+        <dt>Crédito</dt>
+        <dd>−{{ formatearPesos(carrito.creditoUsado()) }}</dd>
+      </div>
+    }
+    @if (carrito.puntosUsados() > 0) {
+      <div class="saldos__linea saldos__linea--descuento">
+        <dt>{{ formatearPuntos(carrito.puntosUsados()) }} puntos</dt>
+        <dd>−{{ formatearPesos(carrito.montoCubiertoPorPuntos()) }}</dd>
+      </div>
+    }
+    <div class="saldos__linea saldos__linea--total">
+      <dt>A pagar</dt>
+      <dd>{{ formatearPesos(carrito.totalAPagar()) }}</dd>
+    </div>
+  </dl>
+</div>

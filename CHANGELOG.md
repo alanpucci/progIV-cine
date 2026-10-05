@@ -3,6 +3,27 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 4.5] - 2026-10-05
+
+### Added
+- Componente `SaldosCompra` (declarado en `CompraModule`) en
+  `/compra/datos-comprador`, visible solo con sesión: muestra el crédito y
+  los puntos disponibles, permite elegir cuánto usar de cada uno (o "Usar
+  todo") y desglosa total, crédito, puntos y monto a pagar.
+- `CarritoService.saldosAplicados` (signal + `sessionStorage`) y
+  `aplicarSaldos()`, `creditoUsado()`, `puntosUsados()`,
+  `montoCubiertoPorPuntos()` y `totalAPagar()`. Los importes usados se
+  topean contra el total vigente del carrito.
+- `VALOR_PUNTO_EN_PESOS` (1 punto = $1) en `carrito.model.ts`.
+
+### Changed
+- `DatosComprador` descarta los saldos aplicados cuando no hay sesión, y
+  `CarritoService.vaciar()` también los limpia.
+- `README.md`: nueva sección sobre crédito y puntos como pago parcial.
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: la sección 7 suma como
+  resuelta la equivalencia 1 punto = $1 para `ventas.puntos_usados`
+  (editado directamente sobre el PDF con PyMuPDF).
+
 ## [Fase 4.4] - 2026-09-28
 
 ### Added

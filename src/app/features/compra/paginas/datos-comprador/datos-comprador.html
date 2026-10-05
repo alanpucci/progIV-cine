@@ -25,6 +25,10 @@
       </div>
     }
 
+    @if (registrado()) {
+      <app-saldos-compra [usuarioId]="usuarioId()" />
+    }
+
     <div class="datos-comprador__panel">
       @if (registrado()) {
         <p class="datos-comprador__modo">

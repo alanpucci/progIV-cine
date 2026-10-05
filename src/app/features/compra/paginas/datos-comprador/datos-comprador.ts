@@ -29,6 +29,7 @@ export class DatosComprador implements OnInit {
 
   protected readonly cargado = signal(false);
   protected readonly fechaNacimientoPerfil = signal<string | null>(null);
+  protected readonly usuarioId = signal("");
   protected readonly intentoEnviar = signal(false);
   protected readonly errorEnvio = signal<string | null>(null);
   protected readonly confirmado = signal(false);
@@ -83,6 +84,7 @@ export class DatosComprador implements OnInit {
 
     if (sesion) {
       const perfil = await this.perfiles.obtener(sesion.user.id);
+      this.usuarioId.set(sesion.user.id);
       this.fechaNacimientoPerfil.set(perfil.fechaNacimiento);
       this.formulario.controls.fechaNacimiento.disable();
       this.formulario.patchValue({
@@ -92,6 +94,7 @@ export class DatosComprador implements OnInit {
       return;
     }
 
+    this.carrito.aplicarSaldos(null);
     if (guardado) {
       this.formulario.patchValue({
         email: guardado.emailContacto,
