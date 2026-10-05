@@ -3,10 +3,12 @@ import { SeleccionButacasService } from '../../../core/servicios/seleccion-butac
 import { ButacaElegida, SeleccionButacas } from '../../../core/modelos/funcion.model';
 import { ExtraCarrito, ExtrasCarrito, TipoExtraCarrito } from '../modelos/carrito.model';
 import { CuponAplicado } from '../modelos/cupon.model';
+import { Comprador } from '../modelos/comprador.model';
 import { CuponesService } from './cupones.service';
 
 const CLAVE_ALMACENAMIENTO = 'cine.carrito-extras';
 const CLAVE_CUPON = 'cine.carrito-cupon';
+const CLAVE_COMPRADOR = 'cine.carrito-comprador';
 
 @Service()
 export class CarritoService {
@@ -16,7 +18,8 @@ export class CarritoService {
 
   readonly productos = signal<ExtraCarrito[]>(this.almacenados.productos);
   readonly combos = signal<ExtraCarrito[]>(this.almacenados.combos);
-  readonly cupon = signal<CuponAplicado | null>(this.leerCupon());
+  readonly cupon = signal<CuponAplicado | null>(this.leerDeSesion<CuponAplicado>(CLAVE_CUPON));
+  readonly comprador = signal<Comprador | null>(this.leerDeSesion<Comprador>(CLAVE_COMPRADOR));
 
   seleccion(): SeleccionButacas | null {
     return this.seleccionButacas.seleccion();
@@ -24,6 +27,10 @@ export class CarritoService {
 
   entradas(): ButacaElegida[] {
     return this.seleccion()?.butacas ?? [];
+  }
+
+  edadMinimaRequerida(): number | null {
+    return this.seleccion()?.funcion.clasificacionEdad ?? null;
   }
 
   extras(): ExtraCarrito[] {
@@ -104,6 +111,11 @@ export class CarritoService {
     this.guardarCupon();
   }
 
+  guardarComprador(comprador: Comprador | null): void {
+    this.comprador.set(comprador);
+    this.guardarEnSesion(CLAVE_COMPRADOR, comprador);
+  }
+
   cantidadItems(): number {
     return this.entradas().length + this.cantidadExtras();
   }
@@ -117,6 +129,7 @@ export class CarritoService {
     this.combos.set([]);
     this.guardar();
     this.quitarCupon();
+    this.guardarComprador(null);
     this.seleccionButacas.limpiar();
   }
 
@@ -138,22 +151,25 @@ export class CarritoService {
   }
 
   private guardarCupon(): void {
-    const cupon = this.cupon();
+    this.guardarEnSesion(CLAVE_CUPON, this.cupon());
+  }
+
+  private guardarEnSesion(clave: string, valor: unknown): void {
     try {
-      if (cupon) {
-        sessionStorage.setItem(CLAVE_CUPON, JSON.stringify(cupon));
+      if (valor) {
+        sessionStorage.setItem(clave, JSON.stringify(valor));
       } else {
-        sessionStorage.removeItem(CLAVE_CUPON);
+        sessionStorage.removeItem(clave);
       }
     } catch {
       return;
     }
   }
 
-  private leerCupon(): CuponAplicado | null {
+  private leerDeSesion<T>(clave: string): T | null {
     try {
-      const guardado = sessionStorage.getItem(CLAVE_CUPON);
-      return guardado ? (JSON.parse(guardado) as CuponAplicado) : null;
+      const guardado = sessionStorage.getItem(clave);
+      return guardado ? (JSON.parse(guardado) as T) : null;
     } catch {
       return null;
     }

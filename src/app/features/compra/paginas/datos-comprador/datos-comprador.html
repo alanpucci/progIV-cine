@@ -1,0 +1,110 @@
+<section class="datos-comprador">
+  <header class="datos-comprador__cabecera">
+    <p class="datos-comprador__etiqueta">Boletería</p>
+    <h1 class="datos-comprador__titulo">Tus datos</h1>
+  </header>
+
+  @if (carrito.entradas().length === 0) {
+    <div class="datos-comprador__vacio">
+      <p>Para continuar necesitás elegir butacas de una función.</p>
+      <a class="datos-comprador__enlace" routerLink="/">Ver cartelera</a>
+    </div>
+  } @else if (cargado()) {
+    @if (carrito.seleccion(); as seleccion) {
+      <div class="datos-comprador__funcion">
+        <p class="datos-comprador__pelicula">
+          {{ seleccion.funcion.peliculaNombre }}
+          @if (seleccion.funcion.clasificacionEdad) {
+            <span class="datos-comprador__clasificacion">+{{ seleccion.funcion.clasificacionEdad }}</span>
+          }
+        </p>
+        <p class="datos-comprador__meta">
+          {{ carrito.entradas().length }} {{ carrito.entradas().length === 1 ? "entrada" : "entradas" }} · Total
+          ${{ carrito.total() }}
+        </p>
+      </div>
+    }
+
+    <div class="datos-comprador__panel">
+      @if (registrado()) {
+        <p class="datos-comprador__modo">
+          <span class="datos-comprador__sello">Cuenta</span>
+          Comprás con tu cuenta: la compra suma puntos y queda en tu historial.
+        </p>
+      } @else {
+        <p class="datos-comprador__modo">
+          <span class="datos-comprador__sello datos-comprador__sello--invitado">Invitado</span>
+          <span>
+            Estás comprando sin cuenta.
+            <a class="datos-comprador__enlace" routerLink="/cuenta/ingreso" [queryParams]="{ volverA: '/compra/datos-comprador' }">
+              Ingresá
+            </a>
+            para sumar puntos y usar tu crédito.
+          </span>
+        </p>
+      }
+
+      <form class="datos-comprador__formulario" [formGroup]="formulario" (ngSubmit)="continuar()" novalidate>
+        <div class="datos-comprador__campo">
+          <label for="comprador-email">Mail de contacto</label>
+          <input
+            id="comprador-email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            [attr.aria-invalid]="mostrarError(formulario.controls.email)"
+          />
+          <p class="datos-comprador__ayuda">Te enviamos las entradas a este mail.</p>
+          @if (mostrarError(formulario.controls.email)) {
+            <p class="datos-comprador__error">
+              {{ formulario.controls.email.hasError("required") ? "Ingresá un mail." : "El formato del mail no es válido." }}
+            </p>
+          }
+        </div>
+
+        <div class="datos-comprador__campo">
+          <label for="comprador-fecha">Fecha de nacimiento</label>
+          <input
+            id="comprador-fecha"
+            type="date"
+            formControlName="fechaNacimiento"
+            autocomplete="bday"
+            [min]="fechaMinima"
+            [max]="fechaMaxima"
+            [attr.aria-invalid]="mostrarError(formulario.controls.fechaNacimiento)"
+          />
+          <p class="datos-comprador__ayuda">
+            {{
+              registrado()
+                ? "Tomada de tu perfil."
+                : "La pedimos para validar la edad requerida por la película."
+            }}
+          </p>
+          @if (mostrarError(formulario.controls.fechaNacimiento)) {
+            <p class="datos-comprador__error">
+              @if (formulario.controls.fechaNacimiento.hasError("fechaFutura")) {
+                La fecha no puede ser posterior a hoy.
+              } @else if (formulario.controls.fechaNacimiento.hasError("fechaImprobable")) {
+                Revisá el año ingresado.
+              } @else {
+                Ingresá tu fecha de nacimiento.
+              }
+            </p>
+          }
+        </div>
+
+        @if (errorEnvio(); as mensaje) {
+          <p class="datos-comprador__error-envio">{{ mensaje }}</p>
+        }
+        @if (confirmado()) {
+          <p class="datos-comprador__confirmado">Datos confirmados para {{ carrito.comprador()?.emailContacto }}.</p>
+        }
+
+        <div class="datos-comprador__acciones">
+          <a class="datos-comprador__enlace" routerLink="/compra/carrito">Volver al carrito</a>
+          <app-boton tipo="submit">Continuar</app-boton>
+        </div>
+      </form>
+    </div>
+  }
+</section>

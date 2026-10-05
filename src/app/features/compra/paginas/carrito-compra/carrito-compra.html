@@ -105,7 +105,11 @@
     </article>
 
     <div class="carrito-compra__acciones">
+      @if (carrito.entradas().length === 0) {
+        <p class="carrito-compra__aviso">Elegí butacas de una función para continuar con la compra.</p>
+      }
       <app-boton variante="fantasma" (click)="vaciarCarrito()">Vaciar carrito</app-boton>
+      <app-boton [deshabilitado]="carrito.entradas().length === 0" (click)="continuar()">Continuar</app-boton>
     </div>
   }
 </section>
