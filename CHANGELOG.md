@@ -3,6 +3,14 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Refactor: catálogo sin @let] - 2026-10-05
+
+### Changed
+- `CatalogoInicio` deja de usar `@let` en el template: el pipe
+  `filtrarPeliculas` se aplica directamente en la condición de "sin
+  resultados" y en el `@for` de la grilla, en vez de guardar el resultado
+  en una variable local del template.
+
 ## [Fase 5.3] - 2026-10-05
 
 ### Added
