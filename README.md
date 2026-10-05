@@ -511,6 +511,28 @@ directos (`pg_trigger_depth() = 1`). También agrega el trigger que mantiene
 `peliculas.entradas_vendidas` (suma al insertar entradas y resta cuando un
 ítem se cancela).
 
+### Comprobante de compra: armado en el cliente, no releído de Supabase
+
+`/compra/confirmacion` (`Confirmacion`, en `CompraModule`) muestra la
+compra recién pagada: número de operación, una entrada por butaca con su
+código y el resumen de importes. No vuelve a leer la venta de Supabase: el
+comprador anónimo no tiene lectura sobre `venta_items` ni `entradas`, y
+abrírsela expondría los códigos de otras compras.
+
+En cambio, `VentasService.confirmarCompra()` devuelve lo que solo se conoce
+al grabar (id de venta, código QR de cada butaca y puntos acreditados) y
+`CarritoService.guardarComprobante()` lo combina con lo que ya tiene el
+carrito (función, butacas, extras, importes) en un `CompraConfirmada`. El
+comprobante vive en el signal `ultimaCompra`, respaldado en
+`sessionStorage` para que refrescar la página no lo pierda, y sobrevive a
+`vaciar()`. `Pago` guarda el comprobante, navega y recién después vacía el
+carrito, para no mostrar un instante el estado de carrito vacío.
+
+El costo: el comprobante solo existe en la pestaña donde se compró. El
+usuario registrado sí puede leer sus ventas y entradas de Supabase (políticas
+`*_select_propio`), así que fuera de este flujo se le pueden mostrar desde
+la base.
+
 ### Inputs y outputs: `input()` / `output()` sin `.required`
 
 Los componentes y directivas reciben datos con `input()` y emiten eventos con

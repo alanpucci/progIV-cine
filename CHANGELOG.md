@@ -3,6 +3,32 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 4.7] - 2026-10-05
+
+### Added
+- Página `/compra/confirmacion` (`Confirmacion`, declarada en
+  `CompraModule`): sello de compra pagada con número de operación, fecha y
+  mail de contacto, puntos sumados (con sesión), una entrada con forma de
+  ticket por butaca (película, sala, horario, proyección, idioma, butaca,
+  tipo, estado `emitida` y código), aviso de documento si la película tiene
+  clasificación, y resumen de extras e importes.
+- Componente presentacional `TicketEntrada` (`componentes/ticket-entrada/`,
+  declarado en `CompraModule`): recibe `funcion` y `entrada` por `input()`
+  y dibuja el ticket de una entrada emitida.
+- `CompraConfirmada` (comprobante) y `CompraRegistrada` (resultado de
+  `VentasService.confirmarCompra()`: id de venta, códigos QR por butaca y
+  puntos acreditados).
+- `CarritoService.ultimaCompra` y `guardarComprobante()`: el comprobante se
+  arma con el estado del carrito antes de vaciarlo y se respalda en
+  `sessionStorage`.
+- `codigosQrPorButaca()` y `puntosAcreditados()` en `venta.filas.ts`.
+
+### Changed
+- `Pago` ya no muestra la confirmación en la misma página: al confirmar,
+  guarda el comprobante, navega a `/compra/confirmacion` y recién ahí vacía
+  el carrito.
+- `README.md`: sección nueva sobre el comprobante de compra.
+
 ## [Fase 4.6] - 2026-10-05
 
 ### Added

@@ -10,13 +10,15 @@ import {
 } from '../modelos/carrito.model';
 import { CuponAplicado } from '../modelos/cupon.model';
 import { Comprador } from '../modelos/comprador.model';
-import { SolicitudCompra } from '../modelos/pago.model';
+import { CompraRegistrada, SolicitudCompra } from '../modelos/pago.model';
+import { CompraConfirmada } from '../modelos/confirmacion.model';
 import { CuponesService } from './cupones.service';
 
 const CLAVE_ALMACENAMIENTO = 'cine.carrito-extras';
 const CLAVE_CUPON = 'cine.carrito-cupon';
 const CLAVE_COMPRADOR = 'cine.carrito-comprador';
 const CLAVE_SALDOS = 'cine.carrito-saldos';
+const CLAVE_ULTIMA_COMPRA = 'cine.ultima-compra';
 
 @Service()
 export class CarritoService {
@@ -29,6 +31,7 @@ export class CarritoService {
   readonly cupon = signal<CuponAplicado | null>(this.leerDeSesion<CuponAplicado>(CLAVE_CUPON));
   readonly comprador = signal<Comprador | null>(this.leerDeSesion<Comprador>(CLAVE_COMPRADOR));
   readonly saldosAplicados = signal<SaldosAplicados | null>(this.leerDeSesion<SaldosAplicados>(CLAVE_SALDOS));
+  readonly ultimaCompra = signal<CompraConfirmada | null>(this.leerDeSesion<CompraConfirmada>(CLAVE_ULTIMA_COMPRA));
 
   seleccion(): SeleccionButacas | null {
     return this.seleccionButacas.seleccion();
@@ -169,6 +172,31 @@ export class CarritoService {
       totalAPagar: this.totalAPagar(),
       referenciaPago,
     };
+  }
+
+  guardarComprobante(registro: CompraRegistrada): void {
+    const seleccion = this.seleccion();
+    const comprador = this.comprador();
+    if (!seleccion || !comprador) return;
+    const comprobante: CompraConfirmada = {
+      ventaId: registro.ventaId,
+      confirmadaEn: new Date().toISOString(),
+      registrada: registro.registrada,
+      emailContacto: comprador.emailContacto,
+      funcion: seleccion.funcion,
+      entradas: seleccion.butacas.map((butaca) => ({ ...butaca, codigoQr: registro.codigosQr[butaca.id] })),
+      extras: this.extras(),
+      cuponCodigo: this.cupon()?.codigo ?? null,
+      subtotal: this.subtotal(),
+      descuento: this.descuento(),
+      credito: this.creditoUsado(),
+      puntos: this.puntosUsados(),
+      montoPuntos: this.montoCubiertoPorPuntos(),
+      totalAPagar: this.totalAPagar(),
+      puntosAcreditados: registro.puntosAcreditados,
+    };
+    this.ultimaCompra.set(comprobante);
+    this.guardarEnSesion(CLAVE_ULTIMA_COMPRA, comprobante);
   }
 
   cantidadItems(): number {

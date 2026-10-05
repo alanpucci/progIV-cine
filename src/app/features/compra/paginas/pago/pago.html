@@ -1,19 +1,10 @@
 <section class="pago">
   <header class="pago__cabecera">
     <p class="pago__etiqueta">Boletería</p>
-    <h1 class="pago__titulo">{{ ventaConfirmada() ? "Compra confirmada" : "Pago" }}</h1>
+    <h1 class="pago__titulo">Pago</h1>
   </header>
 
-  @if (ventaConfirmada(); as ventaId) {
-    <div class="pago__confirmada">
-      <span class="pago__sello">Pagada</span>
-      <p class="pago__mensaje">Tu compra quedó registrada y las entradas ya están emitidas.</p>
-      <p class="pago__operacion">
-        Operación <strong>{{ ventaId.slice(0, 8).toUpperCase() }}</strong>
-      </p>
-      <a class="pago__enlace" routerLink="/">Volver a la cartelera</a>
-    </div>
-  } @else if (carrito.entradas().length === 0 || !carrito.comprador()) {
+  @if (carrito.entradas().length === 0 || !carrito.comprador()) {
     <div class="pago__vacio">
       <p>Antes de pagar necesitás elegir butacas y completar tus datos.</p>
       <a class="pago__enlace" routerLink="/compra/datos-comprador">Completar mis datos</a>

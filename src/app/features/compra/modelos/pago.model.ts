@@ -26,3 +26,10 @@ export interface SolicitudCompra {
   totalAPagar: number;
   referenciaPago: string | null;
 }
+
+export interface CompraRegistrada {
+  ventaId: string;
+  registrada: boolean;
+  codigosQr: Record<string, string>;
+  puntosAcreditados: number;
+}

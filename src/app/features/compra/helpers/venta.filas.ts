@@ -67,7 +67,13 @@ export function filasItemsVenta(ventaId: string, solicitud: SolicitudCompra): Fi
   return [...entradas, ...productos, ...combos];
 }
 
-export function filasEntradas(items: FilaItemVenta[], adultoRequerido: boolean) {
+export interface FilaEntrada {
+  venta_item_id: string;
+  codigo_qr: string;
+  adulto_requerido: boolean;
+}
+
+export function filasEntradas(items: FilaItemVenta[], adultoRequerido: boolean): FilaEntrada[] {
   return items
     .filter((item) => item.tipo_item === 'entrada')
     .map((item) => ({
@@ -75,6 +81,15 @@ export function filasEntradas(items: FilaItemVenta[], adultoRequerido: boolean) 
       codigo_qr: crypto.randomUUID().replace(/-/g, '').toUpperCase(),
       adulto_requerido: adultoRequerido,
     }));
+}
+
+export function codigosQrPorButaca(items: FilaItemVenta[], entradas: FilaEntrada[]): Record<string, string> {
+  const codigos: Record<string, string> = {};
+  for (const entrada of entradas) {
+    const item = items.find((fila) => fila.id === entrada.venta_item_id);
+    if (item?.butaca_id) codigos[item.butaca_id] = entrada.codigo_qr;
+  }
+  return codigos;
 }
 
 export function filasPagos(ventaId: string, solicitud: SolicitudCompra) {
@@ -87,11 +102,14 @@ export function filasPagos(ventaId: string, solicitud: SolicitudCompra) {
     .map((pago) => ({ ...pago, venta_id: ventaId, estado: 'aprobado' }));
 }
 
+export function puntosAcreditados(solicitud: SolicitudCompra): number {
+  return Math.floor(solicitud.totalAPagar);
+}
+
 export function filasMovimientosPuntos(usuarioId: string, ventaId: string, solicitud: SolicitudCompra) {
-  const puntosAcreditados = Math.floor(solicitud.totalAPagar);
   return [
     { tipo: 'debito', puntos: -solicitud.puntos },
-    { tipo: 'acreditacion', puntos: puntosAcreditados },
+    { tipo: 'acreditacion', puntos: puntosAcreditados(solicitud) },
   ]
     .filter((movimiento) => movimiento.puntos !== 0)
     .map((movimiento) => ({ ...movimiento, usuario_id: usuarioId, venta_id: ventaId }));
