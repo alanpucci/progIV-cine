@@ -54,7 +54,7 @@ buscador + filtro múltiple por género, destacado "3 más vendidas" en home.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 1.1 | Capa de datos: modelos + `PeliculasService` (listado/detalle/destacadas) + RPC agregada de "más vendidas" | ✅ |
+| 1.1 | Capa de datos: modelos + `PeliculasService` (listado/detalle/destacadas) + destacado de "más vendidas" (contador `peliculas.entradas_vendidas`) | ✅ |
 | 1.2 | Página de listado (home): grilla de películas + destacado "3 más vendidas" | ✅ |
 | 1.3 | Buscador + filtro múltiple por género | ✅ |
 | 1.4 | Página de detalle de película (sinopsis, géneros, funciones disponibles, reseñas + promedio) | ⬜ |
@@ -68,16 +68,16 @@ clara), disponibilidad en tiempo real, selección de función desde el detalle.
 | 2.1 | Capa de datos: modelos (`Sala`, `Butaca`, `Funcion`, `ReservaButaca`) + `FuncionesService` (funciones disponibles por película) | ✅ |
 | 2.2 | Selección de función desde el detalle de película (fecha, horario, sala, tipo de proyección 2D/3D/4D/5D, idioma) | ✅ |
 | 2.3 | Mapa visual de butacas: layout por sala (filas/columnas) con diferenciación de color normal/accesible/VIP | ✅ |
-| 2.4 | Bloqueo temporal de butacas en selección: RPC transaccional sobre `reservas_butaca` + expiración por `expira_at` — **diferida**, se retoma antes de 4.6 | ⬜ |
+| 2.4 | Bloqueo temporal de butacas en selección: alta/baja en `reservas_butaca` desde el frontend + expiración por `expira_at` — **diferida** | ⬜ |
 | 2.5 | Disponibilidad en tiempo real (Supabase Realtime) reflejada en el mapa mientras otro usuario selecciona — **diferida**, se retoma después de 2.4 | ⬜ |
 | 2.6 | Selección de butacas en el mapa + confirmación → entrega el estado al carrito de la Fase 4 | ✅ |
 
 > **2.4 y 2.5 diferidas.** Se adelanta 2.6 para cerrar el flujo
 > película → función → butacas sin esperar el bloqueo en Postgres ni
 > Realtime. Mientras tanto la selección es solo del lado del cliente (no
-> bloquea nada), lo cual es aceptable porque todavía no se vende. 2.4 es
-> **prerrequisito de 4.6**: la confirmación de compra no se implementa
-> sin el bloqueo transaccional. 2.4 se enchufa en
+> bloquea nada). La confirmación de compra (4.6) se hizo sin esperar a la
+> 2.4: el índice único `ux_butaca_por_funcion` impide vender dos veces la
+> misma butaca, y un conflicto aparece recién al pagar. 2.4 se enchufa en
 > `SeleccionButacasService.confirmar()` sin tocar el mapa.
 
 ### Fase 3 — Autenticación y perfil (M01) 🔄
@@ -110,7 +110,7 @@ validación de edad (RN04), pantalla de pago simulada, persistencia de venta.
 | 4.3 | Aplicación de cupón: validación de tipo (`primera_compra`/`edad`/`general`), vigencia y porcentaje; aplicación automática de `primera_compra`/`edad` si el usuario cumple las condiciones | ✅ |
 | 4.4 | Checkout: datos de contacto, compra anónima vs registrada, validación de edad (RN04, `fecha_nacimiento_comprador`) | ✅ |
 | 4.5 | Checkout registrado: uso opcional de crédito/puntos disponibles como medio de pago parcial (1 punto = $1, combinable con crédito) | ✅ |
-| 4.6 | Pantalla de pago simulada + RPC transaccional de confirmación (valida butacas, crea `ventas`/`venta_items`/`pagos`, descuenta stock de productos — también los que vienen dentro de combos, vía `combo_items` —, acredita puntos) | ⬜ |
+| 4.6 | Pantalla de pago simulada + confirmación de compra desde el frontend (crea `ventas`/`venta_items`/`entradas`/`pagos`, descuenta stock de productos — también los que vienen dentro de combos, vía `combo_items` —, acredita puntos) | ✅ |
 | 4.7 | Pantalla de confirmación de compra (resumen, entradas emitidas) | ⬜ |
 
 ### Fase 5 — Entradas y QR (M09, vista cliente) ⬜
@@ -130,7 +130,7 @@ invalidación de QR usado.
 |---|---|---|
 | 6.1 | Guard de rol `empleado` + layout mínimo del panel | ⬜ |
 | 6.2 | Escaneo de QR por cámara + ingreso manual de código como alternativa | ⬜ |
-| 6.3 | RPC de validación de entrada: marca `validada`, registra en `usos_qr`, rechaza código inexistente/ya usado | ⬜ |
+| 6.3 | Validación de entrada: marca `validada`, registra en `usos_qr`, rechaza código inexistente/ya usado | ⬜ |
 | 6.4 | Retiro de Candy: marca `ventas.candy_entregado_at`, independiente de la validación de entradas | ⬜ |
 | 6.5 | Historial de validaciones de la sesión del empleado en curso | ⬜ |
 
@@ -153,11 +153,11 @@ historial, no transferencia.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 8.1 | Acreditación de puntos al confirmar una compra (integra con el RPC de la Fase 4, vía `movimientos_puntos`) | ⬜ |
+| 8.1 | Acreditación de puntos al confirmar una compra (integra con la confirmación de compra de la Fase 4, vía `movimientos_puntos`) | ⬜ |
 | 8.2 | ABM de recompensas desde administración (`recompensas`: tipo entrada/producto, costo en puntos) | ⬜ |
 | 8.3 | Canje de recompensas desde el perfil del cliente (`canjes` + débito de puntos) | ⬜ |
 | 8.4 | Vista de saldo e historial unificado de puntos y crédito en el perfil | ⬜ |
-| 8.5 | Verificación de la regla "no transferencia": puntos/crédito solo se mueven por operaciones propias del usuario vía RPC, nunca por edición directa | ⬜ |
+| 8.5 | Verificación de la regla "no transferencia": puntos/crédito solo se mueven por operaciones propias del usuario (políticas RLS + trigger de saldos), nunca por edición directa | ⬜ |
 
 ### Fase 9 — Cancelaciones (M10) ⬜
 Cancelación hasta 2 horas antes, liberación de butacas, generación de crédito.
@@ -165,7 +165,7 @@ Cancelación hasta 2 horas antes, liberación de butacas, generación de crédit
 | # | Sub-tarea | Estado |
 |---|---|---|
 | 9.1 | Cancelación de compra desde "Mis entradas"/perfil, con validación de ventana (hasta 2 hs antes de la función) | ⬜ |
-| 9.2 | RPC de cancelación: marca `ventas`/`venta_items` cancelados (libera el índice único de butaca), genera `movimientos_credito`, actualiza `peliculas.entradas_vendidas` | ⬜ |
+| 9.2 | Cancelación: marca `ventas`/`venta_items` cancelados (libera el índice único de butaca), genera `movimientos_credito`, actualiza `peliculas.entradas_vendidas` | ⬜ |
 | 9.3 | Cancelación desde el panel de administración (con motivo, sin restricción de ventana horaria) | ⬜ |
 
 ### Fase 10 — Próximamente y notificaciones (M11) ⬜
@@ -195,7 +195,7 @@ Registro y consulta de logs de acciones administrativas y de validación.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 12.1 | Registro en `logs_actividad` desde las acciones administrativas de las Fases 7-11 (RPC/triggers) | ⬜ |
+| 12.1 | Registro en `logs_actividad` desde las acciones administrativas de las Fases 7-11 (desde los servicios o con triggers) | ⬜ |
 | 12.2 | Registro en `logs_actividad` de las validaciones de QR/Candy del panel de empleado (Fase 6) | ⬜ |
 | 12.3 | Pantalla de consulta de logs en administración, con filtros por usuario/entidad/acción/fecha | ⬜ |
 

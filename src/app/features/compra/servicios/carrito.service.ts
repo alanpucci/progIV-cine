@@ -10,6 +10,7 @@ import {
 } from '../modelos/carrito.model';
 import { CuponAplicado } from '../modelos/cupon.model';
 import { Comprador } from '../modelos/comprador.model';
+import { SolicitudCompra } from '../modelos/pago.model';
 import { CuponesService } from './cupones.service';
 
 const CLAVE_ALMACENAMIENTO = 'cine.carrito-extras';
@@ -145,6 +146,29 @@ export class CarritoService {
     const aplicados = saldos && (saldos.credito > 0 || saldos.puntos > 0) ? saldos : null;
     this.saldosAplicados.set(aplicados);
     this.guardarEnSesion(CLAVE_SALDOS, aplicados);
+  }
+
+  solicitudDeCompra(referenciaPago: string | null): SolicitudCompra | null {
+    const seleccion = this.seleccion();
+    const comprador = this.comprador();
+    if (!seleccion || !comprador) return null;
+    return {
+      funcionId: seleccion.funcion.id,
+      adultoRequerido: seleccion.funcion.clasificacionEdad !== null,
+      entradas: seleccion.butacas.map((butaca) => ({ butacaId: butaca.id, precio: butaca.precio })),
+      productos: this.productos().map(({ id, cantidad, precioUnitario }) => ({ id, cantidad, precioUnitario })),
+      combos: this.combos().map(({ id, cantidad, precioUnitario }) => ({ id, cantidad, precioUnitario })),
+      cuponId: this.cupon()?.id ?? null,
+      emailContacto: comprador.emailContacto,
+      fechaNacimiento: comprador.fechaNacimiento,
+      subtotal: this.subtotal(),
+      descuento: this.descuento(),
+      credito: this.creditoUsado(),
+      puntos: this.puntosUsados(),
+      total: this.total(),
+      totalAPagar: this.totalAPagar(),
+      referenciaPago,
+    };
   }
 
   cantidadItems(): number {

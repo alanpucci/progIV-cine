@@ -1,0 +1,173 @@
+<section class="pago">
+  <header class="pago__cabecera">
+    <p class="pago__etiqueta">Boletería</p>
+    <h1 class="pago__titulo">{{ ventaConfirmada() ? "Compra confirmada" : "Pago" }}</h1>
+  </header>
+
+  @if (ventaConfirmada(); as ventaId) {
+    <div class="pago__confirmada">
+      <span class="pago__sello">Pagada</span>
+      <p class="pago__mensaje">Tu compra quedó registrada y las entradas ya están emitidas.</p>
+      <p class="pago__operacion">
+        Operación <strong>{{ ventaId.slice(0, 8).toUpperCase() }}</strong>
+      </p>
+      <a class="pago__enlace" routerLink="/">Volver a la cartelera</a>
+    </div>
+  } @else if (carrito.entradas().length === 0 || !carrito.comprador()) {
+    <div class="pago__vacio">
+      <p>Antes de pagar necesitás elegir butacas y completar tus datos.</p>
+      <a class="pago__enlace" routerLink="/compra/datos-comprador">Completar mis datos</a>
+    </div>
+  } @else {
+    <div class="pago__grilla">
+      @if (carrito.seleccion(); as seleccion) {
+        <aside class="pago__ticket">
+          <div class="pago__ticket-cuerpo">
+            <p class="pago__pelicula">{{ seleccion.funcion.peliculaNombre }}</p>
+            <p class="pago__meta">
+              {{ seleccion.funcion.salaNombre }} · {{ formatearFechaFuncion(seleccion.funcion.inicio) }}
+              {{ formatearHoraFuncion(seleccion.funcion.inicio) }} · {{ seleccion.funcion.tipoProyeccion }}
+            </p>
+            <ul class="pago__butacas">
+              @for (butaca of carrito.entradas(); track butaca.id) {
+                <li class="pago__butaca">{{ butaca.fila }}{{ butaca.numero }}</li>
+              }
+            </ul>
+            @if (carrito.cantidadExtras() > 0) {
+              <p class="pago__meta">
+                + {{ carrito.cantidadExtras() }} {{ carrito.cantidadExtras() === 1 ? "ítem" : "ítems" }} del Candy Bar
+              </p>
+            }
+          </div>
+
+          <dl class="pago__importes">
+            <div class="pago__importe">
+              <dt>Subtotal</dt>
+              <dd>{{ formatearPesos(carrito.subtotal()) }}</dd>
+            </div>
+            @if (carrito.cupon(); as cupon) {
+              <div class="pago__importe pago__importe--resta">
+                <dt>Cupón {{ cupon.codigo }}</dt>
+                <dd>−{{ formatearPesos(carrito.descuento()) }}</dd>
+              </div>
+            }
+            @if (carrito.creditoUsado() > 0) {
+              <div class="pago__importe pago__importe--resta">
+                <dt>Crédito</dt>
+                <dd>−{{ formatearPesos(carrito.creditoUsado()) }}</dd>
+              </div>
+            }
+            @if (carrito.puntosUsados() > 0) {
+              <div class="pago__importe pago__importe--resta">
+                <dt>{{ formatearPuntos(carrito.puntosUsados()) }} puntos</dt>
+                <dd>−{{ formatearPesos(carrito.montoCubiertoPorPuntos()) }}</dd>
+              </div>
+            }
+            <div class="pago__importe pago__importe--total">
+              <dt>A pagar</dt>
+              <dd>{{ formatearPesos(carrito.totalAPagar()) }}</dd>
+            </div>
+          </dl>
+        </aside>
+      }
+
+      <div class="pago__panel">
+        @if (requiereTarjeta()) {
+          <header class="pago__encabezado">
+            <h2 class="pago__subtitulo">Datos de la tarjeta</h2>
+            <p class="pago__indicacion">
+              Ingresá los datos de tu tarjeta para efectuar el pago de {{ formatearPesos(carrito.totalAPagar()) }}.
+            </p>
+          </header>
+
+          <form class="pago__formulario" [formGroup]="formulario" (ngSubmit)="pagar()" novalidate>
+            <div class="pago__campo">
+              <label for="pago-titular">Titular</label>
+              <input
+                id="pago-titular"
+                type="text"
+                formControlName="titular"
+                autocomplete="off"
+                [attr.aria-invalid]="mostrarError(formulario.controls.titular)"
+              />
+              @if (mostrarError(formulario.controls.titular)) {
+                <p class="pago__error">Ingresá el nombre como figura en la tarjeta.</p>
+              }
+            </div>
+
+            <div class="pago__campo">
+              <label for="pago-numero">Número de tarjeta</label>
+              <input
+                id="pago-numero"
+                type="text"
+                inputmode="numeric"
+                maxlength="19"
+                formControlName="numero"
+                (input)="formatearNumero($event)"
+                autocomplete="off"
+                placeholder="0000 0000 0000 0000"
+                [attr.aria-invalid]="mostrarError(formulario.controls.numero)"
+              />
+              @if (mostrarError(formulario.controls.numero)) {
+                <p class="pago__error">Ingresá los 16 dígitos de la tarjeta.</p>
+              }
+            </div>
+
+            <div class="pago__campos">
+              <div class="pago__campo">
+                <label for="pago-vencimiento">Vencimiento</label>
+                <input
+                  id="pago-vencimiento"
+                  type="text"
+                  maxlength="5"
+                  formControlName="vencimiento"
+                  inputmode="numeric"
+                  (input)="formatearVencimiento($event)"
+                  autocomplete="off"
+                  placeholder="MM/AA"
+                  [attr.aria-invalid]="mostrarError(formulario.controls.vencimiento)"
+                />
+                @if (mostrarError(formulario.controls.vencimiento)) {
+                  <p class="pago__error">
+                    {{ formulario.controls.vencimiento.hasError("tarjetaVencida") ? "La tarjeta está vencida." : "Usá el formato MM/AA." }}
+                  </p>
+                }
+              </div>
+
+              <div class="pago__campo">
+                <label for="pago-cvv">Código de seguridad</label>
+                <input
+                  id="pago-cvv"
+                  type="password"
+                  inputmode="numeric"
+                  maxlength="4"
+                  formControlName="cvv"
+                  autocomplete="off"
+                  [attr.aria-invalid]="mostrarError(formulario.controls.cvv)"
+                />
+                @if (mostrarError(formulario.controls.cvv)) {
+                  <p class="pago__error">Son 3 o 4 dígitos.</p>
+                }
+              </div>
+            </div>
+
+            <p class="pago__ayuda">Pago simulado: no se cobra nada. Una tarjeta terminada en 0000 se rechaza.</p>
+          </form>
+        } @else {
+          <p class="pago__cubierto">Tu crédito y tus puntos cubren el total de la compra, no hace falta tarjeta.</p>
+        }
+
+        @if (errorPago(); as mensaje) {
+          <p class="pago__error-envio">{{ mensaje }}</p>
+        }
+
+        <div class="pago__acciones">
+          <a class="pago__enlace" routerLink="/compra/datos-comprador">Volver a tus datos</a>
+          <app-boton (click)="pagar()">
+            {{ requiereTarjeta() ? "Pagar " + formatearPesos(carrito.totalAPagar()) : "Confirmar compra" }}
+          </app-boton>
+        </div>
+      </div>
+    </div>
+  }
+</section>

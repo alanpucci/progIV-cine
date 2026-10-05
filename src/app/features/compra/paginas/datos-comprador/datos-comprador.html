@@ -100,13 +100,10 @@
         @if (errorEnvio(); as mensaje) {
           <p class="datos-comprador__error-envio">{{ mensaje }}</p>
         }
-        @if (confirmado()) {
-          <p class="datos-comprador__confirmado">Datos confirmados para {{ carrito.comprador()?.emailContacto }}.</p>
-        }
 
         <div class="datos-comprador__acciones">
           <a class="datos-comprador__enlace" routerLink="/compra/carrito">Volver al carrito</a>
-          <app-boton tipo="submit">Continuar</app-boton>
+          <app-boton tipo="submit">Ir a pagar</app-boton>
         </div>
       </form>
     </div>

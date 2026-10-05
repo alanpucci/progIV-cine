@@ -140,12 +140,6 @@
   @include formularios.error-envio;
 }
 
-.datos-comprador__confirmado {
-  margin: 0;
-  color: var(--color-acento-secundario);
-  font-size: 0.9rem;
-}
-
 .datos-comprador__acciones {
   display: flex;
   align-items: center;

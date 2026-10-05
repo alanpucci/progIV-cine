@@ -3,6 +3,55 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 4.6] - 2026-10-05
+
+### Added
+- Página `/compra/pago` (`Pago`, declarada en `CompraModule`): resumen de la
+  compra en forma de ticket, formulario de tarjeta simulada con título e
+  indicación del monto a pagar, y confirmación de la venta. Los campos de
+  tarjeta usan `autocomplete="off"`, y el número y el vencimiento se
+  formatean mientras se escriben (`formatoNumeroTarjeta()` agrega un espacio
+  cada 4 dígitos y `formatoVencimiento()` la barra de `MM/AA`; solo aceptan
+  dígitos).
+- `VentasService.confirmarCompra()` en `features/compra/`: graba la compra
+  desde el frontend con la API de tablas de supabase-js (venta `pendiente`,
+  `venta_items`, `entradas` con código QR, `pagos` por medio usado,
+  movimientos de crédito/puntos con acreditación sobre lo pagado con
+  tarjeta, descuento de stock incluidos los productos de combos) y la pasa
+  a `pagada`.
+- `SolicitudCompra`, `CarritoService.solicitudDeCompra()` y los armadores de
+  filas en `venta.filas.ts`.
+- `tarjeta.helpers.ts`: validadores de la tarjeta y
+  `simularAutorizacion()` (rechaza las tarjetas terminadas en `0000`).
+- Migración `20261005120000_compra_desde_frontend.sql`: políticas RLS de
+  escritura acotadas para `ventas`, `venta_items`, `pagos`, `entradas`,
+  `movimientos_credito`, `movimientos_puntos` y el stock de `productos`;
+  lectura de `ventas` anónimas para `anon` limitada a `id`, `usuario_id` y
+  `estado`; trigger `trg_venta_items_entradas_vendidas` que mantiene
+  `peliculas.entradas_vendidas`.
+
+### Changed
+- Decisión de arquitectura: todas las llamadas a Supabase salen del
+  frontend con la API de tablas de supabase-js. Actualizados `README.md` (sección nueva sobre el pago
+  y la confirmación, y las de concurrencia y RLS) y `CLAUDE.md`.
+- "Ir a pagar" en `/compra/datos-comprador` navega al pago en vez de mostrar
+  un aviso de datos confirmados.
+- La etiqueta del movimiento de puntos `debito` pasa a "Uso de puntos"
+  (cubre pago y canje).
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: la sección 7 suma como
+  resuelto el proveedor de pagos simulado y la confirmación desde el
+  frontend, y el punto de crédito y puntos indica que el saldo se valida en
+  el checkout. Las reglas 5.1, 5.3 y la nota de QR atómico dejan de suponer
+  lógica de servidor invocada por el cliente.
+- `docs/ROADMAP.md` y `docs/ROADMAP.pdf`: 4.6 pasa a ✅; las sub-tareas 1.1,
+  2.4, 4.6, 6.3, 8.1, 8.5, 9.2 y 12.1 se describen sin lógica de servidor, y
+  la nota de 2.4/2.5 deja de marcar la 2.4 como prerrequisito de la 4.6.
+
+### Fixed
+- `proteger_campos_sensibles_perfil` ya no bloquea las actualizaciones de
+  saldo que hacen los triggers de `movimientos_credito` y
+  `movimientos_puntos`; solo frena los `update` directos.
+
 ## [Fase 4.5] - 2026-10-05
 
 ### Added
@@ -54,8 +103,8 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
 ### Changed
 - `README.md`: se quitan todas las referencias a fases y sub-tareas. Los
   títulos de sección pierden el "(Fase X.Y)" y lo pendiente se nombra por
-  lo que es (por ejemplo, "la RPC de confirmación de compra" en vez de "la
-  RPC de la Fase 4.6"). El README queda solo con arquitectura y decisiones
+  lo que es (por ejemplo, "la confirmación de compra" en vez de "la
+  Fase 4.6"). El README queda solo con arquitectura y decisiones
   técnicas; el seguimiento por fase sigue en `CHANGELOG.md` y
   `docs/ROADMAP.md`.
 - `CLAUDE.md`: se agrega la regla de no referenciar fases en el README.
@@ -656,8 +705,8 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
 - `supabase/migrations/20260916120100_rls_politicas.sql`: Row Level Security
   habilitada en las 26 tablas — catálogo de lectura pública/ABM admin, datos
   personales visibles solo por su dueño (o admin/empleado según rol), y
-  tablas transaccionales sensibles sin escritura de cliente (reservada a RPC
-  `security definer` de fases futuras).
+  tablas transaccionales sensibles sin escritura de cliente hasta que cada
+  funcionalidad agregue las políticas que necesita).
 
 ### Changed
 - `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: versión 3. Se agrega
