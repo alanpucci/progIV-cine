@@ -11,7 +11,7 @@
       <p class="catalogo-inicio__estado catalogo-inicio__estado--error">
         No se pudo cargar el catálogo. Volvé a intentar más tarde.
       </p>
-    } @else if (!cargandoDestacadas()) {
+    } @else if (!cargaGlobal.visible()) {
       <div class="catalogo-inicio__podio">
         @for (pelicula of destacadas(); track pelicula.id; let indice = $index) {
           <a class="catalogo-inicio__enlace" [routerLink]="['/pelicula', pelicula.id]">
@@ -39,7 +39,7 @@
   <section class="catalogo-inicio__seccion">
     <h2 class="catalogo-inicio__titulo-seccion">Todas las películas</h2>
 
-    @if (!cargandoListado() && listado().length > 0) {
+    @if (!cargaGlobal.visible() && listado().length > 0) {
       <div class="catalogo-inicio__filtros">
         <label class="catalogo-inicio__buscador">
           <span class="catalogo-inicio__buscador-icono" aria-hidden="true">⌕</span>
@@ -83,11 +83,11 @@
       <p class="catalogo-inicio__estado catalogo-inicio__estado--error">
         No se pudo cargar la cartelera. Volvé a intentar más tarde.
       </p>
-    } @else if (!cargandoListado() && listado().length === 0) {
+    } @else if (!cargaGlobal.visible() && listado().length === 0) {
       <p class="catalogo-inicio__estado">No hay películas publicadas por el momento.</p>
-    } @else if (!cargandoListado() && listadoFiltrado.length === 0) {
+    } @else if (!cargaGlobal.visible() && listadoFiltrado.length === 0) {
       <p class="catalogo-inicio__estado">No se encontraron películas con esos filtros.</p>
-    } @else if (!cargandoListado()) {
+    } @else if (!cargaGlobal.visible()) {
       <div class="catalogo-inicio__grilla">
         @for (pelicula of listadoFiltrado; track pelicula.id) {
           <a class="catalogo-inicio__enlace" [routerLink]="['/pelicula', pelicula.id]">

@@ -21,7 +21,7 @@ import { cumpleEdadMinima } from "../../helpers/edad.helpers";
 export class DatosComprador implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly perfiles = inject(PerfilesService);
-  private readonly cargaGlobal = inject(CargaGlobalService);
+  protected readonly cargaGlobal = inject(CargaGlobalService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   protected readonly carrito = inject(CarritoService);
@@ -29,7 +29,6 @@ export class DatosComprador implements OnInit {
   protected readonly fechaMinima = FECHA_NACIMIENTO_MINIMA;
   protected readonly fechaMaxima = fechaIsoLocal(new Date());
 
-  protected readonly cargado = signal(false);
   protected readonly fechaNacimientoPerfil = signal<string | null>(null);
   protected readonly usuarioId = signal("");
   protected readonly intentoEnviar = signal(false);
@@ -46,7 +45,6 @@ export class DatosComprador implements OnInit {
     } catch {
       this.errorEnvio.set("No se pudieron cargar tus datos. Intentá de nuevo.");
     }
-    this.cargado.set(true);
   }
 
   protected registrado(): boolean {

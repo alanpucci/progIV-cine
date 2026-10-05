@@ -9,7 +9,7 @@
       <p>Para continuar necesitás elegir butacas de una función.</p>
       <a class="datos-comprador__enlace" routerLink="/">Ver cartelera</a>
     </div>
-  } @else if (cargado()) {
+  } @else if (!cargaGlobal.visible()) {
     @if (carrito.seleccion(); as seleccion) {
       <div class="datos-comprador__funcion">
         <p class="datos-comprador__pelicula">

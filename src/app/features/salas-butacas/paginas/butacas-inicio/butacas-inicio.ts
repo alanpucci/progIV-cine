@@ -22,7 +22,7 @@ interface FilaDeButacas {
 export class ButacasInicio {
   private readonly ruta = inject(ActivatedRoute);
   private readonly funcionesService = inject(FuncionesService);
-  private readonly cargaGlobal = inject(CargaGlobalService);
+  protected readonly cargaGlobal = inject(CargaGlobalService);
   private readonly router = inject(Router);
   private readonly seleccionButacas = inject(SeleccionButacasService);
 
@@ -30,7 +30,6 @@ export class ButacasInicio {
   protected readonly formatearHoraFuncion = formatearHoraFuncion;
   protected readonly funcion = signal<FuncionMapa | null>(null);
   protected readonly butacas = signal<Butaca[]>([]);
-  protected readonly cargando = signal(true);
   protected readonly error = signal(false);
   protected readonly idsSeleccionados = signal<string[]>([]);
 
@@ -94,7 +93,6 @@ export class ButacasInicio {
   }
 
   private async cargarMapa(funcionId: string): Promise<void> {
-    this.cargando.set(true);
     this.error.set(false);
     this.funcion.set(null);
     this.butacas.set([]);
@@ -113,8 +111,6 @@ export class ButacasInicio {
       );
     } catch {
       this.error.set(true);
-    } finally {
-      this.cargando.set(false);
     }
   }
 }

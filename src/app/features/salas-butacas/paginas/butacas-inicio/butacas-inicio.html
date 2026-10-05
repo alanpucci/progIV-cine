@@ -4,10 +4,10 @@
     <p class="butacas-mapa__estado butacas-mapa__estado--error">
       No se pudo cargar la función. Volvé a intentar más tarde.
     </p>
-  } @else if (!cargando() && !funcion()) {
+  } @else if (!cargaGlobal.visible() && !funcion()) {
     <a class="butacas-mapa__volver" routerLink="/">← Volver a la cartelera</a>
     <p class="butacas-mapa__estado">No encontramos esa función.</p>
-  } @else if (!cargando() && funcion(); as datosFuncion) {
+  } @else if (!cargaGlobal.visible() && funcion(); as datosFuncion) {
     <a class="butacas-mapa__volver" [routerLink]="['/pelicula', datosFuncion.peliculaId]">← Volver a la película</a>
 
     <header class="butacas-mapa__encabezado">
