@@ -7,6 +7,8 @@ import { FormularioPelicula } from './paginas/formulario-pelicula/formulario-pel
 import { GenerosPeliculas } from './paginas/generos-peliculas/generos-peliculas';
 import { ListadoSalas } from './paginas/listado-salas/listado-salas';
 import { FormularioSala } from './paginas/formulario-sala/formulario-sala';
+import { ListadoFunciones } from './paginas/listado-funciones/listado-funciones';
+import { FormularioFuncion } from './paginas/formulario-funcion/formulario-funcion';
 
 const RUTAS_ADMINISTRACION: Routes = [
   {
@@ -21,6 +23,9 @@ const RUTAS_ADMINISTRACION: Routes = [
       { path: 'salas', component: ListadoSalas },
       { path: 'salas/nueva', component: FormularioSala },
       { path: 'salas/:id', component: FormularioSala },
+      { path: 'funciones', component: ListadoFunciones },
+      { path: 'funciones/nueva', component: FormularioFuncion },
+      { path: 'funciones/:id', component: FormularioFuncion },
     ],
   },
 ];

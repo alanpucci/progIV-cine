@@ -8,6 +8,8 @@ import { FormularioPelicula } from './paginas/formulario-pelicula/formulario-pel
 import { GenerosPeliculas } from './paginas/generos-peliculas/generos-peliculas';
 import { ListadoSalas } from './paginas/listado-salas/listado-salas';
 import { FormularioSala } from './paginas/formulario-sala/formulario-sala';
+import { ListadoFunciones } from './paginas/listado-funciones/listado-funciones';
+import { FormularioFuncion } from './paginas/formulario-funcion/formulario-funcion';
 import { Boton } from '../../shared/componentes/boton/boton';
 
 @NgModule({
@@ -19,6 +21,8 @@ import { Boton } from '../../shared/componentes/boton/boton';
     GenerosPeliculas,
     ListadoSalas,
     FormularioSala,
+    ListadoFunciones,
+    FormularioFuncion,
   ],
   imports: [AdministracionRoutingModule, ReactiveFormsModule, Boton],
 })

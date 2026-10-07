@@ -1,0 +1,124 @@
+<header class="formulario-funcion__cabecera">
+  <a class="formulario-funcion__enlace" routerLink="/administracion/funciones">← Volver a funciones</a>
+  <p class="formulario-funcion__etiqueta">{{ edicion() ? "Edición" : "Alta" }}</p>
+  <h2 class="formulario-funcion__titulo">{{ edicion() ? "Editar función" : "Nueva función" }}</h2>
+</header>
+
+@if (noEncontrada()) {
+  <p class="formulario-funcion__vacio">No encontramos la función que querés editar.</p>
+} @else if (conVentas()) {
+  <p class="formulario-funcion__vacio">
+    Esta función ya tiene entradas vendidas, así que no se puede cambiar su horario ni su sala.
+  </p>
+} @else if (!cargaGlobal.visible()) {
+  <form class="formulario-funcion" [formGroup]="formulario" (ngSubmit)="guardar()">
+    <div class="formulario-funcion__columna">
+      <fieldset class="formulario-funcion__bloque">
+        <legend>Película y horario</legend>
+
+        <div class="formulario-funcion__campo">
+          <label for="funcion-pelicula">Película</label>
+          <select
+            id="funcion-pelicula"
+            formControlName="peliculaId"
+            [attr.aria-invalid]="mostrarError(formulario.controls.peliculaId)"
+          >
+            <option value="" disabled>Elegí una película</option>
+            @for (pelicula of peliculas(); track pelicula.id) {
+              <option [value]="pelicula.id">{{ pelicula.nombre }} ({{ formatearDuracion(pelicula.duracionMinutos) }})</option>
+            }
+          </select>
+          @if (mostrarError(formulario.controls.peliculaId)) {
+            <p class="formulario-funcion__error">Elegí la película.</p>
+          }
+        </div>
+
+        <div class="formulario-funcion__campo">
+          <label for="funcion-inicio">Fecha y hora de inicio</label>
+          <input
+            id="funcion-inicio"
+            type="datetime-local"
+            formControlName="inicio"
+            [attr.aria-invalid]="mostrarError(formulario.controls.inicio)"
+          />
+          @if (mostrarError(formulario.controls.inicio)) {
+            <p class="formulario-funcion__error">
+              {{ formulario.controls.inicio.hasError("fechaHoraPasada") ? "La función tiene que empezar en el futuro." : "Ingresá la fecha y hora de inicio." }}
+            </p>
+          }
+        </div>
+      </fieldset>
+
+      <fieldset class="formulario-funcion__bloque">
+        <legend>Proyección</legend>
+
+        <div class="formulario-funcion__fila">
+          <div class="formulario-funcion__campo">
+            <label for="funcion-tipo">Formato</label>
+            <select id="funcion-tipo" formControlName="tipoProyeccion">
+              @for (tipo of tiposProyeccion; track tipo) {
+                <option [value]="tipo">{{ tipo }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="formulario-funcion__campo">
+            <label for="funcion-idioma">Idioma</label>
+            <select id="funcion-idioma" formControlName="idioma">
+              @for (idioma of idiomas; track idioma.valor) {
+                <option [value]="idioma.valor">{{ idioma.etiqueta }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="formulario-funcion__campo">
+            <label for="funcion-precio">Precio base ($)</label>
+            <input
+              id="funcion-precio"
+              type="number"
+              min="1"
+              formControlName="precioBase"
+              [attr.aria-invalid]="mostrarError(formulario.controls.precioBase)"
+            />
+            @if (mostrarError(formulario.controls.precioBase)) {
+              <p class="formulario-funcion__error">Ingresá un precio mayor a 0.</p>
+            }
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
+    <aside class="formulario-funcion__lateral">
+      <div class="boleto">
+        <p class="boleto__etiqueta">Admite uno</p>
+        <p class="boleto__pelicula">{{ peliculaElegida()?.nombre || "Sin película" }}</p>
+        @if (finEstimado()) {
+          <p class="boleto__horario">
+            {{ formatearHoraFuncion(inicioElegido()) }} – {{ formatearHoraFuncion(finEstimado()) }}
+          </p>
+          <p class="boleto__margen">
+            Sala ocupada hasta las {{ formatearHoraFuncion(salaLibreDesde()) }} ({{ margenMinutos }} min de margen)
+          </p>
+        } @else {
+          <p class="boleto__margen">Elegí película y horario para ver cuándo termina.</p>
+        }
+      </div>
+
+      <div class="formulario-funcion__campo">
+        <label for="funcion-sala">Sala</label>
+        <select id="funcion-sala" formControlName="salaId">
+          <option value="">Automática (primera sala libre)</option>
+          @for (sala of salas(); track sala.id) {
+            <option [value]="sala.id">{{ sala.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      @if (errorEnvio(); as mensaje) {
+        <p class="formulario-funcion__error-envio">{{ mensaje }}</p>
+      }
+
+      <app-boton tipo="submit" tamano="grande">{{ edicion() ? "Guardar cambios" : "Programar función" }}</app-boton>
+    </aside>
+  </form>
+}
