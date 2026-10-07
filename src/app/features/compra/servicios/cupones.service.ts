@@ -13,7 +13,12 @@ export class CuponesService {
   private readonly perfiles = inject(PerfilesService);
 
   async validar(codigo: string): Promise<CuponAplicado> {
-    const { data, error } = await this.supabase.from('cupones').select(COLUMNAS_CUPON).eq('codigo', codigo).maybeSingle();
+    const { data, error } = await this.supabase
+      .from('cupones')
+      .select(COLUMNAS_CUPON)
+      .eq('codigo', codigo)
+      .eq('activo', true)
+      .maybeSingle();
 
     if (error) throw error;
     if (!data) throw new Error('El cupón ingresado no existe o no está disponible.');
@@ -70,6 +75,7 @@ export class CuponesService {
       .from('cupones')
       .select(COLUMNAS_CUPON)
       .in('tipo', ['primera_compra', 'edad'])
+      .eq('activo', true)
       .order('porcentaje', { ascending: false });
 
     if (error) throw error;

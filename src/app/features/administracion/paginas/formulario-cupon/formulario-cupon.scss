@@ -1,0 +1,156 @@
+@use "formularios";
+
+.formulario-cupon__cabecera {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-xs);
+  margin-bottom: var(--espacio-xl);
+}
+
+.formulario-cupon__etiqueta {
+  margin: var(--espacio-sm) 0 0;
+  color: var(--color-acento-secundario);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.formulario-cupon__titulo {
+  font-size: 2.2rem;
+}
+
+.formulario-cupon__enlace {
+  @include formularios.enlace;
+
+  font-size: 0.9rem;
+}
+
+.formulario-cupon__vacio {
+  color: var(--color-texto-secundario);
+}
+
+.formulario-cupon {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 15rem;
+  align-items: start;
+  gap: var(--espacio-xl);
+}
+
+.formulario-cupon__columna,
+.formulario-cupon__lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+.formulario-cupon__lateral {
+  position: sticky;
+  top: 6rem;
+}
+
+.formulario-cupon__bloque {
+  @include formularios.panel;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+  margin: 0;
+  min-width: 0;
+
+  legend {
+    padding: 0 var(--espacio-sm);
+    color: var(--color-acento-secundario);
+    font-family: var(--fuente-titulo);
+    font-size: 1.3rem;
+    letter-spacing: 0.06em;
+  }
+}
+
+.formulario-cupon__fila {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-md);
+}
+
+.formulario-cupon__campo {
+  @include formularios.campo;
+
+  input:disabled {
+    color: var(--color-texto-silenciado);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.formulario-cupon__ayuda {
+  margin: 0;
+  color: var(--color-texto-silenciado);
+  font-size: 0.8rem;
+}
+
+.formulario-cupon__interruptor {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  color: var(--color-texto-primario);
+  cursor: pointer;
+
+  input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--color-acento);
+  }
+}
+
+.formulario-cupon__error {
+  @include formularios.error-campo;
+}
+
+.formulario-cupon__error-envio {
+  @include formularios.error-envio;
+}
+
+.vale-previa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-sm);
+  padding: var(--espacio-xl) var(--espacio-md);
+  border: 2px dashed color-mix(in srgb, var(--color-acento-texto) 40%, transparent);
+  border-radius: var(--radio-md);
+  background:
+    radial-gradient(circle at 0 50%, var(--color-fondo) 0 0.8rem, transparent 0.82rem),
+    radial-gradient(circle at 100% 50%, var(--color-fondo) 0 0.8rem, transparent 0.82rem),
+    var(--color-acento);
+  box-shadow: var(--sombra-elevada);
+  color: var(--color-acento-texto);
+}
+
+.vale-previa__porcentaje {
+  font-family: var(--fuente-titulo);
+  font-size: 3.5rem;
+  line-height: 1;
+}
+
+.vale-previa__codigo {
+  max-width: 100%;
+  padding: var(--espacio-xs) var(--espacio-sm);
+  border-radius: var(--radio-sm);
+  background: rgba(0, 0, 0, 0.25);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  letter-spacing: 0.12em;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 960px) {
+  .formulario-cupon,
+  .formulario-cupon__fila {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .formulario-cupon__lateral {
+    position: static;
+  }
+}

@@ -1,0 +1,64 @@
+<header class="listado">
+  <div class="listado__encabezado">
+    <p class="listado__etiqueta">Rollo 05</p>
+    <h2 class="listado__titulo">Cupones</h2>
+    <p class="listado__bajada">
+      Descuentos por porcentaje. Los de primera compra y por edad se aplican solos a quien cumple la condición.
+    </p>
+  </div>
+  <app-boton routerLink="/administracion/cupones/nuevo">Nuevo cupón</app-boton>
+</header>
+
+@if (error(); as mensaje) {
+  <p class="listado__error">{{ mensaje }}</p>
+}
+
+@if (!cargaGlobal.visible() && cupones().length === 0) {
+  <p class="listado__vacio">Todavía no hay cupones cargados.</p>
+}
+
+<ul class="talonario">
+  @for (cupon of cupones(); track cupon.id) {
+    <li class="vale" [attr.data-estado]="estado(cupon)">
+      <div class="vale__talon">
+        <span class="vale__porcentaje">{{ cupon.porcentaje }}%</span>
+        <span class="vale__off">off</span>
+      </div>
+
+      <div class="vale__cuerpo">
+        <p class="vale__codigo">{{ cupon.codigo }}</p>
+        <p class="vale__meta">{{ tipo(cupon) }} · {{ vigencia(cupon) }}</p>
+        <p class="vale__meta">
+          <span class="vale__estado">{{ estado(cupon) }}</span>
+          · {{ cupon.cantidadUsos }} {{ cupon.cantidadUsos === 1 ? "uso" : "usos" }}
+        </p>
+
+        <div class="vale__acciones">
+          @if (cuponAEliminar() === cupon.id) {
+            <app-boton tamano="chico" (click)="confirmarEliminacion(cupon.id)">Sí, eliminar</app-boton>
+            <app-boton variante="fantasma" tamano="chico" (click)="cuponAEliminar.set(null)">Cancelar</app-boton>
+          } @else {
+            <app-boton variante="secundario" tamano="chico" [routerLink]="['/administracion/cupones', cupon.id]">
+              Editar
+            </app-boton>
+            <app-boton variante="fantasma" tamano="chico" (click)="alternarActivacion(cupon)">
+              {{ cupon.activo ? "Desactivar" : "Activar" }}
+            </app-boton>
+            @if (cupon.cantidadUsos === 0) {
+              <app-boton variante="fantasma" tamano="chico" (click)="cuponAEliminar.set(cupon.id)">Eliminar</app-boton>
+            } @else {
+              <app-boton
+                variante="fantasma"
+                tamano="chico"
+                [deshabilitado]="true"
+                title="Ya se usó en compras: no se puede eliminar, pero sí desactivar."
+              >
+                Eliminar
+              </app-boton>
+            }
+          }
+        </div>
+      </div>
+    </li>
+  }
+</ul>

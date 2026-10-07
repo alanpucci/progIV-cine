@@ -34,6 +34,6 @@ export const SECCIONES_ADMINISTRACION: SeccionAdministracion[] = [
     ruta: 'cupones',
     titulo: 'Cupones',
     descripcion: 'Descuentos por porcentaje con vigencia.',
-    disponible: false,
+    disponible: true,
   },
 ];
