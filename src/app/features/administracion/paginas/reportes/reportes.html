@@ -1,0 +1,238 @@
+<header class="reportes">
+  <div class="reportes__encabezado">
+    <p class="reportes__etiqueta">Rollo 08</p>
+    <h2 class="reportes__titulo">Reportes y estadísticas</h2>
+    <p class="reportes__bajada">
+      Facturación, entradas vendidas y Candy Bar de las compras pagadas en el período. Las ventas canceladas no suman.
+    </p>
+  </div>
+</header>
+
+<div class="periodo">
+  <div class="periodo__atajos">
+    @for (opcion of atajos; track opcion.valor) {
+      <button
+        type="button"
+        class="periodo__atajo"
+        [class.periodo__atajo--activo]="atajo() === opcion.valor"
+        (click)="elegirAtajo(opcion.valor)"
+      >
+        {{ opcion.texto }}
+      </button>
+    }
+  </div>
+
+  <form class="periodo__rango" (ngSubmit)="consultarRango()">
+    <label class="periodo__campo">
+      <span>Desde</span>
+      <input type="date" name="desde" [(ngModel)]="desde" />
+    </label>
+    <label class="periodo__campo">
+      <span>Hasta</span>
+      <input type="date" name="hasta" [(ngModel)]="hasta" />
+    </label>
+    <app-boton tipo="submit" variante="secundario" tamano="chico">Consultar</app-boton>
+  </form>
+</div>
+
+@if (error(); as mensaje) {
+  <p class="reportes__error">{{ mensaje }}</p>
+}
+
+@if (reporte(); as datos) {
+  <section class="marquesina">
+    <div class="marquesina__cabecera">
+      <p class="marquesina__periodo">{{ periodoTexto(datos) }}</p>
+      <div class="marquesina__exportar">
+        <app-boton variante="fantasma" tamano="chico" (click)="exportar('pdf')">Exportar PDF</app-boton>
+        <app-boton variante="fantasma" tamano="chico" (click)="exportar('excel')">Exportar Excel</app-boton>
+      </div>
+    </div>
+
+    <dl class="marquesina__indicadores">
+      <div class="indicador indicador--principal">
+        <dt>Facturado</dt>
+        <dd>{{ pesos(datos.totales.facturado) }}</dd>
+      </div>
+      <div class="indicador">
+        <dt>Ventas pagadas</dt>
+        <dd>{{ datos.totales.ventas }}</dd>
+      </div>
+      <div class="indicador">
+        <dt>Entradas vendidas</dt>
+        <dd>{{ datos.totales.entradas }}</dd>
+      </div>
+      <div class="indicador">
+        <dt>Descuentos</dt>
+        <dd>{{ pesos(datos.totales.descuentos) }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <div class="vistas">
+    <button
+      type="button"
+      class="vistas__opcion"
+      [class.vistas__opcion--activa]="vista() === 'facturacion'"
+      (click)="vista.set('facturacion')"
+    >
+      Facturación diaria
+    </button>
+    <button
+      type="button"
+      class="vistas__opcion"
+      [class.vistas__opcion--activa]="vista() === 'entradas'"
+      (click)="vista.set('entradas')"
+    >
+      Entradas
+    </button>
+    <button
+      type="button"
+      class="vistas__opcion"
+      [class.vistas__opcion--activa]="vista() === 'candy'"
+      (click)="vista.set('candy')"
+    >
+      Candy Bar
+    </button>
+  </div>
+
+  @switch (vista()) {
+    @case ("facturacion") {
+      <div class="tabla">
+        <table>
+          <thead>
+            <tr>
+              <th>Día</th>
+              <th class="tabla__numero">Ventas</th>
+              <th class="tabla__numero">Entradas</th>
+              <th class="tabla__numero">Descuentos</th>
+              <th class="tabla__numero">Facturado</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (fila of datos.dias; track fila.fecha) {
+              <tr [class.tabla__fila--vacia]="fila.ventas === 0">
+                <td>{{ dia(fila.fecha) }}</td>
+                <td class="tabla__numero">{{ fila.ventas }}</td>
+                <td class="tabla__numero">{{ fila.entradas }}</td>
+                <td class="tabla__numero">{{ pesos(fila.descuentos) }}</td>
+                <td class="tabla__numero">{{ pesos(fila.facturado) }}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>Total</td>
+              <td class="tabla__numero">{{ datos.totales.ventas }}</td>
+              <td class="tabla__numero">{{ datos.totales.entradas }}</td>
+              <td class="tabla__numero">{{ pesos(datos.totales.descuentos) }}</td>
+              <td class="tabla__numero">{{ pesos(datos.totales.facturado) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    }
+
+    @case ("entradas") {
+      <app-grafico-barras
+        titulo="Películas más vistas"
+        subtitulo="Entradas vendidas en el período"
+        mensajeVacio="No se vendieron entradas en el período."
+        [barras]="barrasPeliculas(datos)"
+      />
+
+      <h3 class="reportes__subtitulo">Por película</h3>
+      @if (datos.peliculas.length === 0) {
+        <p class="reportes__vacio">No se vendieron entradas en el período.</p>
+      } @else {
+        <div class="tabla">
+          <table>
+            <thead>
+              <tr>
+                <th>Película</th>
+                <th class="tabla__numero">Funciones</th>
+                <th class="tabla__numero">Entradas</th>
+                <th class="tabla__numero">Importe de lista</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (fila of datos.peliculas; track fila.peliculaId) {
+                <tr>
+                  <td>{{ fila.nombre }}</td>
+                  <td class="tabla__numero">{{ fila.funciones }}</td>
+                  <td class="tabla__numero">{{ fila.entradas }}</td>
+                  <td class="tabla__numero">{{ pesos(fila.importe) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <h3 class="reportes__subtitulo">Por función</h3>
+      @if (datos.funciones.length === 0) {
+        <p class="reportes__vacio">No se vendieron entradas en el período.</p>
+      } @else {
+        <div class="tabla">
+          <table>
+            <thead>
+              <tr>
+                <th>Película</th>
+                <th>Función</th>
+                <th>Sala</th>
+                <th class="tabla__numero">Entradas</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (fila of datos.funciones; track fila.funcionId) {
+                <tr>
+                  <td>{{ fila.pelicula }}</td>
+                  <td>{{ inicioFuncion(fila.inicio) }}</td>
+                  <td>{{ fila.sala }}</td>
+                  <td class="tabla__numero">{{ fila.entradas }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+
+    @case ("candy") {
+      <app-grafico-barras
+        titulo="Productos más vendidos"
+        subtitulo="Unidades, sueltas y dentro de combos"
+        mensajeVacio="No se vendieron productos en el período."
+        [barras]="barrasProductos(datos)"
+      />
+
+      <h3 class="reportes__subtitulo">Todos los productos</h3>
+      @if (datos.productos.length === 0) {
+        <p class="reportes__vacio">No se vendieron productos en el período.</p>
+      } @else {
+        <div class="tabla">
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th class="tabla__numero">Sueltos</th>
+                <th class="tabla__numero">En combos</th>
+                <th class="tabla__numero">Unidades</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (fila of datos.productos; track fila.productoId) {
+                <tr>
+                  <td>{{ fila.nombre }}</td>
+                  <td class="tabla__numero">{{ fila.sueltos }}</td>
+                  <td class="tabla__numero">{{ fila.enCombos }}</td>
+                  <td class="tabla__numero">{{ fila.unidades }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  }
+}
