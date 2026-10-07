@@ -36,4 +36,10 @@ export const SECCIONES_ADMINISTRACION: SeccionAdministracion[] = [
     descripcion: 'Descuentos por porcentaje con vigencia.',
     disponible: true,
   },
+  {
+    ruta: 'recompensas',
+    titulo: 'Recompensas',
+    descripcion: 'Entradas y productos canjeables por puntos.',
+    disponible: true,
+  },
 ];

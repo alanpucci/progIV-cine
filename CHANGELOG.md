@@ -3,6 +3,23 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 8] - 2026-10-07
+
+### Added
+- `RecompensasAdministracionService` (listado con cantidad de canjes,
+  obtener por id, crear, actualizar, activar/desactivar y eliminar).
+- Página `ListadoRecompensas` (`/administracion/recompensas`): fichas con
+  costo en puntos, tipo (entrada o Candy Bar), qué se entrega, estado y
+  canjes. "Eliminar" deshabilitado si la recompensa ya se canjeó.
+- Página `FormularioRecompensa` (`/administracion/recompensas/nueva` y
+  `/administracion/recompensas/:id`): nombre, tipo, producto (solo para el
+  tipo producto), costo en puntos y estado, con vista previa de la ficha.
+- Validador de grupo `productoRequerido`.
+- Modelo compartido `Recompensa`/`TipoRecompensa` en `core/modelos/`.
+
+### Changed
+- Nueva sección "Recompensas" en el panel de administración.
+
 ## [Docs: roadmap Fase 7] - 2026-10-07
 
 ### Changed

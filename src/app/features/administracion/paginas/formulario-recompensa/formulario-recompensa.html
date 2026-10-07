@@ -1,0 +1,105 @@
+<header class="formulario-recompensa__cabecera">
+  <a class="formulario-recompensa__enlace" routerLink="/administracion/recompensas">← Volver a recompensas</a>
+  <p class="formulario-recompensa__etiqueta">{{ edicion() ? "Edición" : "Alta" }}</p>
+  <h2 class="formulario-recompensa__titulo">{{ edicion() ? "Editar recompensa" : "Nueva recompensa" }}</h2>
+</header>
+
+@if (noEncontrada()) {
+  <p class="formulario-recompensa__vacio">No encontramos la recompensa que querés editar.</p>
+} @else if (!cargaGlobal.visible()) {
+  <form class="formulario-recompensa" [formGroup]="formulario" (ngSubmit)="guardar()">
+    <fieldset class="formulario-recompensa__bloque">
+      <legend>Recompensa</legend>
+
+      <div class="formulario-recompensa__campo">
+        <label for="recompensa-nombre">Nombre</label>
+        <input
+          id="recompensa-nombre"
+          type="text"
+          formControlName="nombre"
+          placeholder="Entrada 2D de regalo"
+          [attr.aria-invalid]="mostrarError(formulario.controls.nombre)"
+        />
+        @if (mostrarError(formulario.controls.nombre)) {
+          <p class="formulario-recompensa__error">
+            {{
+              formulario.controls.nombre.hasError("maxlength")
+                ? "Máximo 80 caracteres."
+                : "Ingresá el nombre que va a ver el cliente."
+            }}
+          </p>
+        }
+      </div>
+
+      <div class="formulario-recompensa__fila">
+        <div class="formulario-recompensa__campo">
+          <label for="recompensa-tipo">Tipo</label>
+          <select id="recompensa-tipo" formControlName="tipo" (change)="sincronizarProducto()">
+            @for (tipo of tipos; track tipo.valor) {
+              <option [value]="tipo.valor">{{ tipo.etiqueta }}</option>
+            }
+          </select>
+          <p class="formulario-recompensa__ayuda">{{ ayudaTipo() }}</p>
+        </div>
+
+        <div class="formulario-recompensa__campo">
+          <label for="recompensa-producto">Producto</label>
+          <select
+            id="recompensa-producto"
+            formControlName="productoId"
+            [attr.aria-invalid]="mostrarErrorGrupo('productoRequerido')"
+          >
+            <option value="">Elegí un producto</option>
+            @for (producto of productosElegibles(); track producto.id) {
+              <option [value]="producto.id">{{ producto.nombre }} · ${{ producto.precio }}</option>
+            }
+          </select>
+          @if (mostrarErrorGrupo("productoRequerido")) {
+            <p class="formulario-recompensa__error">Elegí el producto que se entrega.</p>
+          }
+        </div>
+      </div>
+
+      <div class="formulario-recompensa__fila">
+        <div class="formulario-recompensa__campo">
+          <label for="recompensa-puntos">Costo en puntos</label>
+          <input
+            id="recompensa-puntos"
+            type="number"
+            min="1"
+            step="1"
+            formControlName="puntosCosto"
+            [attr.aria-invalid]="mostrarError(formulario.controls.puntosCosto)"
+          />
+          @if (mostrarError(formulario.controls.puntosCosto)) {
+            <p class="formulario-recompensa__error">Ingresá una cantidad entera de puntos mayor a 0.</p>
+          } @else if (formulario.controls.tipo.value === "producto" && precioReferencia() !== null) {
+            <p class="formulario-recompensa__ayuda">
+              Como pago parcial, el producto costaría {{ precioReferencia() }} puntos (1 punto = $1).
+            </p>
+          }
+        </div>
+
+        <label class="formulario-recompensa__interruptor">
+          <input type="checkbox" formControlName="activo" />
+          <span>Activa</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <aside class="formulario-recompensa__lateral">
+      <div class="ficha-previa">
+        <span class="ficha-previa__tipo">{{ formulario.controls.tipo.value === "entrada" ? "Entrada" : "Candy Bar" }}</span>
+        <span class="ficha-previa__puntos">{{ formulario.controls.puntosCosto.value || 0 }}</span>
+        <span class="ficha-previa__unidad">puntos</span>
+        <span class="ficha-previa__nombre">{{ formulario.controls.nombre.value || "Nombre de la recompensa" }}</span>
+      </div>
+
+      @if (errorEnvio(); as mensaje) {
+        <p class="formulario-recompensa__error-envio">{{ mensaje }}</p>
+      }
+
+      <app-boton tipo="submit" tamano="grande">{{ edicion() ? "Guardar cambios" : "Crear recompensa" }}</app-boton>
+    </aside>
+  </form>
+}

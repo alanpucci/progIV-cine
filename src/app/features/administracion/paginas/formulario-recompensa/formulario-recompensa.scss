@@ -1,0 +1,164 @@
+@use "formularios";
+
+.formulario-recompensa__cabecera {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-xs);
+  margin-bottom: var(--espacio-xl);
+}
+
+.formulario-recompensa__etiqueta {
+  margin: var(--espacio-sm) 0 0;
+  color: var(--color-acento-secundario);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.formulario-recompensa__titulo {
+  font-size: 2.2rem;
+}
+
+.formulario-recompensa__enlace {
+  @include formularios.enlace;
+
+  font-size: 0.9rem;
+}
+
+.formulario-recompensa__vacio {
+  color: var(--color-texto-secundario);
+}
+
+.formulario-recompensa {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 15rem;
+  align-items: start;
+  gap: var(--espacio-xl);
+}
+
+.formulario-recompensa__lateral {
+  position: sticky;
+  top: 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+.formulario-recompensa__bloque {
+  @include formularios.panel;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+  margin: 0;
+  min-width: 0;
+
+  legend {
+    padding: 0 var(--espacio-sm);
+    color: var(--color-acento-secundario);
+    font-family: var(--fuente-titulo);
+    font-size: 1.3rem;
+    letter-spacing: 0.06em;
+  }
+}
+
+.formulario-recompensa__fila {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--espacio-md);
+}
+
+.formulario-recompensa__campo {
+  @include formularios.campo;
+
+  select:disabled {
+    color: var(--color-texto-silenciado);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.formulario-recompensa__ayuda {
+  margin: 0;
+  color: var(--color-texto-silenciado);
+  font-size: 0.8rem;
+}
+
+.formulario-recompensa__interruptor {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  margin-top: 1.9rem;
+  color: var(--color-texto-primario);
+  cursor: pointer;
+
+  input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--color-acento);
+  }
+}
+
+.formulario-recompensa__error {
+  @include formularios.error-campo;
+}
+
+.formulario-recompensa__error-envio {
+  @include formularios.error-envio;
+}
+
+.ficha-previa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-xs);
+  padding: var(--espacio-xl) var(--espacio-md);
+  border-radius: 50% / 18%;
+  background:
+    repeating-radial-gradient(circle at 50% 40%, transparent 0 1.2rem, rgba(0, 0, 0, 0.12) 1.2rem 1.35rem),
+    var(--color-acento-secundario);
+  box-shadow: var(--sombra-elevada);
+  color: var(--color-acento-texto);
+  text-align: center;
+}
+
+.ficha-previa__tipo,
+.ficha-previa__unidad {
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.ficha-previa__puntos {
+  font-family: var(--fuente-titulo);
+  font-size: 3.2rem;
+  line-height: 1;
+}
+
+.ficha-previa__nombre {
+  max-width: 100%;
+  margin-top: var(--espacio-sm);
+  padding: var(--espacio-xs) var(--espacio-sm);
+  border-radius: var(--radio-sm);
+  background: rgba(0, 0, 0, 0.25);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 960px) {
+  .formulario-recompensa,
+  .formulario-recompensa__fila {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .formulario-recompensa__lateral {
+    position: static;
+  }
+
+  .formulario-recompensa__interruptor {
+    margin-top: 0;
+  }
+}
