@@ -10,7 +10,8 @@ import {
   fechaIsoLocal,
   fechaNacimientoValida,
 } from "../../../../shared/validadores/fecha.validadores";
-import { contrasenasCoinciden, sinEspaciosVacios } from "../../validadores/registro.validadores";
+import { contrasenasCoinciden } from "../../validadores/registro.validadores";
+import { sinEspaciosVacios } from "../../../../shared/validadores/texto.validadores";
 
 const LARGO_MINIMO_CONTRASENA = 8;
 

@@ -34,5 +34,5 @@ export function formatearHoraFuncion(inicio: string): string {
 }
 
 export function formatearFechaEstreno(fecha: string): string {
-  return FORMATEADOR_FECHA_ESTRENO.format(new Date(fecha));
+  return FORMATEADOR_FECHA_ESTRENO.format(new Date(`${fecha}T00:00:00`));
 }

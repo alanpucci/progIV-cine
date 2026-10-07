@@ -1,0 +1,71 @@
+<header class="generos__cabecera">
+  <a class="generos__enlace" routerLink="/administracion/peliculas">← Volver a películas</a>
+  <p class="generos__etiqueta">Rollo 01 · Géneros</p>
+  <h2 class="generos__titulo">Géneros</h2>
+  <p class="generos__bajada">Los géneros alimentan el filtro del catálogo. Eliminar uno lo quita de las películas que lo tengan.</p>
+</header>
+
+<form class="generos__alta" [formGroup]="formularioAlta" (ngSubmit)="agregar()">
+  <div class="generos__campo">
+    <label for="genero-nuevo">Nuevo género</label>
+    <input
+      id="genero-nuevo"
+      type="text"
+      formControlName="nombre"
+      [attr.aria-invalid]="formularioAlta.invalid && intentoAgregar()"
+    />
+  </div>
+  <app-boton tipo="submit">Agregar</app-boton>
+</form>
+@if (formularioAlta.invalid && intentoAgregar()) {
+  <p class="generos__error">Ingresá el nombre del género.</p>
+}
+
+@if (error(); as mensaje) {
+  <p class="generos__error">{{ mensaje }}</p>
+}
+
+<ul class="cartel">
+  @for (genero of generos(); track genero.id) {
+    <li class="cartel__fila">
+      @if (generoEditando() === genero.id) {
+        <form class="cartel__edicion" [formGroup]="formularioEdicion" (ngSubmit)="guardarEdicion(genero.id)">
+          <input
+            class="cartel__input"
+            type="text"
+            formControlName="nombre"
+            [attr.aria-invalid]="formularioEdicion.invalid"
+          />
+          <app-boton tipo="submit" tamano="chico">Guardar</app-boton>
+          <app-boton variante="fantasma" tamano="chico" (click)="generoEditando.set(null)">Cancelar</app-boton>
+        </form>
+      } @else {
+        <span class="cartel__nombre">{{ genero.nombre }}</span>
+        <span class="cartel__cantidad">
+          {{ genero.cantidadPeliculas }} {{ genero.cantidadPeliculas === 1 ? "película" : "películas" }}
+        </span>
+
+        <div class="cartel__acciones">
+          @if (generoAEliminar() === genero.id) {
+            <span class="cartel__confirmacion">
+              {{
+                genero.cantidadPeliculas > 0
+                  ? "Se va a quitar de " + genero.cantidadPeliculas + (genero.cantidadPeliculas === 1 ? " película." : " películas.")
+                  : "¿Eliminar?"
+              }}
+            </span>
+            <app-boton tamano="chico" (click)="confirmarEliminacion(genero.id)">Eliminar</app-boton>
+            <app-boton variante="fantasma" tamano="chico" (click)="generoAEliminar.set(null)">Cancelar</app-boton>
+          } @else {
+            <app-boton variante="secundario" tamano="chico" (click)="empezarEdicion(genero)">Renombrar</app-boton>
+            <app-boton variante="fantasma" tamano="chico" (click)="pedirEliminacion(genero.id)">Eliminar</app-boton>
+          }
+        </div>
+      }
+    </li>
+  } @empty {
+    @if (!cargaGlobal.visible()) {
+      <li class="cartel__vacio">Todavía no hay géneros cargados.</li>
+    }
+  }
+</ul>

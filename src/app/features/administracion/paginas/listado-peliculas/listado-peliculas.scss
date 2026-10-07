@@ -1,0 +1,202 @@
+@use "formularios";
+
+.listado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--espacio-lg);
+  margin-bottom: var(--espacio-xl);
+}
+
+.listado__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+}
+
+.listado__etiqueta {
+  margin: 0;
+  color: var(--color-acento-secundario);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.listado__titulo {
+  font-size: 2.2rem;
+}
+
+.listado__bajada {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.listado__acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-lg);
+}
+
+.listado__enlace {
+  @include formularios.enlace;
+}
+
+.listado__error {
+  @include formularios.error-envio;
+
+  margin-bottom: var(--espacio-lg);
+}
+
+.listado__vacio {
+  color: var(--color-texto-secundario);
+}
+
+.tira {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: var(--espacio-sm) 1.6rem;
+  list-style: none;
+  border-radius: var(--radio-md);
+  background:
+    repeating-linear-gradient(180deg, var(--color-fondo) 0 0.7rem, transparent 0.7rem 1.6rem) left 0.5rem top 0 /
+      0.6rem 100% no-repeat,
+    repeating-linear-gradient(180deg, var(--color-fondo) 0 0.7rem, transparent 0.7rem 1.6rem) right 0.5rem top 0 /
+      0.6rem 100% no-repeat,
+    var(--color-superficie-elevada);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.fotograma {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--espacio-lg);
+  padding: var(--espacio-md);
+  border-bottom: 2px solid var(--color-fondo);
+  background: var(--color-superficie);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &--oculta .fotograma__poster {
+    filter: grayscale(1) brightness(0.6);
+  }
+
+  &--oculta .fotograma__nombre {
+    color: var(--color-texto-secundario);
+  }
+}
+
+.fotograma__poster {
+  width: 4.5rem;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radio-sm);
+  object-fit: cover;
+  background: var(--color-fondo-alterno);
+}
+
+.fotograma__datos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+  min-width: 0;
+}
+
+.fotograma__nombre {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  margin: 0;
+  color: var(--color-texto-primario);
+  font-family: var(--fuente-titulo);
+  font-size: 1.5rem;
+  letter-spacing: 0.03em;
+}
+
+.fotograma__clasificacion {
+  padding: 0 var(--espacio-xs);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-sm);
+  color: var(--color-texto-secundario);
+  font-family: var(--fuente-base);
+  font-size: 0.7rem;
+  letter-spacing: 0;
+}
+
+.fotograma__meta,
+.fotograma__generos {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.85rem;
+}
+
+.fotograma__generos {
+  color: var(--color-texto-silenciado);
+}
+
+.fotograma__sellos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-sm);
+  margin-top: var(--espacio-xs);
+}
+
+.sello {
+  padding: 0.1rem var(--espacio-sm);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-completo);
+  color: var(--color-texto-silenciado);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  &--activo {
+    border-color: var(--color-exito);
+    color: var(--color-exito);
+  }
+
+  &--preventa {
+    border-color: var(--color-acento-secundario);
+    color: var(--color-acento-secundario);
+  }
+}
+
+.fotograma__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--espacio-sm);
+  max-width: 16rem;
+}
+
+.fotograma__confirmacion {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.85rem;
+  text-align: right;
+}
+
+@media (max-width: 720px) {
+  .fotograma {
+    grid-template-columns: 4rem minmax(0, 1fr);
+  }
+
+  .fotograma__acciones {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    max-width: none;
+  }
+
+  .fotograma__confirmacion {
+    text-align: left;
+  }
+}

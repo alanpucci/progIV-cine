@@ -3,6 +3,46 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 7.2] - 2026-10-06
+
+### Added
+- Migración `reglas_peliculas_generos`: checks
+  `peliculas_precio_preventa_positivo` y `peliculas_preventa_con_precio`, e
+  índice único `generos_nombre_unico_sin_mayusculas` sobre `lower(nombre)`.
+- `PeliculasAdministracionService` (listado completo incluidas las ocultas,
+  obtener por id, crear, actualizar con reemplazo de géneros, ocultar/publicar
+  y eliminar) y `GenerosAdministracionService` (listado con cantidad de
+  películas, crear, renombrar y eliminar), en la feature `administracion`.
+- Página `ListadoPeliculas` (`/administracion/peliculas`): catálogo completo
+  con estado de publicación, preventa y cantidad de funciones, y acciones
+  editar, ocultar/publicar y eliminar con confirmación. "Eliminar" queda
+  deshabilitado si la película tiene funciones cargadas.
+- Página `FormularioPelicula` (`/administracion/peliculas/nueva` y
+  `/administracion/peliculas/:id`): alta y edición con ficha, sinopsis,
+  géneros, publicación, preventa y vista previa del afiche. El precio de
+  preventa queda deshabilitado mientras la preventa no esté habilitada.
+- Página `GenerosPeliculas` (`/administracion/peliculas/generos`): alta,
+  renombrado y baja de géneros.
+- Validador de grupo `precioPreventaRequerido` y helper `mensajeDeError()`.
+
+### Changed
+- La sección "Películas" del panel queda disponible.
+- `sinEspaciosVacios` se mueve de `features/perfil/validadores/` a
+  `shared/validadores/texto.validadores.ts`, porque ahora también lo usan los
+  formularios de películas y géneros.
+- Se quita el atributo `novalidate` de todos los `<form>` (perfil, compra y
+  administración): `ReactiveFormsModule` ya lo agrega solo.
+- `CLAUDE.md`: convenciones de formularios (leer con `.value` en vez de
+  `getRawValue()`, no escribir `novalidate`).
+- `README.md`: nueva sección sobre el ABM de películas y géneros; se corrige
+  la mención de que el panel iba a reutilizar `PeliculasService`.
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: restricciones nuevas de
+  `peliculas.precio_preventa` y `generos.nombre`.
+
+### Fixed
+- `formatearFechaEstreno()` mostraba el día anterior: la fecha `YYYY-MM-DD`
+  se interpretaba como medianoche UTC.
+
 ## [Fase 7.1] - 2026-10-06
 
 ### Added

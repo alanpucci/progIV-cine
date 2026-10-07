@@ -1,0 +1,74 @@
+<header class="listado">
+  <div class="listado__encabezado">
+    <p class="listado__etiqueta">Rollo 01</p>
+    <h2 class="listado__titulo">Películas</h2>
+    <p class="listado__bajada">Todo el catálogo, incluidas las películas ocultas al público.</p>
+  </div>
+  <div class="listado__acciones">
+    <a class="listado__enlace" routerLink="/administracion/peliculas/generos">Géneros</a>
+    <app-boton routerLink="/administracion/peliculas/nueva">Nueva película</app-boton>
+  </div>
+</header>
+
+@if (error(); as mensaje) {
+  <p class="listado__error">{{ mensaje }}</p>
+}
+
+@if (!cargaGlobal.visible() && peliculas().length === 0) {
+  <p class="listado__vacio">Todavía no hay películas cargadas.</p>
+}
+
+<ol class="tira">
+  @for (pelicula of peliculas(); track pelicula.id) {
+    <li class="fotograma" [class.fotograma--oculta]="!pelicula.publicada">
+      <img class="fotograma__poster" [src]="pelicula.imagenUrl" [alt]="pelicula.nombre" loading="lazy" />
+
+      <div class="fotograma__datos">
+        <p class="fotograma__nombre">
+          {{ pelicula.nombre }}
+          <span class="fotograma__clasificacion">{{ formatearClasificacion(pelicula.clasificacionEdad) }}</span>
+        </p>
+        <p class="fotograma__meta">
+          {{ formatearFechaEstreno(pelicula.fechaEstreno) }} · {{ formatearDuracion(pelicula.duracionMinutos) }} ·
+          {{ pelicula.cantidadFunciones }} {{ pelicula.cantidadFunciones === 1 ? "función" : "funciones" }}
+        </p>
+        <p class="fotograma__generos">{{ nombresGeneros(pelicula) }}</p>
+        <div class="fotograma__sellos">
+          <span class="sello" [class.sello--activo]="pelicula.publicada">
+            {{ pelicula.publicada ? "En catálogo" : "Oculta" }}
+          </span>
+          @if (pelicula.preventaHabilitada) {
+            <span class="sello sello--preventa">Preventa ${{ pelicula.precioPreventa }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="fotograma__acciones">
+        @if (peliculaAEliminar() === pelicula.id) {
+          <p class="fotograma__confirmacion">¿Eliminar definitivamente?</p>
+          <app-boton variante="primario" tamano="chico" (click)="confirmarEliminacion(pelicula.id)">Sí, eliminar</app-boton>
+          <app-boton variante="fantasma" tamano="chico" (click)="peliculaAEliminar.set(null)">Cancelar</app-boton>
+        } @else {
+          <app-boton variante="secundario" tamano="chico" [routerLink]="['/administracion/peliculas', pelicula.id]">
+            Editar
+          </app-boton>
+          <app-boton variante="fantasma" tamano="chico" (click)="alternarPublicacion(pelicula)">
+            {{ pelicula.publicada ? "Ocultar" : "Publicar" }}
+          </app-boton>
+          @if (pelicula.cantidadFunciones === 0) {
+            <app-boton variante="fantasma" tamano="chico" (click)="peliculaAEliminar.set(pelicula.id)">Eliminar</app-boton>
+          } @else {
+            <app-boton
+              variante="fantasma"
+              tamano="chico"
+              [deshabilitado]="true"
+              title="Tiene funciones cargadas: no se puede eliminar, pero sí ocultar del catálogo."
+            >
+              Eliminar
+            </app-boton>
+          }
+        }
+      </div>
+    </li>
+  }
+</ol>
