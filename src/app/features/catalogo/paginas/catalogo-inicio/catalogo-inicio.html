@@ -2,6 +2,7 @@
   <header class="catalogo-inicio__marquesina">
     <h1 class="catalogo-inicio__titulo-marquesina">En cartelera esta semana</h1>
     <p class="catalogo-inicio__lema">Butacas listas, proyector encendido.</p>
+    <a class="catalogo-inicio__proximamente" routerLink="/proximamente">Ver los próximos estrenos →</a>
   </header>
 
   <section class="catalogo-inicio__seccion">
@@ -96,6 +97,9 @@
         ) {
           <a class="catalogo-inicio__enlace" [routerLink]="['/pelicula', pelicula.id]">
             <app-tarjeta class="catalogo-inicio__tarjeta" appInteractiva>
+              @if (estadoVenta(pelicula) === "preventa") {
+                <span class="catalogo-inicio__sello-preventa">Preventa</span>
+              }
               <img
                 class="catalogo-inicio__poster"
                 [src]="pelicula.imagenUrl"

@@ -17,6 +17,8 @@
 
     <app-mis-peliculas [usuarioId]="usuarioId()" />
 
+    <app-mis-alertas [usuarioId]="usuarioId()" />
+
     <app-historial-compras [usuarioId]="usuarioId()" (compraCancelada)="billetera.recargar()" />
 
     <div class="perfil__panel">

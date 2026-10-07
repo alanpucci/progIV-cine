@@ -52,6 +52,7 @@ export interface FuncionMapa {
   tipoProyeccion: TipoProyeccion;
   idioma: Idioma;
   precioBase: number;
+  enPreventa: boolean;
 }
 
 export interface ReservaButaca {

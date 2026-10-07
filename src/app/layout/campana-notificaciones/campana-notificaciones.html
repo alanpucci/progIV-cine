@@ -1,0 +1,52 @@
+<button
+  type="button"
+  class="campana"
+  [class.campana--con-avisos]="noLeidas() > 0"
+  [attr.aria-expanded]="abierta()"
+  aria-label="Notificaciones"
+  (click)="alternar()"
+>
+  <svg class="campana__icono" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6Z" />
+    <path d="M10 19a2 2 0 0 0 4 0" />
+  </svg>
+  @if (noLeidas() > 0) {
+    <span class="campana__contador">{{ noLeidas() > 9 ? "9+" : noLeidas() }}</span>
+  }
+</button>
+
+@if (abierta()) {
+  <div class="campana__panel">
+    <header class="campana__cabecera">
+      <h2 class="campana__titulo">Avisos de cartelera</h2>
+      @if (noLeidas() > 0) {
+        <button type="button" class="campana__marcar-todas" (click)="marcarTodas()">Marcar todo como leído</button>
+      }
+    </header>
+
+    @if (error()) {
+      <p class="campana__estado campana__estado--error">No se pudieron cargar tus avisos.</p>
+    } @else if (notificaciones().length === 0) {
+      <p class="campana__estado">
+        No tenés avisos. Activá una alerta desde Próximamente y te avisamos cuando salgan las entradas.
+      </p>
+    } @else {
+      <ul class="campana__lista">
+        @for (notificacion of notificaciones(); track notificacion.id) {
+          <li>
+            <button
+              type="button"
+              class="campana__aviso"
+              [class.campana__aviso--nueva]="!notificacion.leida"
+              (click)="abrir(notificacion)"
+            >
+              <span class="campana__aviso-titulo">{{ notificacion.titulo }}</span>
+              <span class="campana__aviso-mensaje">{{ notificacion.mensaje }}</span>
+              <span class="campana__aviso-fecha">{{ fecha(notificacion) }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+}

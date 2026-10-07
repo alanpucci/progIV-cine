@@ -66,7 +66,9 @@
       <div class="butacas-mapa__resumen-detalle">
         @if (butacasSeleccionadas().length === 0) {
           <p class="butacas-mapa__resumen-titulo">Elegí tus butacas en el mapa</p>
-          <p class="butacas-mapa__resumen-texto">Entrada desde ${{ datosFuncion.precioBase }}</p>
+          <p class="butacas-mapa__resumen-texto">
+            Entrada desde ${{ datosFuncion.precioBase }}{{ datosFuncion.enPreventa ? ' · precio de preventa' : '' }}
+          </p>
         } @else {
           <p class="butacas-mapa__resumen-titulo">
             {{ butacasSeleccionadas().length }}

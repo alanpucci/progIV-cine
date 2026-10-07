@@ -236,9 +236,36 @@
 }
 
 .catalogo-inicio__tarjeta {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--espacio-md);
+}
+
+.catalogo-inicio__sello-preventa {
+  position: absolute;
+  top: calc(var(--espacio-lg) + var(--espacio-sm));
+  right: 0;
+  padding: 0.2rem var(--espacio-sm) 0.2rem var(--espacio-md);
+  background: var(--color-acento-secundario);
+  clip-path: polygon(0.5rem 0, 100% 0, 100% 100%, 0.5rem 100%, 0 50%);
+  color: var(--color-fondo);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.catalogo-inicio__proximamente {
+  display: inline-block;
+  margin-top: var(--espacio-md);
+  color: var(--color-acento-secundario);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--color-acento-secundario-hover);
+  }
 }
 
 .catalogo-inicio__poster {

@@ -1,9 +1,10 @@
 import { Component, inject, signal } from "@angular/core";
 import { Router, RouterLink, RouterLinkActive } from "@angular/router";
 import { AuthService } from "../../core/servicios/auth.service";
+import { CampanaNotificaciones } from "../campana-notificaciones/campana-notificaciones";
 
 @Component({
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, CampanaNotificaciones],
   selector: "app-encabezado",
   styleUrl: "./encabezado.scss",
   templateUrl: "./encabezado.html",
@@ -14,6 +15,10 @@ export class Encabezado {
 
   protected readonly menuAbierto = signal(false);
   protected readonly cerrandoSesion = signal(false);
+
+  protected usuarioId(): string {
+    return this.auth.sesion()?.user.id ?? "";
+  }
 
   protected alternarMenu(): void {
     this.menuAbierto.update((abierto) => !abierto);

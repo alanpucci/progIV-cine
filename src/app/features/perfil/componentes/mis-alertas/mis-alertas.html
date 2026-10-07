@@ -1,0 +1,38 @@
+<section class="mis-alertas">
+  <header class="mis-alertas__cabecera">
+    <h2 class="mis-alertas__titulo">Alertas de estreno</h2>
+    <a class="mis-alertas__enlace" routerLink="/proximamente">Ver próximos estrenos →</a>
+  </header>
+
+  @if (errorCarga(); as mensaje) {
+    <p class="mis-alertas__error" role="alert">{{ mensaje }}</p>
+  } @else if (lista(); as alertas) {
+    @if (alertas.length === 0) {
+      <p class="mis-alertas__vacio">
+        No tenés alertas activas. Elegí una película en Próximamente y te avisamos cuando salgan las entradas.
+      </p>
+    } @else {
+      <ul class="mis-alertas__lista">
+        @for (alerta of alertas; track alerta.id) {
+          <li class="mis-alertas__item">
+            <a [routerLink]="['/pelicula', alerta.peliculaId]">
+              <img class="mis-alertas__poster" [src]="alerta.imagenUrl" [alt]="alerta.nombre" loading="lazy" />
+            </a>
+            <div class="mis-alertas__datos">
+              <span class="mis-alertas__nombre">{{ alerta.nombre }}</span>
+              <span class="mis-alertas__fecha">
+                Estreno {{ formatearFechaEstreno(alerta.fechaEstreno) }} ·
+                {{ alerta.preventaHabilitada ? "preventa" : "venta" }} desde el {{ apertura(alerta) }}
+              </span>
+            </div>
+            <app-interruptor-alerta
+              [peliculaId]="alerta.peliculaId"
+              [activa]="true"
+              (cambio)="quitar(alerta.peliculaId)"
+            />
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>
