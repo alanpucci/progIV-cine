@@ -3,6 +3,30 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 7.6] - 2026-10-07
+
+### Added
+- `CuponesAdministracionService` (listado con cantidad de usos, obtener por
+  id, crear, actualizar, activar/desactivar y eliminar).
+- Página `ListadoCupones` (`/administracion/cupones`): talonario con
+  porcentaje, código, tipo, vigencia, estado (vigente, programado, vencido
+  o inactivo) y usos. "Eliminar" deshabilitado si el cupón ya se usó.
+- Página `FormularioCupon` (`/administracion/cupones/nuevo` y
+  `/administracion/cupones/:id`): código, porcentaje, tipo, edad mínima
+  (solo para el tipo "Por edad"), vigencia por días y estado, con vista
+  previa del cupón.
+- Validadores de grupo `edadMinimaRequerida` y `vigenciaOrdenada`.
+
+### Changed
+- La sección "Cupones" del panel queda disponible: todas las secciones
+  del panel tienen su ABM.
+- `README.md`: nueva sección sobre el ABM de cupones.
+
+### Fixed
+- `CuponesService` (compra) filtra `activo = true` al validar un código y
+  al buscar el cupón automático: a un admin la RLS le deja leer también
+  los cupones desactivados.
+
 ## [Fase 7.5] - 2026-10-07
 
 ### Added

@@ -14,6 +14,8 @@ import { ListadoCandyBar } from './paginas/listado-candy-bar/listado-candy-bar';
 import { FormularioProducto } from './paginas/formulario-producto/formulario-producto';
 import { FormularioCombo } from './paginas/formulario-combo/formulario-combo';
 import { CategoriasProducto } from './paginas/categorias-producto/categorias-producto';
+import { ListadoCupones } from './paginas/listado-cupones/listado-cupones';
+import { FormularioCupon } from './paginas/formulario-cupon/formulario-cupon';
 import { Boton } from '../../shared/componentes/boton/boton';
 
 @NgModule({
@@ -31,6 +33,8 @@ import { Boton } from '../../shared/componentes/boton/boton';
     FormularioProducto,
     FormularioCombo,
     CategoriasProducto,
+    ListadoCupones,
+    FormularioCupon,
   ],
   imports: [AdministracionRoutingModule, ReactiveFormsModule, Boton],
 })

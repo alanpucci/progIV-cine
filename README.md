@@ -377,6 +377,28 @@ carta (misma regla que con las películas).
   guardar, los `combo_items` se reemplazan enteros (borrar e insertar),
   igual que los géneros de una película.
 
+### ABM de cupones
+
+`CuponesAdministracionService` lista todos los cupones (activos o no) con la
+cantidad de ventas que los usaron (`ventas ( count )`, por
+`ventas.cupon_id`), y da de alta, edita, activa/desactiva y elimina. Un
+cupón usado no se puede eliminar (la venta lo referencia), solo desactivar.
+
+- **Código en mayúsculas.** La compra pasa el código ingresado a mayúsculas
+  antes de buscarlo, así que el formulario lo guarda igual (letras, dígitos,
+  `_` y `-`, sin espacios).
+- **Edad mínima.** Se habilita solo con el tipo "Por edad" y un validador
+  de grupo la exige en ese caso (mismo patrón que el precio de preventa);
+  para otros tipos se guarda `null`. El `check` `chk_cupon_edad_minima` del
+  esquema inicial ya lo reforzaba en Postgres.
+- **Vigencia por días.** El formulario pide fechas (`type="date"`), no
+  fecha y hora: "desde" se guarda como el inicio de ese día y "hasta" como
+  las 23:59:59, ambos en hora local, así el último día cuenta entero. Un
+  validador de grupo impide que el fin quede antes del inicio.
+- **Estado en el listado.** Cada cupón se muestra como vigente, programado
+  (todavía no empezó), vencido o inactivo, calculado en el cliente con la
+  misma lógica que usa la compra para aceptarlo.
+
 ### Estado de carga global: un overlay compartido, no uno por componente
 
 Ningún componente arma su propio indicador de carga. Existe
@@ -571,7 +593,10 @@ se valida con una consulta común a la tabla. El costo es que alguien podría
 consultar la tabla y ver los códigos, algo aceptable para el alcance del TP.
 
 `CuponesService` (en `features/compra/`, misma regla que
-`CarritoService`) busca el código y valida en el frontend:
+`CarritoService`) busca el código y valida en el frontend. Las consultas
+filtran `activo = true` explícitamente aunque la política ya lo haga para
+clientes: a un admin, `cupones_admin_todo` le deja leer también los
+desactivados, y sin el filtro se le aplicarían al comprar.
 
 - vigencia: `fecha_inicio`/`fecha_fin`, cada extremo abierto si es `null`;
 - `primera_compra`: exige sesión y que el usuario no tenga ventas no
