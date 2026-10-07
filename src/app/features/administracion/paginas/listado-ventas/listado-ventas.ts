@@ -53,10 +53,6 @@ export class ListadoVentas implements OnInit {
     );
   }
 
-  protected buscar(evento: Event): void {
-    this.busqueda.set((evento.target as HTMLInputElement).value);
-  }
-
   protected cambiarVista(vista: VistaVentas): void {
     this.vista.set(vista);
     this.ventaACancelar.set(null);

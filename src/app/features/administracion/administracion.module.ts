@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AdministracionRoutingModule } from './administracion-routing.module';
 import { PanelAdministracion } from './paginas/panel-administracion/panel-administracion';
 import { InicioAdministracion } from './paginas/inicio-administracion/inicio-administracion';
@@ -42,6 +42,6 @@ import { Boton } from '../../shared/componentes/boton/boton';
     FormularioRecompensa,
     ListadoVentas,
   ],
-  imports: [AdministracionRoutingModule, ReactiveFormsModule, Boton],
+  imports: [AdministracionRoutingModule, FormsModule, ReactiveFormsModule, Boton],
 })
 export class AdministracionModule {}

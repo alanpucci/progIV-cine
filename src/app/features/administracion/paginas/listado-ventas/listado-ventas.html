@@ -33,8 +33,7 @@
     class="filtros__busqueda"
     type="search"
     placeholder="Buscar por mail, cliente, película u operación"
-    [value]="busqueda()"
-    (input)="buscar($event)"
+    [(ngModel)]="busqueda"
   />
 </div>
 
