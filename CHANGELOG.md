@@ -3,6 +3,15 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fix: fecha en Mis películas] - 2026-10-07
+
+### Fixed
+- "Mi perfil" quedaba con el spinner girando para cualquier usuario con una
+  entrada pagada: `MisPeliculas.fechaVista()` pasaba `funciones.inicio` (un
+  timestamp) a `formatearFechaEstreno()`, que espera `YYYY-MM-DD`. El
+  `RangeError` en pleno render cortaba la detección de cambios. Ahora se
+  convierte a la fecha local con `fechaIsoLocal()` antes de formatear.
+
 ## [Fase 8] - 2026-10-07
 
 ### Added
