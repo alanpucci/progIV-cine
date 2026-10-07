@@ -1267,6 +1267,22 @@ funcionaba, pero sumaba una función a mantener por un cálculo que en realidad
 se puede resolver una sola vez, en el momento en que la venta cambia de
 estado.
 
+### PWA: service worker de Angular solo para la app
+
+La app es instalable con `@angular/pwa` (`@angular/service-worker`). El
+service worker se registra solo en el build de producción
+(`enabled: !isDevMode()`) y con `registerWhenStable:30000`, así no compite
+con la carga inicial. `ngsw-config.json` cachea únicamente el *app shell*
+(`index.html`, JS, CSS y el manifest, precargados) y los assets estáticos
+(que se cachean al primer uso). No declara `dataGroups`, así que las
+respuestas de Supabase nunca se cachean: funciones, butacas y stock siempre
+se leen en vivo. Sin conexión la app abre, pero no puede comprar ni
+consultar datos.
+
+`@angular/service-worker` tiene un *peer dependency* exacto con
+`@angular/core`, así que hay que actualizarlo junto con el resto de los
+paquetes `@angular/*`.
+
 ## Diseño visual
 
 Paleta oscura/nocturna con motivos de cine (proyección, cinta de película,
