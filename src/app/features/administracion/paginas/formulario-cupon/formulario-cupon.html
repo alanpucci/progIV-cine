@@ -1,0 +1,119 @@
+<header class="formulario-cupon__cabecera">
+  <a class="formulario-cupon__enlace" routerLink="/administracion/cupones">← Volver a cupones</a>
+  <p class="formulario-cupon__etiqueta">{{ edicion() ? "Edición" : "Alta" }}</p>
+  <h2 class="formulario-cupon__titulo">{{ edicion() ? "Editar cupón" : "Nuevo cupón" }}</h2>
+</header>
+
+@if (noEncontrado()) {
+  <p class="formulario-cupon__vacio">No encontramos el cupón que querés editar.</p>
+} @else if (!cargaGlobal.visible()) {
+  <form class="formulario-cupon" [formGroup]="formulario" (ngSubmit)="guardar()">
+    <div class="formulario-cupon__columna">
+      <fieldset class="formulario-cupon__bloque">
+        <legend>Descuento</legend>
+
+        <div class="formulario-cupon__fila">
+          <div class="formulario-cupon__campo">
+            <label for="cupon-codigo">Código</label>
+            <input
+              id="cupon-codigo"
+              type="text"
+              formControlName="codigo"
+              placeholder="CINEVERANO"
+              [attr.aria-invalid]="mostrarError(formulario.controls.codigo)"
+            />
+            @if (mostrarError(formulario.controls.codigo)) {
+              <p class="formulario-cupon__error">Usá letras, números, guion o guion bajo, sin espacios.</p>
+            }
+          </div>
+
+          <div class="formulario-cupon__campo">
+            <label for="cupon-porcentaje">Porcentaje (%)</label>
+            <input
+              id="cupon-porcentaje"
+              type="number"
+              min="1"
+              max="100"
+              formControlName="porcentaje"
+              [attr.aria-invalid]="mostrarError(formulario.controls.porcentaje)"
+            />
+            @if (mostrarError(formulario.controls.porcentaje)) {
+              <p class="formulario-cupon__error">Ingresá un porcentaje entre 1 y 100.</p>
+            }
+          </div>
+        </div>
+
+        <div class="formulario-cupon__fila">
+          <div class="formulario-cupon__campo">
+            <label for="cupon-tipo">Tipo</label>
+            <select id="cupon-tipo" formControlName="tipo" (change)="sincronizarEdadMinima()">
+              @for (tipo of tipos; track tipo.valor) {
+                <option [value]="tipo.valor">{{ tipo.etiqueta }}</option>
+              }
+            </select>
+            <p class="formulario-cupon__ayuda">{{ ayudaTipo() }}</p>
+          </div>
+
+          <div class="formulario-cupon__campo">
+            <label for="cupon-edad">Edad mínima</label>
+            <input
+              id="cupon-edad"
+              type="number"
+              min="1"
+              step="1"
+              formControlName="edadMinima"
+              [attr.aria-invalid]="mostrarErrorGrupo('edadMinimaRequerida') || mostrarError(formulario.controls.edadMinima)"
+            />
+            @if (mostrarErrorGrupo("edadMinimaRequerida")) {
+              <p class="formulario-cupon__error">Un cupón por edad necesita la edad mínima.</p>
+            } @else if (mostrarError(formulario.controls.edadMinima)) {
+              <p class="formulario-cupon__error">Ingresá una edad entera mayor a 0.</p>
+            }
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="formulario-cupon__bloque">
+        <legend>Vigencia</legend>
+
+        <div class="formulario-cupon__fila">
+          <div class="formulario-cupon__campo">
+            <label for="cupon-inicio">Desde (opcional)</label>
+            <input id="cupon-inicio" type="date" formControlName="fechaInicio" />
+          </div>
+
+          <div class="formulario-cupon__campo">
+            <label for="cupon-fin">Hasta (opcional, inclusive)</label>
+            <input
+              id="cupon-fin"
+              type="date"
+              formControlName="fechaFin"
+              [attr.aria-invalid]="mostrarErrorGrupo('vigenciaDesordenada')"
+            />
+          </div>
+        </div>
+        @if (mostrarErrorGrupo("vigenciaDesordenada")) {
+          <p class="formulario-cupon__error">La fecha de fin no puede ser anterior a la de inicio.</p>
+        }
+
+        <label class="formulario-cupon__interruptor">
+          <input type="checkbox" formControlName="activo" />
+          <span>Activo</span>
+        </label>
+      </fieldset>
+    </div>
+
+    <aside class="formulario-cupon__lateral">
+      <div class="vale-previa">
+        <span class="vale-previa__porcentaje">{{ formulario.controls.porcentaje.value || 0 }}%</span>
+        <span class="vale-previa__codigo">{{ (formulario.controls.codigo.value || "CÓDIGO").toUpperCase() }}</span>
+      </div>
+
+      @if (errorEnvio(); as mensaje) {
+        <p class="formulario-cupon__error-envio">{{ mensaje }}</p>
+      }
+
+      <app-boton tipo="submit" tamano="grande">{{ edicion() ? "Guardar cambios" : "Crear cupón" }}</app-boton>
+    </aside>
+  </form>
+}

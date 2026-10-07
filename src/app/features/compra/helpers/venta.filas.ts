@@ -9,7 +9,7 @@ export interface FilaComboItem {
 export interface FilaItemVenta {
   id: string;
   venta_id: string;
-  tipo_item: 'entrada' | 'producto' | 'combo';
+  tipo_item: 'entrada' | 'producto' | 'combo' | 'recompensa';
   funcion_id?: string;
   butaca_id?: string;
   producto_id?: string;
@@ -64,7 +64,18 @@ export function filasItemsVenta(ventaId: string, solicitud: SolicitudCompra): Fi
     precio_unitario: combo.precioUnitario,
     total_linea: combo.precioUnitario * combo.cantidad,
   }));
-  return [...entradas, ...productos, ...combos];
+  const recompensas: FilaItemVenta[] = solicitud.canjes
+    .filter((canje) => canje.productoId !== null)
+    .map((canje) => ({
+      id: crypto.randomUUID(),
+      venta_id: ventaId,
+      tipo_item: 'recompensa',
+      producto_id: canje.productoId ?? undefined,
+      cantidad: 1,
+      precio_unitario: 0,
+      total_linea: 0,
+    }));
+  return [...entradas, ...productos, ...combos, ...recompensas];
 }
 
 export interface FilaEntrada {
@@ -115,12 +126,43 @@ export function filasMovimientosPuntos(usuarioId: string, ventaId: string, solic
     .map((movimiento) => ({ ...movimiento, usuario_id: usuarioId, venta_id: ventaId }));
 }
 
+export interface FilaCanje {
+  id: string;
+  usuario_id: string;
+  recompensa_id: string;
+  venta_id: string;
+  puntos_usados: number;
+}
+
+export function filasCanjes(usuarioId: string, ventaId: string, solicitud: SolicitudCompra): FilaCanje[] {
+  return solicitud.canjes.map((canje) => ({
+    id: crypto.randomUUID(),
+    usuario_id: usuarioId,
+    recompensa_id: canje.recompensaId,
+    venta_id: ventaId,
+    puntos_usados: canje.puntosCosto,
+  }));
+}
+
+export function filasMovimientosCanjes(canjes: FilaCanje[]) {
+  return canjes.map((canje) => ({
+    usuario_id: canje.usuario_id,
+    venta_id: canje.venta_id,
+    canje_id: canje.id,
+    tipo: 'debito',
+    puntos: -canje.puntos_usados,
+  }));
+}
+
 export function productosRequeridos(solicitud: SolicitudCompra, comboItems: FilaComboItem[]): Map<string, number> {
   const requeridos = new Map<string, number>();
   const sumar = (productoId: string, cantidad: number) =>
     requeridos.set(productoId, (requeridos.get(productoId) ?? 0) + cantidad);
 
   solicitud.productos.forEach((producto) => sumar(producto.id, producto.cantidad));
+  solicitud.canjes.forEach((canje) => {
+    if (canje.productoId) sumar(canje.productoId, 1);
+  });
   for (const comboItem of comboItems) {
     const combo = solicitud.combos.find((item) => item.id === comboItem.combo_id);
     if (combo) sumar(comboItem.producto_id, comboItem.cantidad * combo.cantidad);

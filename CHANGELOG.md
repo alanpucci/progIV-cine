@@ -3,6 +3,218 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 9] - 2026-10-07
+
+### Added
+- Migración `cancelacion_ventas`: columna `ventas.motivo_cancelacion`,
+  políticas `ventas_update_cancelar_propia` y `ventas_update_cancelar_admin`
+  (solo la transición `pagada` → `cancelada`) y
+  `propagar_cancelacion_venta` extendida: además de marcar los
+  `venta_items`, pasa las entradas a `cancelada`, acredita en
+  `movimientos_credito` lo pagado con tarjeta o crédito
+  (`total - puntos_usados`) y revierte el neto de puntos de la venta con un
+  movimiento `ajuste`.
+- `ComprasService.cancelarCompra()`.
+- Helpers `dentroDelPlazoDeCancelacion()` y `creditoPorCancelacion()` en
+  `core/helpers/cancelacion.helpers.ts`.
+- "Mis compras" (perfil): botón "Cancelar compra" en las ventas pagadas
+  cuya función empieza en más de 2 horas, con confirmación que anticipa el
+  crédito. El plazo se vuelve a validar al confirmar.
+- Sección "Ventas" en el panel de administración
+  (`/administracion/ventas`, `ListadoVentas` +
+  `VentasAdministracionService`): últimas 100 ventas, pagadas y canceladas,
+  con búsqueda por mail, cliente, película u operación, y cancelación sin
+  plazo con motivo obligatorio. Las canceladas muestran fecha y motivo.
+
+### Changed
+- `Compra` incluye `puntosUsados`.
+- `BilleteraCuenta` expone `recargar()`; el perfil la recarga al cancelar
+  una compra.
+- Etiquetas de movimientos: "Crédito por cancelación" y "Ajuste por
+  cancelación".
+- Modelo de datos (PDF): resuelto cómo se calcula el crédito de una
+  cancelación y agregada `ventas.motivo_cancelacion`.
+
+## [Fix: carga del perfil y de los datos del comprador] - 2026-10-07
+
+### Fixed
+- `/compra/datos-comprador` con sesión entraba en un ciclo de requests
+  (miles por segundo) y no se veía: `SaldosCompra` cargaba el saldo con la
+  carga global, la página oculta su contenido mientras la carga global está
+  visible, eso destruía `SaldosCompra` y al terminar se volvía a crear y a
+  cargar. Ahora `DatosComprador` pide el saldo junto con el perfil y se lo
+  pasa a `SaldosCompra` como `input()`.
+- "Mi perfil" quedaba con el spinner girando para cualquier usuario con una
+  entrada pagada: `MisPeliculas.fechaVista()` pasaba `funciones.inicio` (un
+  timestamp) a `formatearFechaEstreno()`, que espera `YYYY-MM-DD`. El
+  `RangeError` en pleno render cortaba la detección de cambios. Ahora se
+  convierte a la fecha local con `fechaIsoLocal()` antes de formatear.
+
+## [Fase 8] - 2026-10-07
+
+### Added
+- `RecompensasAdministracionService` (listado con cantidad de canjes,
+  obtener por id, crear, actualizar, activar/desactivar y eliminar).
+- Página `ListadoRecompensas` (`/administracion/recompensas`): fichas con
+  costo en puntos, tipo (entrada o Candy Bar), qué se entrega, estado y
+  canjes. "Eliminar" deshabilitado si la recompensa ya se canjeó.
+- Página `FormularioRecompensa` (`/administracion/recompensas/nueva` y
+  `/administracion/recompensas/:id`): nombre, tipo, producto (solo para el
+  tipo producto), costo en puntos y estado, con vista previa de la ficha.
+- Validador de grupo `productoRequerido`.
+- Modelo compartido `Recompensa`/`TipoRecompensa` en `core/modelos/`.
+- Canje de recompensas en el checkout: componente `RecompensasCompra`
+  (dentro del bloque de saldo de `/compra/datos-comprador`, solo con sesión
+  y saldo de puntos) que lista las recompensas activas, bloquea las que no
+  alcanzan o las de entrada cuando ya están todas cubiertas, y muestra los
+  canjes aplicados con opción de quitarlos.
+- `RecompensasService` en `core/servicios/` (recompensas activas, sin las de
+  productos desactivados).
+- `CarritoService`: signal `canjes` (en `sessionStorage`), `canjear()`,
+  `quitarCanje()`, `quitarCanjes()`, `canjesEfectivos()`,
+  `entradasCanjeadas()`, `entradaCanjeada()`, `montoEntradasCanjeadas()`,
+  `productosCanjeados()` y `puntosCanjes()`.
+- `filasCanjes()` y `filasMovimientosCanjes()` en `venta.filas.ts`: al
+  confirmar la compra se insertan los `canjes` y un débito de puntos por
+  canje con su `canje_id`.
+- Migración `canje_recompensas`: política `canjes_insert_propio`.
+- Migración `saldos_solo_por_movimientos`: `proteger_campos_sensibles_perfil`
+  rechaza cualquier `update` directo de `puntos_saldo`/`credito_saldo`,
+  también el de un admin; los saldos solo cambian con los triggers de los
+  ledgers. El rol sigue siendo editable solo por un admin.
+- "Mi billetera" (perfil) muestra las recompensas activas, con cuántos
+  puntos faltan para cada una, y aclara que los puntos y el crédito no se
+  transfieren.
+
+### Changed
+- Nueva sección "Recompensas" en el panel de administración.
+- La entrada cubierta por un canje se graba con precio 0 y el producto
+  canjeado como ítem `recompensa` con precio 0, que también descuenta stock.
+- `subtotalEntradas()` resta las entradas cubiertas por canjes. El carrito
+  las marca con la etiqueta "canje" y muestra los productos canjeados; el
+  pago y la confirmación listan las recompensas.
+- `SaldosCompra`: los puntos para pago parcial excluyen los comprometidos en
+  canjes. Sin sesión, los canjes se descartan como el resto del saldo.
+- El historial de compras muestra el nombre del producto canjeado.
+- "Mi billetera" unifica el historial de puntos y crédito en una sola lista
+  ordenada por fecha, con una marca de moneda por movimiento. Las fichas de
+  saldo pasan a filtrar el historial (otro clic, o "Ver todos", vuelve a la
+  lista completa).
+- `MovimientoPuntos` trae el nombre de la recompensa canjeada
+  (`canjes ( recompensas ( nombre ) )`): el historial muestra "Canje: …" y
+  el débito por pago parcial pasa a "Pago con puntos".
+- `README.md`: nueva sección sobre el canje de recompensas.
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: resuelto que los canjes se
+  hacen dentro de una compra y cómo se graban.
+- `README.md`: nueva sección "Puntos y crédito no transferibles", con las
+  garantías de RLS y triggers y cómo se verificaron. La nota sobre el
+  trigger de `perfiles` ya no dice que un admin puede editar saldos.
+- `docs/ROADMAP.md` y `docs/ROADMAP.pdf`: Fase 8 marcada como hecha, la 8.3
+  pasa a "canje de recompensas en el checkout" y nota sobre el desvío.
+- Acreditación de puntos (8.1): sin cambios de código, ya se hacía al
+  confirmar la compra (1 punto por peso pagado con tarjeta, vía
+  `movimientos_puntos`). Lo canjeado vale $0 y no suma puntos.
+- No transferencia (8.5) verificada: con todas las migraciones aplicadas
+  sobre PGlite se probaron como `authenticated` 20 casos (transferencias,
+  edición directa de saldos por cliente y admin, edición/borrado de
+  movimientos, canjes a nombre de otro, lectura cruzada y una compra con
+  canjes que descuenta el saldo por trigger). Todos pasan.
+
+## [Docs: roadmap Fase 7] - 2026-10-07
+
+### Changed
+- `docs/ROADMAP.md` y `docs/ROADMAP.pdf`: sub-tareas 7.1 a 7.6 y la Fase 7
+  marcadas como hechas, descripción de la 7.4 ajustada (sala automática o
+  elegida a mano) y nota sobre el admin que no opera como cliente.
+
+## [Fix: el admin no opera como cliente] - 2026-10-07
+
+### Added
+- `noAdminGuard` (`CanMatchFn`) en `core/guardias/rol.guard.ts`: redirige
+  al catálogo a un admin. Aplicado a `/butacas`, `/compra`, `/mis-entradas`
+  y `/cuenta/perfil`.
+
+### Changed
+- El encabezado (escritorio y menú móvil) ya no muestra "Mis entradas" ni
+  "Mi perfil" a un usuario admin: solo "Administración" y "Cerrar sesión".
+- En el detalle de película, un admin ve las funciones pero no puede
+  elegirlas: en lugar de "Continuar a selección de butacas" se muestra un
+  aviso.
+- `README.md`: el admin no opera como cliente.
+
+## [Fase 7.6] - 2026-10-07
+
+### Added
+- `CuponesAdministracionService` (listado con cantidad de usos, obtener por
+  id, crear, actualizar, activar/desactivar y eliminar).
+- Página `ListadoCupones` (`/administracion/cupones`): talonario con
+  porcentaje, código, tipo, vigencia, estado (vigente, programado, vencido
+  o inactivo) y usos. "Eliminar" deshabilitado si el cupón ya se usó.
+- Página `FormularioCupon` (`/administracion/cupones/nuevo` y
+  `/administracion/cupones/:id`): código, porcentaje, tipo, edad mínima
+  (solo para el tipo "Por edad"), vigencia por días y estado, con vista
+  previa del cupón.
+- Validadores de grupo `edadMinimaRequerida` y `vigenciaOrdenada`.
+
+### Changed
+- La sección "Cupones" del panel queda disponible: todas las secciones
+  del panel tienen su ABM.
+- `README.md`: nueva sección sobre el ABM de cupones.
+
+### Fixed
+- `CuponesService` (compra) filtra `activo = true` al validar un código y
+  al buscar el cupón automático: a un admin la RLS le deja leer también
+  los cupones desactivados.
+
+## [Fase 7.5] - 2026-10-07
+
+### Added
+- `CategoriasProductoAdministracionService` (listado con cantidad de
+  productos, crear, renombrar, eliminar), `ProductosAdministracionService`
+  y `CombosAdministracionService` (listado, obtener por id, crear,
+  actualizar, activar/desactivar y eliminar; los combos reemplazan sus
+  `combo_items` al guardar).
+- Página `ListadoCandyBar` (`/administracion/candy-bar`): combos con su
+  contenido, precio fijo y precio suelto, y productos agrupados por
+  categoría con precio y stock.
+- Página `FormularioProducto` (`/administracion/candy-bar/productos/nuevo`
+  y `/:id`): categoría, nombre, descripción, precio, stock opcional y
+  estado.
+- Página `FormularioCombo` (`/administracion/candy-bar/combos/nuevo` y
+  `/:id`): datos del combo y contenido con `FormArray`, con precio suelto y
+  ahorro calculados.
+- Página `CategoriasProducto` (`/administracion/candy-bar/categorias`):
+  alta, renombrado y baja (solo sin productos).
+
+### Changed
+- La sección "Candy bar" del panel queda disponible.
+- `README.md`: nueva sección sobre el ABM del Candy bar.
+
+## [Fase 7.4] - 2026-10-07
+
+### Added
+- `FuncionesAdministracionService`: listado de próximas o pasadas con
+  película, sala y entradas vendidas; obtener por id; opciones de películas
+  y salas activas; crear y actualizar con asignación automática de sala o
+  validación de la sala elegida (margen de 30 minutos); eliminar.
+- Página `ListadoFunciones` (`/administracion/funciones`): programación
+  agrupada por día, con vista de próximas y pasadas. Editar y eliminar solo
+  en funciones sin entradas vendidas.
+- Página `FormularioFuncion` (`/administracion/funciones/nueva` y
+  `/administracion/funciones/:id`): película, fecha y hora, formato,
+  idioma, precio base y sala (automática o a elección), con vista previa
+  del horario de fin y de hasta cuándo queda ocupada la sala.
+- Validador `fechaHoraFutura` y helpers `sumarMinutos()` y
+  `fechaHoraLocal()`.
+
+### Changed
+- La sección "Funciones" del panel queda disponible.
+- Al crear una función se completa `created_by` con el administrador.
+- `README.md`: nueva sección sobre el ABM de funciones.
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: nota de `funciones`
+  corregida: la asignación automática de sala la hace la aplicación, el
+  `exclude` es el respaldo.
+
 ## [Fase 7.3] - 2026-10-06
 
 ### Added

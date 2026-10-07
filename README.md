@@ -37,7 +37,7 @@ src/app/
 
 Cada carpeta dentro de `features/` corresponde a un módulo funcional del
 análisis (`catalogo`, `salas-butacas`, `compra`, `fidelizacion`, `entradas`,
-`cancelaciones`, `proximamente`, `perfil`, `empleado`, `administracion`) y
+`proximamente`, `perfil`, `empleado`, `administracion`) y
 agrupa **todo** lo que esa feature necesita: sus componentes, sus servicios de
 dominio, sus modelos y sus rutas.
 
@@ -247,6 +247,14 @@ El guard es solo para la navegación. Lo que impide de verdad que un no-admin
 modifique el catálogo son las políticas RLS `*_admin_todo`, que ya estaban
 en el esquema inicial.
 
+A la inversa, un admin no opera como cliente: puede recorrer el catálogo y
+ver el detalle y las funciones de cada película, pero no comprar. El
+detalle deshabilita la elección de función y reemplaza el botón de
+continuar por un aviso, el encabezado no le muestra "Mis entradas" ni "Mi
+perfil", y `noAdminGuard` (`CanMatchFn`, también en `rol.guard.ts`) cierra
+esas rutas (`/butacas`, `/compra`, `/mis-entradas`, `/cuenta/perfil`)
+redirigiendo al catálogo si se escriben a mano.
+
 El panel (`features/administracion/`) es un `NgModule` con una ruta padre,
 `PanelAdministracion`, que dibuja la barra lateral y un `<router-outlet>`
 donde se cargan las secciones como rutas hijas. Las secciones salen de la
@@ -324,6 +332,80 @@ activas, dejando el hueco en la grilla.
   cascada, así que una sala con funciones no se puede eliminar, solo
   desactivar (`salas.activa = false`). Una sala inactiva no se ofrece para
   programar funciones nuevas.
+
+### ABM de funciones: asignación de sala en el servicio, solapamiento en Postgres
+
+El análisis pide que la sala se asigne sola buscando disponibilidad (RN03) y
+que entre funciones de una misma sala haya al menos 30 minutos después del
+fin (RN01/RN02). Las dos cosas se resuelven en
+`FuncionesAdministracionService`; el `exclude using gist` de `funciones`
+(`sin_solapamiento_por_sala`) del esquema inicial sigue rechazando un
+solapamiento en Postgres:
+
+- **Fin calculado en el cliente.** El formulario calcula `fin` como
+  `inicio + duracion_minutos` de la película y lo manda en el insert/update.
+  El trigger `calcular_fin_funcion` solo completa `fin` cuando llega vacío,
+  y en un update que cambia `inicio` sin tocar `fin` dejaría el valor viejo;
+  mandarlo siempre evita depender de ese caso.
+- **Salas ocupadas en una sola consulta.** Una función existente choca con
+  la nueva si `inicio < fin_nuevo + 30 min` y `fin > inicio_nuevo - 30 min`
+  (la misma intersección de rangos que evalúa el `exclude`). El servicio
+  trae las funciones que cumplen eso (excluyendo la que se está editando) y
+  se queda con sus `sala_id`.
+- **Automática o manual.** Por defecto la sala es "Automática": se elige la
+  primera sala activa, por nombre, que no esté ocupada; si no hay ninguna,
+  se rechaza con un mensaje. El formulario permite además elegir una sala a
+  mano, y en ese caso se valida que esté libre.
+- **Funciones con ventas.** El listado trae la cantidad de entradas
+  vendidas de cada función (`venta_items ( count )` filtrado por
+  `tipo_item = 'entrada'` y no cancelado). Con alguna vendida, la función
+  no se puede editar (cambiar horario o sala dejaría entradas apuntando a
+  otra función o a butacas de otra sala) ni eliminar.
+
+### ABM del Candy bar: un servicio por tabla y combos con `FormArray`
+
+El panel administra categorías, productos y combos con un servicio por
+tabla (`CategoriasProductoAdministracionService`,
+`ProductosAdministracionService`, `CombosAdministracionService`), separados
+de `CandyBarService` de `compra`, que solo lee lo activo para armar la
+carta (misma regla que con las películas).
+
+- **Desactivar en vez de borrar.** `combo_items.producto_id` y
+  `venta_items.producto_id`/`combo_id` no tienen cascada: un producto que
+  está en un combo o ya se vendió, o un combo vendido, no se pueden
+  eliminar. El servicio traduce el `23503` a un mensaje que sugiere
+  desactivarlo (`activo = false` lo saca de la compra). Una categoría con
+  productos tampoco se puede eliminar, y el listado ya trae la cantidad
+  (`productos ( count )`) para deshabilitar el botón.
+- **Stock opcional.** `productos.stock` vacío significa "sin control de
+  stock", que la compra ya respetaba (no descuenta ni limita).
+- **Contenido del combo.** El formulario usa un `FormArray` de grupos
+  `{ productoId, cantidad }` con `Validators.minLength(1)`, y muestra el
+  precio de los productos sueltos y el ahorro contra el precio fijo. Al
+  guardar, los `combo_items` se reemplazan enteros (borrar e insertar),
+  igual que los géneros de una película.
+
+### ABM de cupones
+
+`CuponesAdministracionService` lista todos los cupones (activos o no) con la
+cantidad de ventas que los usaron (`ventas ( count )`, por
+`ventas.cupon_id`), y da de alta, edita, activa/desactiva y elimina. Un
+cupón usado no se puede eliminar (la venta lo referencia), solo desactivar.
+
+- **Código en mayúsculas.** La compra pasa el código ingresado a mayúsculas
+  antes de buscarlo, así que el formulario lo guarda igual (letras, dígitos,
+  `_` y `-`, sin espacios).
+- **Edad mínima.** Se habilita solo con el tipo "Por edad" y un validador
+  de grupo la exige en ese caso (mismo patrón que el precio de preventa);
+  para otros tipos se guarda `null`. El `check` `chk_cupon_edad_minima` del
+  esquema inicial ya lo reforzaba en Postgres.
+- **Vigencia por días.** El formulario pide fechas (`type="date"`), no
+  fecha y hora: "desde" se guarda como el inicio de ese día y "hasta" como
+  las 23:59:59, ambos en hora local, así el último día cuenta entero. Un
+  validador de grupo impide que el fin quede antes del inicio.
+- **Estado en el listado.** Cada cupón se muestra como vigente, programado
+  (todavía no empezó), vencido o inactivo, calculado en el cliente con la
+  misma lógica que usa la compra para aceptarlo.
 
 ### Estado de carga global: un overlay compartido, no uno por componente
 
@@ -519,7 +601,10 @@ se valida con una consulta común a la tabla. El costo es que alguien podría
 consultar la tabla y ver los códigos, algo aceptable para el alcance del TP.
 
 `CuponesService` (en `features/compra/`, misma regla que
-`CarritoService`) busca el código y valida en el frontend:
+`CarritoService`) busca el código y valida en el frontend. Las consultas
+filtran `activo = true` explícitamente aunque la política ya lo haga para
+clientes: a un admin, `cupones_admin_todo` le deja leer también los
+desactivados, y sin el filtro se le aplicarían al comprar.
 
 - vigencia: `fecha_inicio`/`fecha_fin`, cada extremo abierto si es `null`;
 - `primera_compra`: exige sesión y que el usuario no tenga ventas no
@@ -592,6 +677,43 @@ los saldos aplicados se descartan.
 Al confirmar la compra, el uso se registra en
 `movimientos_credito`/`movimientos_puntos`, y los triggers de esos ledgers
 actualizan el saldo cacheado en `perfiles`.
+
+### Recompensas: se canjean dentro de la compra
+
+Además de usar puntos como pago parcial a $1 cada uno, el cliente puede
+canjearlos por recompensas que configura el admin
+(`/administracion/recompensas`), cada una con su propio costo en puntos:
+
+- **entrada**: cubre una entrada de la compra, de cualquier función. Si la
+  compra tiene varias entradas, cubre la de menor precio;
+- **producto**: suma un producto del Candy Bar sin cargo.
+
+El canje no es un paso aparte ni un voucher para usar después: se elige en
+el checkout, en el mismo bloque del saldo (`RecompensasCompra`, dentro de
+`SaldosCompra`), y se graba junto con la compra. Así cada canje queda
+atado a la venta donde se usó (`canjes.venta_id`) y no hace falta un flujo
+para consumir canjes pendientes.
+
+`CarritoService.canjes` guarda las recompensas elegidas (respaldado en
+`sessionStorage`, como el resto del carrito). `canjesEfectivos()` descarta
+los canjes de entrada que sobran si después se sacan butacas, y de ahí se
+derivan las entradas cubiertas (`entradasCanjeadas()`), su monto, que se
+resta de `subtotalEntradas()`, y los puntos comprometidos
+(`puntosCanjes()`). Los puntos disponibles para pago parcial son el saldo
+menos los comprometidos en canjes, y viceversa.
+
+Al confirmar la compra:
+
+- la entrada cubierta se graba como un `venta_items` de tipo `entrada` con
+  precio 0, para que siga ocupando la butaca en el índice único;
+- el producto se graba como un `venta_items` de tipo `recompensa` con su
+  `producto_id` y precio 0, y descuenta stock igual que una venta;
+- cada canje inserta una fila en `canjes` y un débito en
+  `movimientos_puntos` con su `canje_id`. La migración `canje_recompensas`
+  agrega la política de alta en `canjes`, acotada a los propios.
+
+Como lo canjeado vale $0 en la venta, no suma puntos: la acreditación sigue
+saliendo de lo pagado con tarjeta.
 
 ### Pago simulado y confirmación de compra desde el frontend
 
@@ -843,8 +965,9 @@ criterio parejo:
   confirmación de compra más arriba).
 - `perfiles.rol`, `credito_saldo` y `puntos_saldo` están protegidos además
   por un trigger (no solo por RLS): ni siquiera con una política de UPDATE
-  "propio" un usuario puede autopromoverse a admin o cargarse saldo, porque
-  el trigger rechaza el cambio si quien lo hace no es admin.
+  "propio" un usuario puede autopromoverse a admin. El rol solo lo cambia un
+  admin, y los saldos no los edita nadie directamente (ver "Puntos y crédito
+  no transferibles").
 - El alta de `perfiles` la hace el frontend después del signup, acotada por
   la política `perfiles_insert_alta` (ver "Alta de perfil desde el
   frontend").
@@ -853,6 +976,86 @@ Las migraciones no se aplican solas contra el proyecto de Supabase real desde
 acá: se corren con `supabase db push` (requiere `supabase link` con
 credenciales propias del proyecto) o pegando el contenido de cada archivo, en
 orden, en el SQL Editor del dashboard.
+
+### Puntos y crédito no transferibles
+
+Los puntos (RN08/RN-010) y el crédito son personales. La regla no depende
+del frontend: el saldo cacheado en `perfiles` solo cambia cuando se
+inserta un movimiento en el ledger, y cada usuario solo inserta
+movimientos propios.
+
+- `movimientos_puntos`, `movimientos_credito` y `canjes`: la única
+  escritura permitida es el `insert` con `usuario_id = auth.uid()`. Nadie
+  puede acreditar ni debitar a otra cuenta, ni siquiera un admin. No hay
+  políticas de `update`/`delete`, así que el historial no se edita. La
+  única escritura en una cuenta ajena es la del trigger de cancelación de
+  ventas (ver "Cancelación de compras").
+- `perfiles.puntos_saldo`/`credito_saldo`: el trigger
+  `proteger_campos_sensibles_perfil` rechaza cualquier `update` directo,
+  también el de un admin (migración `saldos_solo_por_movimientos`). Solo
+  pasan los `update` que hacen los triggers de los ledgers
+  (`pg_trigger_depth() > 1`), así que saldo e historial no pueden quedar
+  desfasados.
+- Cada usuario lee solo sus propios saldos, movimientos y canjes.
+
+Lo que la regla no cubre, por la decisión de grabar la compra desde el
+frontend: un usuario con la clave pública puede insertarse movimientos
+propios con el importe que quiera (ver "Pago simulado y confirmación de
+compra desde el frontend"). Eso nunca toca la cuenta de otro.
+
+Estas reglas se verificaron aplicando todas las migraciones sobre un
+Postgres en memoria (PGlite), con un esquema `auth` mínimo, y probando
+cada caso como `authenticated`: transferencias de puntos y crédito, edición
+directa de saldos (cliente y admin), edición y borrado de movimientos,
+canjes a nombre de otro, y una compra con canjes que el trigger descuenta
+del saldo.
+
+### Cancelación de compras: un `update` de la venta, el resto en el trigger
+
+La cancelación (RN07) no tiene una feature propia: es una acción sobre una
+venta que aparece en dos pantallas que ya existían. El cliente cancela
+desde "Mis compras" del perfil (`HistorialCompras`) y el admin desde la
+sección "Ventas" del panel (`ListadoVentas`, en `AdministracionModule`).
+Por eso no hay carpeta `features/cancelaciones/`: las reglas compartidas
+(plazo y crédito a devolver) viven en `core/helpers/cancelacion.helpers.ts`.
+
+En los dos casos el frontend hace lo mismo: un `update` de `ventas` de
+`pagada` a `cancelada` con `cancelled_at` (y `motivo_cancelacion`,
+obligatorio, cuando cancela el admin). Las políticas
+`ventas_update_cancelar_propia` y `ventas_update_cancelar_admin`
+(migración `cancelacion_ventas`) solo permiten esa transición, al dueño de
+la venta o a un admin.
+
+Todo lo demás lo hace el trigger `propagar_cancelacion_venta`, que ya
+marcaba `venta_items.cancelado`:
+
+1. marca los `venta_items` como cancelados, lo que libera el índice único
+   de butacas y descuenta `peliculas.entradas_vendidas`;
+2. pasa las `entradas` de la venta a `cancelada`;
+3. si la venta es de un cliente registrado, acredita en
+   `movimientos_credito` lo que se pagó con tarjeta o con crédito
+   (`total - puntos_usados`) y revierte el neto de puntos de la venta en
+   `movimientos_puntos` con un movimiento `ajuste`: vuelven los puntos
+   usados como pago o en canjes y se descuentan los que sumó la compra.
+   Una compra anónima libera las butacas sin generar crédito.
+
+Se resolvió en el trigger, y no con inserts desde el frontend como en la
+compra, por dos motivos. El admin no puede insertar movimientos en cuentas
+ajenas (ver "Puntos y crédito no transferibles"), y abrirle esa política
+solo para esto debilitaba la regla para todos los casos. Y la cancelación
+y el crédito quedan en la misma transacción: no puede haber una venta
+cancelada sin su crédito. El trigger toma los importes de la fila anterior
+al `update` (`old`), así que el `update` no puede inflar el crédito.
+
+El plazo de 2 horas antes de la función se valida solo en el frontend,
+al mostrar el botón y otra vez al confirmar (por si la página quedó
+abierta). El admin no tiene plazo. No se repone el stock del Candy Bar.
+
+Igual que con los saldos, el trigger se verificó sobre PGlite con todas
+las migraciones: cancelación del dueño y de un admin, intento sobre una
+venta ajena y doble cancelación (sin filas afectadas), crédito y puntos
+resultantes, entradas canceladas, contador de vendidas y reventa de la
+butaca liberada.
 
 ### Contador cacheado para datos agregados públicos
 

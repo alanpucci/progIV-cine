@@ -4,6 +4,8 @@ import { Router } from "@angular/router";
 import { AuthService } from "../../../../core/servicios/auth.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
 import { PerfilesService } from "../../../../core/servicios/perfiles.service";
+import { MovimientosService } from "../../../../core/servicios/movimientos.service";
+import { SaldosCuenta } from "../../../../core/modelos/movimiento.model";
 import {
   FECHA_NACIMIENTO_MINIMA,
   fechaIsoLocal,
@@ -21,6 +23,7 @@ import { cumpleEdadMinima } from "../../helpers/edad.helpers";
 export class DatosComprador implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly perfiles = inject(PerfilesService);
+  private readonly movimientos = inject(MovimientosService);
   protected readonly cargaGlobal = inject(CargaGlobalService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
@@ -30,7 +33,7 @@ export class DatosComprador implements OnInit {
   protected readonly fechaMaxima = fechaIsoLocal(new Date());
 
   protected readonly fechaNacimientoPerfil = signal<string | null>(null);
-  protected readonly usuarioId = signal("");
+  protected readonly saldos = signal<SaldosCuenta | null>(null);
   protected readonly intentoEnviar = signal(false);
   protected readonly errorEnvio = signal<string | null>(null);
 
@@ -81,8 +84,11 @@ export class DatosComprador implements OnInit {
     const guardado = this.carrito.comprador();
 
     if (sesion) {
-      const perfil = await this.perfiles.obtener(sesion.user.id);
-      this.usuarioId.set(sesion.user.id);
+      const [perfil, saldos] = await Promise.all([
+        this.perfiles.obtener(sesion.user.id),
+        this.movimientos.obtenerSaldos(sesion.user.id),
+      ]);
+      this.saldos.set(saldos);
       this.fechaNacimientoPerfil.set(perfil.fechaNacimiento);
       this.formulario.controls.fechaNacimiento.disable();
       this.formulario.patchValue({
@@ -93,6 +99,7 @@ export class DatosComprador implements OnInit {
     }
 
     this.carrito.aplicarSaldos(null);
+    this.carrito.quitarCanjes();
     if (guardado) {
       this.formulario.patchValue({
         email: guardado.emailContacto,

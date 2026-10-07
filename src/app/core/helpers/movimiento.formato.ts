@@ -17,12 +17,12 @@ const FORMATEADOR_FECHA_MOVIMIENTO = new Intl.DateTimeFormat('es-AR', {
 
 export const ETIQUETAS_MOVIMIENTO_PUNTOS: Record<TipoMovimientoPuntos, string> = {
   acreditacion: 'Acreditación por compra',
-  debito: 'Uso de puntos',
-  ajuste: 'Ajuste',
+  debito: 'Pago con puntos',
+  ajuste: 'Ajuste por cancelación',
 };
 
 export const ETIQUETAS_MOVIMIENTO_CREDITO: Record<TipoMovimientoCredito, string> = {
-  acreditacion: 'Acreditación',
+  acreditacion: 'Crédito por cancelación',
   uso: 'Uso en compra',
   ajuste: 'Ajuste',
 };

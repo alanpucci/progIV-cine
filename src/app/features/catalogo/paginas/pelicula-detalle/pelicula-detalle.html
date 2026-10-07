@@ -71,6 +71,7 @@
                       class="pelicula-detalle__funcion"
                       [class.pelicula-detalle__funcion--seleccionada]="funcionSeleccionada() === funcion.id"
                       [attr.aria-pressed]="funcionSeleccionada() === funcion.id"
+                      [disabled]="auth.esAdmin()"
                       (click)="seleccionarFuncion(funcion.id)"
                     >
                       <span class="pelicula-detalle__funcion-hora">{{ formatearHoraFuncion(funcion.inicio) }}</span>
@@ -86,11 +87,15 @@
           }
         </div>
 
-        <div class="pelicula-detalle__cta">
-          <app-boton [deshabilitado]="!funcionSeleccionada()" (click)="continuarAButacas()">
-            Continuar a selección de butacas
-          </app-boton>
-        </div>
+        @if (auth.esAdmin()) {
+          <p class="pelicula-detalle__estado">Con una cuenta de administración no se pueden comprar entradas.</p>
+        } @else {
+          <div class="pelicula-detalle__cta">
+            <app-boton [deshabilitado]="!funcionSeleccionada()" (click)="continuarAButacas()">
+              Continuar a selección de butacas
+            </app-boton>
+          </div>
+        }
       }
     </section>
 

@@ -29,6 +29,9 @@
                 + {{ carrito.cantidadExtras() }} {{ carrito.cantidadExtras() === 1 ? "ítem" : "ítems" }} del Candy Bar
               </p>
             }
+            @for (canje of carrito.canjesEfectivos(); track $index) {
+              <p class="pago__meta">+ {{ canje.nombre }} ({{ formatearPuntos(canje.puntosCosto) }} pts)</p>
+            }
           </div>
 
           <dl class="pago__importes">

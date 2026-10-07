@@ -1,0 +1,76 @@
+<header class="categorias__cabecera">
+  <a class="categorias__enlace" routerLink="/administracion/candy-bar">← Volver al Candy bar</a>
+  <p class="categorias__etiqueta">Rollo 04 · Categorías</p>
+  <h2 class="categorias__titulo">Categorías</h2>
+  <p class="categorias__bajada">Agrupan los productos en la carta del Candy bar. Solo se puede eliminar una categoría sin productos.</p>
+</header>
+
+<form class="categorias__alta" [formGroup]="formularioAlta" (ngSubmit)="agregar()">
+  <div class="categorias__campo">
+    <label for="categoria-nueva">Nueva categoría</label>
+    <input
+      id="categoria-nueva"
+      type="text"
+      formControlName="nombre"
+      [attr.aria-invalid]="formularioAlta.invalid && intentoAgregar()"
+    />
+  </div>
+  <app-boton tipo="submit">Agregar</app-boton>
+</form>
+@if (formularioAlta.invalid && intentoAgregar()) {
+  <p class="categorias__error">Ingresá el nombre de la categoría.</p>
+}
+
+@if (error(); as mensaje) {
+  <p class="categorias__error">{{ mensaje }}</p>
+}
+
+<ul class="cartel">
+  @for (categoria of categorias(); track categoria.id) {
+    <li class="cartel__fila">
+      @if (categoriaEditando() === categoria.id) {
+        <form class="cartel__edicion" [formGroup]="formularioEdicion" (ngSubmit)="guardarEdicion(categoria.id)">
+          <input
+            class="cartel__input"
+            type="text"
+            formControlName="nombre"
+            [attr.aria-invalid]="formularioEdicion.invalid"
+          />
+          <app-boton tipo="submit" tamano="chico">Guardar</app-boton>
+          <app-boton variante="fantasma" tamano="chico" (click)="categoriaEditando.set(null)">Cancelar</app-boton>
+        </form>
+      } @else {
+        <span class="cartel__nombre">{{ categoria.nombre }}</span>
+        <span class="cartel__cantidad">
+          {{ categoria.cantidadProductos }} {{ categoria.cantidadProductos === 1 ? "producto" : "productos" }}
+        </span>
+
+        <div class="cartel__acciones">
+          @if (categoriaAEliminar() === categoria.id) {
+            <span class="cartel__confirmacion">¿Eliminar?</span>
+            <app-boton tamano="chico" (click)="confirmarEliminacion(categoria.id)">Eliminar</app-boton>
+            <app-boton variante="fantasma" tamano="chico" (click)="categoriaAEliminar.set(null)">Cancelar</app-boton>
+          } @else {
+            <app-boton variante="secundario" tamano="chico" (click)="empezarEdicion(categoria)">Renombrar</app-boton>
+            @if (categoria.cantidadProductos === 0) {
+              <app-boton variante="fantasma" tamano="chico" (click)="pedirEliminacion(categoria.id)">Eliminar</app-boton>
+            } @else {
+              <app-boton
+                variante="fantasma"
+                tamano="chico"
+                [deshabilitado]="true"
+                title="Tiene productos: movelos a otra categoría o eliminalos primero."
+              >
+                Eliminar
+              </app-boton>
+            }
+          }
+        </div>
+      }
+    </li>
+  } @empty {
+    @if (!cargaGlobal.visible()) {
+      <li class="cartel__vacio">Todavía no hay categorías cargadas.</li>
+    }
+  }
+</ul>

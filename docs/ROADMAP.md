@@ -18,9 +18,8 @@ src/app/
     compra/          # M05/M06/M07 - carrito, candy/combos, cupones, pago mock (NgModule)
     fidelizacion/    # M08 - puntos, crédito, canjes
     entradas/        # M09 - ticket PDF + QR (vista cliente)
-    cancelaciones/   # M10
     proximamente/    # M11 - estrenos, alertas
-    perfil/          # M01 - registro, login, datos del cliente, Mis películas
+    perfil/          # M01 - registro, login, datos del cliente, Mis películas, cancelación (M10)
     empleado/        # validación QR/código manual
     administracion/  # M12/M13 + ABM de todo lo anterior (NgModule)
   app.routes.ts      # composición de rutas lazy por feature
@@ -141,39 +140,61 @@ invalidación de QR usado.
 | 6.4 | Retiro de Candy: marca `ventas.candy_entregado_at`, independiente de la validación de entradas | ⬜ |
 | 6.5 | Historial de validaciones de la sesión del empleado en curso | ⬜ |
 
-### Fase 7 — Panel de administración: ABM base (M03/M04/M06/M07 admin) ⬜
+### Fase 7 — Panel de administración: ABM base (M03/M04/M06/M07 admin) ✅
 CRUD de películas, salas/butacas, funciones (asignación automática de sala +
 RN01/RN02/RN03), productos/categorías, combos, cupones y preventa.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 7.1 | Estructura `NgModule` de la feature `administracion` + guard de rol `admin` + layout del panel | ⬜ |
-| 7.2 | ABM de películas y géneros (incluye `preventa_habilitada`/`precio_preventa`) | ⬜ |
-| 7.3 | ABM de salas y butacas (layout de filas/columnas, tipo normal/accesible/VIP) | ⬜ |
-| 7.4 | ABM de funciones: asignación de sala, validación de solapamiento (RN01/RN02/RN03, margen de 30 min ya reforzado en Postgres) | ⬜ |
-| 7.5 | ABM de productos/categorías y combos (con `combo_items`) | ⬜ |
-| 7.6 | ABM de cupones (tipo, vigencia, porcentaje) | ⬜ |
+| 7.1 | Estructura `NgModule` de la feature `administracion` + guard de rol `admin` + layout del panel | ✅ |
+| 7.2 | ABM de películas y géneros (incluye `preventa_habilitada`/`precio_preventa`) | ✅ |
+| 7.3 | ABM de salas y butacas (layout de filas/columnas, tipo normal/accesible/VIP) | ✅ |
+| 7.4 | ABM de funciones: asignación automática de sala o elegida a mano, validación de solapamiento con margen de 30 min (RN01/RN02/RN03) | ✅ |
+| 7.5 | ABM de productos/categorías y combos (con `combo_items`) | ✅ |
+| 7.6 | ABM de cupones (tipo, vigencia, porcentaje) | ✅ |
 
-### Fase 8 — Fidelización y crédito (M08) ⬜
+> **El admin no opera como cliente.** Cerrada la Fase 7 se agregó que un
+> admin puede recorrer el catálogo y ver las funciones, pero no comprar: el
+> encabezado no le muestra "Mis entradas"/"Mi perfil" y `noAdminGuard`
+> cierra `/butacas`, `/compra`, `/mis-entradas` y `/cuenta/perfil`.
+
+### Fase 8 — Fidelización y crédito (M08) ✅
 Acreditación de puntos, configuración y canje de recompensas, saldo e
 historial, no transferencia.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 8.1 | Acreditación de puntos al confirmar una compra (integra con la confirmación de compra de la Fase 4, vía `movimientos_puntos`) | ⬜ |
-| 8.2 | ABM de recompensas desde administración (`recompensas`: tipo entrada/producto, costo en puntos) | ⬜ |
-| 8.3 | Canje de recompensas desde el perfil del cliente (`canjes` + débito de puntos) | ⬜ |
-| 8.4 | Vista de saldo e historial unificado de puntos y crédito en el perfil | ⬜ |
-| 8.5 | Verificación de la regla "no transferencia": puntos/crédito solo se mueven por operaciones propias del usuario (políticas RLS + trigger de saldos), nunca por edición directa | ⬜ |
+| 8.1 | Acreditación de puntos al confirmar una compra (integra con la confirmación de compra de la Fase 4, vía `movimientos_puntos`) | ✅ |
+| 8.2 | ABM de recompensas desde administración (`recompensas`: tipo entrada/producto, costo en puntos) | ✅ |
+| 8.3 | Canje de recompensas en el checkout (`canjes` + débito de puntos, atado a la venta) | ✅ |
+| 8.4 | Vista de saldo e historial unificado de puntos y crédito en el perfil | ✅ |
+| 8.5 | Verificación de la regla "no transferencia": puntos/crédito solo se mueven por operaciones propias del usuario (políticas RLS + trigger de saldos), nunca por edición directa | ✅ |
 
-### Fase 9 — Cancelaciones (M10) ⬜
+> **Canje dentro de la compra.** La 8.3 se planeó como canje desde el
+> perfil, pero se resolvió canjear durante la compra: la recompensa de
+> entrada cubre la entrada de menor precio y la de producto lo suma sin
+> cargo. El perfil muestra el catálogo de recompensas y el historial de
+> canjes. La 8.1 ya estaba hecha desde la Fase 4.6. No se creó la carpeta
+> `features/fidelizacion/`: el servicio de recompensas vive en `core/` y
+> los componentes en `compra/`, `perfil/` y `administracion/`.
+
+### Fase 9 — Cancelaciones (M10) ✅
 Cancelación hasta 2 horas antes, liberación de butacas, generación de crédito.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 9.1 | Cancelación de compra desde "Mis entradas"/perfil, con validación de ventana (hasta 2 hs antes de la función) | ⬜ |
-| 9.2 | Cancelación: marca `ventas`/`venta_items` cancelados (libera el índice único de butaca), genera `movimientos_credito`, actualiza `peliculas.entradas_vendidas` | ⬜ |
-| 9.3 | Cancelación desde el panel de administración (con motivo, sin restricción de ventana horaria) | ⬜ |
+| 9.1 | Cancelación de compra desde "Mis entradas"/perfil, con validación de ventana (hasta 2 hs antes de la función) | ✅ |
+| 9.2 | Cancelación: marca `ventas`/`venta_items` cancelados (libera el índice único de butaca), genera `movimientos_credito`, actualiza `peliculas.entradas_vendidas` | ✅ |
+| 9.3 | Cancelación desde el panel de administración (con motivo, sin restricción de ventana horaria) | ✅ |
+
+> **Cancelación desde el perfil y crédito por trigger.** El cliente cancela
+> desde "Mis compras" del perfil (la cancelación es por venta, y "Mis
+> entradas" agrupa por función). El frontend solo pasa la venta a
+> `cancelada`; el trigger de cancelación cancela ítems y entradas, acredita
+> `total - puntos_usados` como crédito y revierte el neto de puntos de la
+> venta, así funciona igual cuando cancela el admin, que no puede escribir
+> en ledgers ajenos. El motivo del admin se guarda en la nueva columna
+> `ventas.motivo_cancelacion`. No se creó `features/cancelaciones/`.
 
 ### Fase 10 — Próximamente y notificaciones (M11) ⬜
 Sección "Próximamente", alertas de estreno, preventa 7 días antes,

@@ -2,6 +2,7 @@ import { Component, inject, signal } from "@angular/core";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { Boton } from "../../../../shared/componentes/boton/boton";
 import { PeliculasService } from "../../../../core/servicios/peliculas.service";
+import { AuthService } from "../../../../core/servicios/auth.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
 import { PeliculaDetalle } from "../../../../core/modelos/pelicula.model";
 import { FuncionDisponible } from "../../../../core/modelos/funcion.model";
@@ -29,6 +30,7 @@ export class PeliculaDetallePagina {
   private readonly router = inject(Router);
   private readonly peliculasService = inject(PeliculasService);
   protected readonly cargaGlobal = inject(CargaGlobalService);
+  protected readonly auth = inject(AuthService);
 
   protected readonly detalle = signal<PeliculaDetalle | null>(null);
   protected readonly error = signal(false);

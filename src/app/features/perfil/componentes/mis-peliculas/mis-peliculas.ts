@@ -4,6 +4,7 @@ import { CargaGlobalService } from "../../../../core/servicios/carga-global.serv
 import { ComprasService } from "../../../../core/servicios/compras.service";
 import { PeliculaVista } from "../../../../core/modelos/compra.model";
 import { formatearFechaEstreno } from "../../../../core/helpers/pelicula.formato";
+import { fechaIsoLocal } from "../../../../shared/validadores/fecha.validadores";
 
 const ESTRELLAS_MAXIMAS = [1, 2, 3, 4, 5];
 
@@ -28,7 +29,7 @@ export class MisPeliculas implements OnInit {
   }
 
   protected fechaVista(pelicula: PeliculaVista): string {
-    return formatearFechaEstreno(pelicula.ultimaFuncion);
+    return formatearFechaEstreno(fechaIsoLocal(new Date(pelicula.ultimaFuncion)));
   }
 
   private async cargar(): Promise<void> {

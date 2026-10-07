@@ -9,6 +9,10 @@
         Todavía no hiciste compras. <a routerLink="/">Mirá la cartelera</a> y elegí tu próxima función.
       </p>
     } @else {
+      @if (errorCancelacion(); as mensaje) {
+        <p class="compras__error" role="alert">{{ mensaje }}</p>
+      }
+
       <ol class="compras__lista">
         @for (compra of compras; track compra.id) {
           <li class="compras__ticket" [class.compras__ticket--cancelada]="compra.estado === 'cancelada'">
@@ -33,6 +37,31 @@
 
               @if (compra.extras.length > 0) {
                 <span class="compras__extras">{{ extrasTexto(compra) }}</span>
+              }
+
+              @if (compraACancelar() === compra.id) {
+                <div class="compras__confirmacion">
+                  <p class="compras__confirmacion-texto">
+                    Se liberan tus butacas y te acreditamos <strong>{{ creditoCancelacion(compra) }}</strong> de crédito
+                    para usar en otra compra. Los puntos que usaste vuelven a tu saldo y se descuentan los que sumaste
+                    con esta compra.
+                  </p>
+                  <div class="compras__acciones">
+                    <app-boton tamano="chico" (click)="confirmarCancelacion(compra)">Sí, cancelar compra</app-boton>
+                    <app-boton variante="fantasma" tamano="chico" (click)="compraACancelar.set(null)">Volver</app-boton>
+                  </div>
+                </div>
+              } @else if (cancelable(compra)) {
+                <div class="compras__acciones">
+                  <app-boton variante="fantasma" tamano="chico" (click)="pedirConfirmacion(compra)">
+                    Cancelar compra
+                  </app-boton>
+                  <span class="compras__plazo">Hasta {{ horasLimite }} h antes de la función, con reintegro en crédito</span>
+                </div>
+              } @else if (compraRecienCancelada() === compra.id) {
+                <p class="compras__aviso" role="status">
+                  Compra cancelada: te acreditamos {{ creditoCancelacion(compra) }} de crédito.
+                </p>
               }
             </div>
 

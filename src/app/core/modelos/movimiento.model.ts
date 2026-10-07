@@ -9,7 +9,9 @@ export interface Movimiento<TTipo extends string> {
   ventaId: string | null;
 }
 
-export type MovimientoPuntos = Movimiento<TipoMovimientoPuntos>;
+export interface MovimientoPuntos extends Movimiento<TipoMovimientoPuntos> {
+  canje: string | null;
+}
 export type MovimientoCredito = Movimiento<TipoMovimientoCredito>;
 
 export interface SaldosCuenta {

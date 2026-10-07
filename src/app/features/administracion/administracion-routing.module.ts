@@ -7,6 +7,17 @@ import { FormularioPelicula } from './paginas/formulario-pelicula/formulario-pel
 import { GenerosPeliculas } from './paginas/generos-peliculas/generos-peliculas';
 import { ListadoSalas } from './paginas/listado-salas/listado-salas';
 import { FormularioSala } from './paginas/formulario-sala/formulario-sala';
+import { ListadoFunciones } from './paginas/listado-funciones/listado-funciones';
+import { FormularioFuncion } from './paginas/formulario-funcion/formulario-funcion';
+import { ListadoCandyBar } from './paginas/listado-candy-bar/listado-candy-bar';
+import { FormularioProducto } from './paginas/formulario-producto/formulario-producto';
+import { FormularioCombo } from './paginas/formulario-combo/formulario-combo';
+import { CategoriasProducto } from './paginas/categorias-producto/categorias-producto';
+import { ListadoCupones } from './paginas/listado-cupones/listado-cupones';
+import { FormularioCupon } from './paginas/formulario-cupon/formulario-cupon';
+import { ListadoRecompensas } from './paginas/listado-recompensas/listado-recompensas';
+import { FormularioRecompensa } from './paginas/formulario-recompensa/formulario-recompensa';
+import { ListadoVentas } from './paginas/listado-ventas/listado-ventas';
 
 const RUTAS_ADMINISTRACION: Routes = [
   {
@@ -21,6 +32,22 @@ const RUTAS_ADMINISTRACION: Routes = [
       { path: 'salas', component: ListadoSalas },
       { path: 'salas/nueva', component: FormularioSala },
       { path: 'salas/:id', component: FormularioSala },
+      { path: 'funciones', component: ListadoFunciones },
+      { path: 'funciones/nueva', component: FormularioFuncion },
+      { path: 'funciones/:id', component: FormularioFuncion },
+      { path: 'candy-bar', component: ListadoCandyBar },
+      { path: 'candy-bar/categorias', component: CategoriasProducto },
+      { path: 'candy-bar/productos/nuevo', component: FormularioProducto },
+      { path: 'candy-bar/productos/:id', component: FormularioProducto },
+      { path: 'candy-bar/combos/nuevo', component: FormularioCombo },
+      { path: 'candy-bar/combos/:id', component: FormularioCombo },
+      { path: 'cupones', component: ListadoCupones },
+      { path: 'cupones/nuevo', component: FormularioCupon },
+      { path: 'cupones/:id', component: FormularioCupon },
+      { path: 'recompensas', component: ListadoRecompensas },
+      { path: 'recompensas/nueva', component: FormularioRecompensa },
+      { path: 'recompensas/:id', component: FormularioRecompensa },
+      { path: 'ventas', component: ListadoVentas },
     ],
   },
 ];

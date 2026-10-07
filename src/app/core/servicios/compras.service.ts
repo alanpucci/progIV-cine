@@ -28,6 +28,14 @@ export class ComprasService {
     return (data as FilaCompra[]).map(mapearCompra);
   }
 
+  async cancelarCompra(ventaId: string): Promise<void> {
+    const { error } = await this.supabase
+      .from('ventas')
+      .update({ estado: 'cancelada', cancelled_at: new Date().toISOString() })
+      .eq('id', ventaId);
+    if (error) throw error;
+  }
+
   async obtenerPeliculasVistas(usuarioId: string): Promise<PeliculaVista[]> {
     const [entradas, calificaciones] = await Promise.all([
       this.supabase

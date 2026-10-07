@@ -1,0 +1,71 @@
+<header class="listado">
+  <div class="listado__encabezado">
+    <p class="listado__etiqueta">Rollo 06</p>
+    <h2 class="listado__titulo">Recompensas</h2>
+    <p class="listado__bajada">
+      Lo que un cliente puede llevarse con sus puntos al comprar: una entrada o un producto del Candy Bar sin cargo.
+    </p>
+  </div>
+  <app-boton routerLink="/administracion/recompensas/nueva">Nueva recompensa</app-boton>
+</header>
+
+@if (error(); as mensaje) {
+  <p class="listado__error">{{ mensaje }}</p>
+}
+
+@if (!cargaGlobal.visible() && recompensas().length === 0) {
+  <p class="listado__vacio">Todavía no hay recompensas cargadas.</p>
+}
+
+<ul class="fichero">
+  @for (recompensa of recompensas(); track recompensa.id) {
+    <li class="ficha" [class.ficha--inactiva]="!recompensa.activo" [attr.data-tipo]="recompensa.tipo">
+      <div class="ficha__costo">
+        <span class="ficha__puntos">{{ formatearPuntos(recompensa.puntosCosto) }}</span>
+        <span class="ficha__unidad">pts</span>
+      </div>
+
+      <div class="ficha__cuerpo">
+        <span class="ficha__tipo">{{ recompensa.tipo === "entrada" ? "Entrada" : "Candy Bar" }}</span>
+        <p class="ficha__nombre">{{ recompensa.nombre }}</p>
+        <p class="ficha__meta">{{ canje(recompensa) }}</p>
+        <p class="ficha__meta">
+          <span class="ficha__estado">{{ recompensa.activo ? "Activa" : "Inactiva" }}</span>
+          · {{ recompensa.cantidadCanjes }} {{ recompensa.cantidadCanjes === 1 ? "canje" : "canjes" }}
+        </p>
+
+        <div class="ficha__acciones">
+          @if (recompensaAEliminar() === recompensa.id) {
+            <app-boton tamano="chico" (click)="confirmarEliminacion(recompensa.id)">Sí, eliminar</app-boton>
+            <app-boton variante="fantasma" tamano="chico" (click)="recompensaAEliminar.set(null)">Cancelar</app-boton>
+          } @else {
+            <app-boton
+              variante="secundario"
+              tamano="chico"
+              [routerLink]="['/administracion/recompensas', recompensa.id]"
+            >
+              Editar
+            </app-boton>
+            <app-boton variante="fantasma" tamano="chico" (click)="alternarActivacion(recompensa)">
+              {{ recompensa.activo ? "Desactivar" : "Activar" }}
+            </app-boton>
+            @if (recompensa.cantidadCanjes === 0) {
+              <app-boton variante="fantasma" tamano="chico" (click)="recompensaAEliminar.set(recompensa.id)">
+                Eliminar
+              </app-boton>
+            } @else {
+              <app-boton
+                variante="fantasma"
+                tamano="chico"
+                [deshabilitado]="true"
+                title="Ya se canjeó: no se puede eliminar, pero sí desactivar."
+              >
+                Eliminar
+              </app-boton>
+            }
+          }
+        </div>
+      </div>
+    </li>
+  }
+</ul>

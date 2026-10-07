@@ -1,0 +1,126 @@
+<header class="formulario-candy__cabecera">
+  <a class="formulario-candy__enlace" routerLink="/administracion/candy-bar">← Volver al Candy bar</a>
+  <p class="formulario-candy__etiqueta">{{ edicion() ? "Edición" : "Alta" }}</p>
+  <h2 class="formulario-candy__titulo">{{ edicion() ? "Editar combo" : "Nuevo combo" }}</h2>
+</header>
+
+@if (noEncontrado()) {
+  <p class="formulario-candy__vacio">No encontramos el combo que querés editar.</p>
+} @else if (!cargaGlobal.visible()) {
+  <form class="formulario-candy" [formGroup]="formulario" (ngSubmit)="guardar()">
+    <fieldset class="formulario-candy__bloque">
+      <legend>Combo</legend>
+
+      <div class="formulario-candy__fila">
+        <div class="formulario-candy__campo">
+          <label for="combo-nombre">Nombre</label>
+          <input
+            id="combo-nombre"
+            type="text"
+            formControlName="nombre"
+            [attr.aria-invalid]="mostrarError(formulario.controls.nombre)"
+          />
+          @if (mostrarError(formulario.controls.nombre)) {
+            <p class="formulario-candy__error">Ingresá el nombre del combo.</p>
+          }
+        </div>
+
+        <div class="formulario-candy__campo">
+          <label for="combo-precio">Precio fijo ($)</label>
+          <input
+            id="combo-precio"
+            type="number"
+            min="1"
+            formControlName="precioFijo"
+            [attr.aria-invalid]="mostrarError(formulario.controls.precioFijo)"
+          />
+          @if (mostrarError(formulario.controls.precioFijo)) {
+            <p class="formulario-candy__error">Ingresá un precio mayor a 0.</p>
+          }
+        </div>
+      </div>
+
+      <div class="formulario-candy__campo">
+        <label for="combo-descripcion">Descripción (opcional)</label>
+        <textarea id="combo-descripcion" rows="2" formControlName="descripcion"></textarea>
+      </div>
+
+      <div class="formulario-candy__interruptores">
+        <label class="formulario-candy__interruptor">
+          <input type="checkbox" formControlName="destacado" />
+          <span>Destacado en la compra</span>
+        </label>
+        <label class="formulario-candy__interruptor">
+          <input type="checkbox" formControlName="activo" />
+          <span>Activo</span>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="formulario-candy__bloque" formArrayName="items">
+      <legend>Contenido</legend>
+
+      @for (item of formulario.controls.items.controls; track item; let indice = $index) {
+        <div class="item-combo" [formGroupName]="indice">
+          <div class="formulario-candy__campo">
+            <label [for]="'combo-producto-' + indice">Producto</label>
+            <select
+              [id]="'combo-producto-' + indice"
+              formControlName="productoId"
+              [attr.aria-invalid]="mostrarError(item.controls.productoId)"
+            >
+              <option value="" disabled>Elegí un producto</option>
+              @for (producto of productos(); track producto.id) {
+                <option [value]="producto.id">
+                  {{ producto.nombre }} (${{ producto.precio }}){{ producto.activo ? "" : " · inactivo" }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="formulario-candy__campo item-combo__cantidad">
+            <label [for]="'combo-cantidad-' + indice">Cantidad</label>
+            <input
+              [id]="'combo-cantidad-' + indice"
+              type="number"
+              min="1"
+              step="1"
+              formControlName="cantidad"
+              [attr.aria-invalid]="mostrarError(item.controls.cantidad)"
+            />
+          </div>
+
+          <app-boton
+            variante="fantasma"
+            tamano="chico"
+            [deshabilitado]="formulario.controls.items.length === 1"
+            (click)="quitarItem(indice)"
+          >
+            Quitar
+          </app-boton>
+        </div>
+      }
+
+      @if (intentoEnviar() && formulario.controls.items.invalid) {
+        <p class="formulario-candy__error">Elegí un producto y una cantidad entera mayor a 0 en cada renglón.</p>
+      }
+
+      <div class="item-combo__pie">
+        <app-boton variante="secundario" tamano="chico" (click)="agregarItem()">+ Agregar producto</app-boton>
+        <p class="item-combo__total">
+          Suelto: ${{ precioSuelto() }}
+          @if (ahorro() > 0) {
+            <span class="item-combo__ahorro">ahorro ${{ ahorro() }}</span>
+          }
+        </p>
+      </div>
+    </fieldset>
+
+    <div class="formulario-candy__pie">
+      @if (errorEnvio(); as mensaje) {
+        <p class="formulario-candy__error-envio">{{ mensaje }}</p>
+      }
+      <app-boton tipo="submit" tamano="grande">{{ edicion() ? "Guardar cambios" : "Crear combo" }}</app-boton>
+    </div>
+  </form>
+}

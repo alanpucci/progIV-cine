@@ -12,12 +12,14 @@ import { CuponAplicado } from '../modelos/cupon.model';
 import { Comprador } from '../modelos/comprador.model';
 import { CompraRegistrada, SolicitudCompra } from '../modelos/pago.model';
 import { CompraConfirmada } from '../modelos/confirmacion.model';
+import { Recompensa } from '../../../core/modelos/recompensa.model';
 import { CuponesService } from './cupones.service';
 
 const CLAVE_ALMACENAMIENTO = 'cine.carrito-extras';
 const CLAVE_CUPON = 'cine.carrito-cupon';
 const CLAVE_COMPRADOR = 'cine.carrito-comprador';
 const CLAVE_SALDOS = 'cine.carrito-saldos';
+const CLAVE_CANJES = 'cine.carrito-canjes';
 const CLAVE_ULTIMA_COMPRA = 'cine.ultima-compra';
 
 @Service()
@@ -31,6 +33,7 @@ export class CarritoService {
   readonly cupon = signal<CuponAplicado | null>(this.leerDeSesion<CuponAplicado>(CLAVE_CUPON));
   readonly comprador = signal<Comprador | null>(this.leerDeSesion<Comprador>(CLAVE_COMPRADOR));
   readonly saldosAplicados = signal<SaldosAplicados | null>(this.leerDeSesion<SaldosAplicados>(CLAVE_SALDOS));
+  readonly canjes = signal<Recompensa[]>(this.leerDeSesion<Recompensa[]>(CLAVE_CANJES) ?? []);
   readonly ultimaCompra = signal<CompraConfirmada | null>(this.leerDeSesion<CompraConfirmada>(CLAVE_ULTIMA_COMPRA));
 
   seleccion(): SeleccionButacas | null {
@@ -83,7 +86,53 @@ export class CarritoService {
   }
 
   subtotalEntradas(): number {
-    return this.seleccionButacas.total();
+    return this.seleccionButacas.total() - this.montoEntradasCanjeadas();
+  }
+
+  canjesEfectivos(): Recompensa[] {
+    let entradasLibres = this.entradas().length;
+    return this.canjes().filter((canje) => {
+      if (canje.tipo === 'producto') return true;
+      if (entradasLibres === 0) return false;
+      entradasLibres--;
+      return true;
+    });
+  }
+
+  puntosCanjes(): number {
+    return this.canjesEfectivos().reduce((suma, canje) => suma + canje.puntosCosto, 0);
+  }
+
+  entradasCanjeadas(): ButacaElegida[] {
+    const cantidad = this.canjesEfectivos().filter((canje) => canje.tipo === 'entrada').length;
+    return [...this.entradas()].sort((a, b) => a.precio - b.precio).slice(0, cantidad);
+  }
+
+  entradaCanjeada(butacaId: string): boolean {
+    return this.entradasCanjeadas().some((butaca) => butaca.id === butacaId);
+  }
+
+  montoEntradasCanjeadas(): number {
+    return this.entradasCanjeadas().reduce((suma, butaca) => suma + butaca.precio, 0);
+  }
+
+  productosCanjeados(): Recompensa[] {
+    return this.canjes().filter((canje) => canje.tipo === 'producto');
+  }
+
+  canjear(recompensa: Recompensa): void {
+    this.canjes.update((canjes) => [...canjes, recompensa]);
+    this.guardarEnSesion(CLAVE_CANJES, this.canjes());
+  }
+
+  quitarCanje(indice: number): void {
+    this.canjes.update((canjes) => canjes.filter((_, posicion) => posicion !== indice));
+    this.guardarEnSesion(CLAVE_CANJES, this.canjes().length > 0 ? this.canjes() : null);
+  }
+
+  quitarCanjes(): void {
+    this.canjes.set([]);
+    this.guardarEnSesion(CLAVE_CANJES, null);
   }
 
   subtotalExtras(): number {
@@ -158,9 +207,17 @@ export class CarritoService {
     return {
       funcionId: seleccion.funcion.id,
       adultoRequerido: seleccion.funcion.clasificacionEdad !== null,
-      entradas: seleccion.butacas.map((butaca) => ({ butacaId: butaca.id, precio: butaca.precio })),
+      entradas: seleccion.butacas.map((butaca) => ({
+        butacaId: butaca.id,
+        precio: this.entradaCanjeada(butaca.id) ? 0 : butaca.precio,
+      })),
       productos: this.productos().map(({ id, cantidad, precioUnitario }) => ({ id, cantidad, precioUnitario })),
       combos: this.combos().map(({ id, cantidad, precioUnitario }) => ({ id, cantidad, precioUnitario })),
+      canjes: this.canjesEfectivos().map(({ id, productoId, puntosCosto }) => ({
+        recompensaId: id,
+        productoId,
+        puntosCosto,
+      })),
       cuponId: this.cupon()?.id ?? null,
       emailContacto: comprador.emailContacto,
       fechaNacimiento: comprador.fechaNacimiento,
@@ -186,6 +243,7 @@ export class CarritoService {
       funcion: seleccion.funcion,
       entradas: seleccion.butacas.map((butaca) => ({ ...butaca, codigoQr: registro.codigosQr[butaca.id] })),
       extras: this.extras(),
+      recompensas: this.canjesEfectivos(),
       cuponCodigo: this.cupon()?.codigo ?? null,
       subtotal: this.subtotal(),
       descuento: this.descuento(),
@@ -214,6 +272,7 @@ export class CarritoService {
     this.quitarCupon();
     this.guardarComprador(null);
     this.aplicarSaldos(null);
+    this.quitarCanjes();
     this.seleccionButacas.limpiar();
   }
 
