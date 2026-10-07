@@ -22,6 +22,7 @@
       [routerLinkActiveOptions]="{ exact: true }"
       >Catálogo</a
     >
+    <a routerLink="/proximamente" routerLinkActive="activo">Próximamente</a>
     @if (auth.haySesion()) {
       @if (auth.esAdmin()) {
         <a routerLink="/administracion" routerLinkActive="activo">Administración</a>
@@ -35,6 +36,10 @@
       <a routerLink="/cuenta/registro" routerLinkActive="activo">Crear cuenta</a>
     }
   </nav>
+
+  @if (auth.rol() === "cliente") {
+    <app-campana-notificaciones class="encabezado__campana" [usuarioId]="usuarioId()" />
+  }
 
   <button
     type="button"
@@ -60,6 +65,7 @@
       (click)="cerrarMenu()"
       >Catálogo</a
     >
+    <a routerLink="/proximamente" routerLinkActive="activo" (click)="cerrarMenu()">Próximamente</a>
     @if (auth.haySesion()) {
       @if (auth.esAdmin()) {
         <a routerLink="/administracion" routerLinkActive="activo" (click)="cerrarMenu()">Administración</a>

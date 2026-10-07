@@ -1,4 +1,13 @@
 import { Butaca, FuncionDisponible, FuncionMapa, Idioma, TipoButaca, TipoProyeccion } from '../modelos/funcion.model';
+import { estadoVenta, precioEntrada } from './preventa.helpers';
+
+interface PeliculaFuncionMapa {
+  nombre: string;
+  clasificacion_edad: number | null;
+  fecha_estreno: string;
+  preventa_habilitada: boolean;
+  precio_preventa: number | null;
+}
 
 export function mapearFuncionDisponible(fila: {
   id: string;
@@ -25,10 +34,7 @@ export function mapearFuncionMapa(fila: {
   id: string;
   pelicula_id: string;
   sala_id: string;
-  peliculas:
-    | { nombre: string; clasificacion_edad: number | null }
-    | { nombre: string; clasificacion_edad: number | null }[]
-    | null;
+  peliculas: PeliculaFuncionMapa | PeliculaFuncionMapa[] | null;
   salas: { nombre: string } | { nombre: string }[] | null;
   inicio: string;
   tipo_proyeccion: TipoProyeccion;
@@ -37,6 +43,11 @@ export function mapearFuncionMapa(fila: {
 }): FuncionMapa {
   const pelicula = Array.isArray(fila.peliculas) ? fila.peliculas[0] : fila.peliculas;
   const sala = Array.isArray(fila.salas) ? fila.salas[0] : fila.salas;
+  const datosVenta = {
+    fechaEstreno: pelicula?.fecha_estreno ?? '',
+    preventaHabilitada: pelicula?.preventa_habilitada ?? false,
+    precioPreventa: pelicula?.precio_preventa ?? null,
+  };
   return {
     id: fila.id,
     peliculaId: fila.pelicula_id,
@@ -47,7 +58,8 @@ export function mapearFuncionMapa(fila: {
     inicio: fila.inicio,
     tipoProyeccion: fila.tipo_proyeccion,
     idioma: fila.idioma,
-    precioBase: fila.precio_base,
+    precioBase: precioEntrada(fila.precio_base, datosVenta),
+    enPreventa: estadoVenta(datosVenta) === 'preventa',
   };
 }
 

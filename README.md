@@ -1057,6 +1057,63 @@ venta ajena y doble cancelación (sin filas afectadas), crédito y puntos
 resultantes, entradas canceladas, contador de vendidas y reventa de la
 butaca liberada.
 
+### Preventa: ventana calculada en el cliente, sin columna ni cron
+
+La preventa (RN06) no tiene estado propio en la base: la ventana se deriva
+de `peliculas.fecha_estreno` y `preventa_habilitada` cada vez que se lee la
+película. `core/helpers/preventa.helpers.ts` concentra la regla en
+`estadoVenta()`, que devuelve uno de tres estados:
+
+- `en-venta`: la película ya se estrenó.
+- `preventa`: tiene la preventa habilitada y faltan 7 días o menos para el
+  estreno. Cada entrada cuesta `precio_preventa` (más el adicional de la
+  butaca) en lugar de `funciones.precio_base`.
+- `proximamente`: todavía no se puede comprar. Sin preventa, la venta abre
+  el día del estreno.
+
+El catálogo ("En cartelera") filtra en la consulta las películas
+`en-venta` o en `preventa` con un `.or(...)` de PostgREST sobre esas dos
+columnas; la sección pública Próximamente (`features/proximamente/`) lista
+las de estreno futuro, incluidas las que ya están en preventa. El precio de
+preventa se aplica al mapear la función para el mapa de butacas
+(`mapearFuncionMapa`), así que todo lo que viene después (selección,
+carrito, `venta_items.precio_unitario`) lo recibe sin cambios.
+
+Se descartó una columna de estado actualizada por un job programado
+(`pg_cron`): agregaba una pieza de infraestructura para algo que se
+resuelve comparando dos fechas. Como el resto de las validaciones de
+negocio que no son críticas, la ventana se respeta solo en el frontend.
+
+### Alertas de estreno y avisos de venta: notificaciones generadas desde el frontend
+
+Las alertas (`alertas_estreno`) se activan desde Próximamente o desde el
+detalle de una película que todavía no está a la venta, con el componente
+compartido `InterruptorAlerta` (`shared/componentes/`), y se gestionan en
+"Alertas de estreno" del perfil. Activar es un `upsert` sobre
+`(usuario_id, pelicula_id)` y quitarla es un `delete`; la política
+`alertas_estreno_propio` del esquema inicial ya cubría las dos cosas.
+
+El aviso de que la venta se habilitó (CU-29) depende del paso del tiempo,
+no de una escritura en la base, así que ningún trigger lo puede disparar.
+En lugar de un job programado, lo genera el frontend al abrir la
+aplicación: la campana del encabezado (`layout/campana-notificaciones/`)
+se monta solo con un cliente logueado y en su `ngOnInit()` llama a
+`NotificacionesService.generarAvisosDeVenta()`, que busca las alertas
+activas cuya película ya está en `preventa` o `en-venta`, inserta una
+notificación por cada una y pasa la alerta a `activa = false` (cumplida).
+Después lista las últimas 20 notificaciones y muestra cuántas no se leyeron.
+Al abrir el panel se vuelve a ejecutar, así que una preventa que abre con
+la aplicación ya abierta aparece sin recargar.
+
+Como las notificaciones son solo in-app, generarlas al abrir la aplicación
+no cambia lo que ve el cliente: no hay otro canal por el que pudiera
+enterarse antes. La migración `avisos_venta` agrega
+`notificaciones.pelicula_id` (para que el aviso lleve a la película) y la
+política `notificaciones_insert_propio`, que solo deja insertar
+notificaciones propias y no leídas. El trigger
+`trg_notificaciones_proteger_contenido` sigue impidiendo editar el
+contenido después: el cliente solo puede marcarlas como leídas.
+
 ### Contador cacheado para datos agregados públicos
 
 El destacado "3 más vendidas" del catálogo necesita un ranking de películas

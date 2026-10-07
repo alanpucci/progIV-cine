@@ -42,13 +42,22 @@
 
         <p class="pelicula-detalle__sinopsis">{{ pelicula.sinopsis }}</p>
 
-        @if (pelicula.preventaHabilitada) {
-          <p class="pelicula-detalle__preventa">
-            En preventa
-            @if (pelicula.precioPreventa !== null) {
-              · desde ${{ pelicula.precioPreventa }}
-            }
-          </p>
+        @switch (estadoVenta(pelicula)) {
+          @case ("preventa") {
+            <p class="pelicula-detalle__preventa">
+              En preventa · ${{ pelicula.precioPreventa }} por entrada hasta el estreno
+            </p>
+          }
+          @case ("proximamente") {
+            <p class="pelicula-detalle__preventa">
+              {{ pelicula.preventaHabilitada ? "Preventa" : "Venta" }} desde el {{ apertura(pelicula) }}
+            </p>
+            <app-interruptor-alerta
+              [peliculaId]="pelicula.id"
+              [activa]="alertaActiva()"
+              (cambio)="alertaActiva.set($event)"
+            />
+          }
         }
       </div>
     </article>
@@ -56,7 +65,11 @@
     <section class="pelicula-detalle__seccion">
       <h2 class="pelicula-detalle__titulo-seccion">Funciones disponibles</h2>
 
-      @if (pelicula.funciones.length === 0) {
+      @if (estadoVenta(pelicula) === "proximamente") {
+        <p class="pelicula-detalle__estado">
+          Las entradas todavía no están a la venta. Salen el {{ apertura(pelicula) }}.
+        </p>
+      } @else if (pelicula.funciones.length === 0) {
         <p class="pelicula-detalle__estado">No hay funciones programadas por el momento.</p>
       } @else {
         <div class="pelicula-detalle__dias">
@@ -78,7 +91,7 @@
                       <span class="pelicula-detalle__funcion-detalle">
                         {{ funcion.salaNombre }} · {{ funcion.tipoProyeccion }} · {{ funcion.idioma }}
                       </span>
-                      <span class="pelicula-detalle__funcion-precio">${{ funcion.precioBase }}</span>
+                      <span class="pelicula-detalle__funcion-precio">${{ precioFuncion(funcion) }}</span>
                     </button>
                   </li>
                 }

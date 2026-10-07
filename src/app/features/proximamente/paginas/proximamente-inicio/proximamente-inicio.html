@@ -1,0 +1,66 @@
+<section class="proximamente">
+  <header class="proximamente__marquesina">
+    <h1 class="proximamente__titulo">Próximamente</h1>
+    <p class="proximamente__lema">Las luces todavía están prendidas. Reservá tu lugar en la fila.</p>
+  </header>
+
+  @if (error()) {
+    <p class="proximamente__estado proximamente__estado--error">
+      No se pudieron cargar los próximos estrenos. Volvé a intentar más tarde.
+    </p>
+  } @else if (!cargaGlobal.visible() && estrenos().length === 0) {
+    <p class="proximamente__estado">No hay estrenos anunciados por el momento.</p>
+  } @else if (!cargaGlobal.visible()) {
+    <ol class="proximamente__cartelera">
+      @for (pelicula of estrenos(); track pelicula.id) {
+        <li class="proximamente__cartel">
+          <a class="proximamente__poster-enlace" [routerLink]="['/pelicula', pelicula.id]">
+            <img class="proximamente__poster" [src]="pelicula.imagenUrl" [alt]="pelicula.nombre" loading="lazy" />
+            <span class="proximamente__fecha" aria-hidden="true">
+              <span class="proximamente__fecha-dia">{{ dia(pelicula.fechaEstreno) }}</span>
+              <span class="proximamente__fecha-mes">{{ mes(pelicula.fechaEstreno) }}</span>
+            </span>
+          </a>
+
+          <div class="proximamente__info">
+            <h2 class="proximamente__nombre">
+              <a [routerLink]="['/pelicula', pelicula.id]">{{ pelicula.nombre }}</a>
+            </h2>
+            <p class="proximamente__meta">
+              Estreno {{ formatearFechaEstreno(pelicula.fechaEstreno) }} ·
+              {{ formatearDuracion(pelicula.duracionMinutos) }} ·
+              {{ formatearClasificacion(pelicula.clasificacionEdad) }}
+            </p>
+
+            @if (pelicula.generos.length > 0) {
+              <ul class="proximamente__generos">
+                @for (genero of pelicula.generos; track genero.id) {
+                  <li class="proximamente__genero">{{ genero.nombre }}</li>
+                }
+              </ul>
+            }
+
+            @switch (estadoVenta(pelicula)) {
+              @case ("preventa") {
+                <p class="proximamente__venta proximamente__venta--abierta">
+                  Preventa abierta · ${{ pelicula.precioPreventa }} por entrada
+                </p>
+                <a class="proximamente__comprar" [routerLink]="['/pelicula', pelicula.id]">Ver funciones →</a>
+              }
+              @default {
+                <p class="proximamente__venta">
+                  {{ pelicula.preventaHabilitada ? "Preventa" : "Venta" }} desde el {{ apertura(pelicula) }}
+                </p>
+                <app-interruptor-alerta
+                  [peliculaId]="pelicula.id"
+                  [activa]="idsConAlerta().includes(pelicula.id)"
+                  (cambio)="actualizarAlerta(pelicula.id, $event)"
+                />
+              }
+            }
+          </div>
+        </li>
+      }
+    </ol>
+  }
+</section>

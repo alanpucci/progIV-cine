@@ -7,6 +7,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/catalogo/catalogo.routes').then((m) => m.RUTAS_CATALOGO),
   },
   {
+    path: 'proximamente',
+    loadChildren: () =>
+      import('./features/proximamente/proximamente.routes').then((m) => m.RUTAS_PROXIMAMENTE),
+  },
+  {
     path: 'butacas',
     canMatch: [noAdminGuard],
     loadChildren: () =>

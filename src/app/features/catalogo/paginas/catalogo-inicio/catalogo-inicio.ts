@@ -5,6 +5,7 @@ import { PeliculasService } from "../../../../core/servicios/peliculas.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
 import { Genero, PeliculaResumen } from "../../../../core/modelos/pelicula.model";
 import { formatearClasificacion, formatearDuracion } from "../../../../core/helpers/pelicula.formato";
+import { estadoVenta } from "../../../../core/helpers/preventa.helpers";
 import { Tarjeta } from "../../../../shared/componentes/tarjeta/tarjeta";
 import { Interactiva } from "../../../../shared/directivas/interactiva.directive";
 import { FiltrarPeliculas } from "../../pipes/filtrar-peliculas.pipe";
@@ -44,6 +45,7 @@ export class CatalogoInicio {
 
   protected readonly formatearDuracion = formatearDuracion;
   protected readonly formatearClasificacion = formatearClasificacion;
+  protected readonly estadoVenta = estadoVenta;
 
   constructor() {
     this.cargarDestacadas();

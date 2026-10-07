@@ -13,6 +13,9 @@ export interface PeliculaResumen {
   clasificacionEdad: number | null;
   generos: Genero[];
   entradasVendidas: number;
+  fechaEstreno: string;
+  preventaHabilitada: boolean;
+  precioPreventa: number | null;
 }
 
 export interface ResenaPelicula {
@@ -24,9 +27,6 @@ export interface ResenaPelicula {
 
 export interface PeliculaDetalle extends PeliculaResumen {
   sinopsis: string;
-  fechaEstreno: string;
-  preventaHabilitada: boolean;
-  precioPreventa: number | null;
   funciones: FuncionDisponible[];
   resenas: ResenaPelicula[];
   promedioEstrellas: number | null;

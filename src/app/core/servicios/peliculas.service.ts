@@ -3,6 +3,7 @@ import { SupabaseService } from './supabase.service';
 import { FuncionesService } from './funciones.service';
 import { PeliculaDetalle, PeliculaResumen, ResenaPelicula } from '../modelos/pelicula.model';
 import { mapearResumen } from '../helpers/pelicula.mapeos';
+import { hoyLocal, ultimoEstrenoEnPreventa } from '../helpers/preventa.helpers';
 
 const COLUMNAS_RESUMEN = `
   id,
@@ -11,6 +12,9 @@ const COLUMNAS_RESUMEN = `
   imagen_url,
   clasificacion_edad,
   entradas_vendidas,
+  fecha_estreno,
+  preventa_habilitada,
+  precio_preventa,
   pelicula_genero ( generos ( id, nombre ) )
 `;
 
@@ -24,6 +28,7 @@ export class PeliculasService {
       .from('peliculas')
       .select(COLUMNAS_RESUMEN)
       .eq('publicada', true)
+      .or(this.filtroEnCartelera())
       .order('fecha_estreno', { ascending: false });
 
     if (error) throw error;
@@ -37,9 +42,6 @@ export class PeliculasService {
         .select(`
           ${COLUMNAS_RESUMEN},
           sinopsis,
-          fecha_estreno,
-          preventa_habilitada,
-          precio_preventa,
           resenas ( id, estrellas, comentario, created_at )
         `)
         .eq('id', id)
@@ -67,9 +69,6 @@ export class PeliculasService {
     return {
       ...mapearResumen(pelicula),
       sinopsis: pelicula.sinopsis,
-      fechaEstreno: pelicula.fecha_estreno,
-      preventaHabilitada: pelicula.preventa_habilitada,
-      precioPreventa: pelicula.precio_preventa,
       funciones,
       resenas,
       promedioEstrellas,
@@ -81,11 +80,28 @@ export class PeliculasService {
       .from('peliculas')
       .select(COLUMNAS_RESUMEN)
       .eq('publicada', true)
+      .or(this.filtroEnCartelera())
       .order('entradas_vendidas', { ascending: false })
       .order('fecha_estreno', { ascending: false })
       .limit(cantidad);
 
     if (error) throw error;
     return (data ?? []).map(mapearResumen);
+  }
+
+  async obtenerProximosEstrenos(): Promise<PeliculaResumen[]> {
+    const { data, error } = await this.supabase
+      .from('peliculas')
+      .select(COLUMNAS_RESUMEN)
+      .eq('publicada', true)
+      .gt('fecha_estreno', hoyLocal())
+      .order('fecha_estreno', { ascending: true });
+
+    if (error) throw error;
+    return (data ?? []).map(mapearResumen);
+  }
+
+  private filtroEnCartelera(): string {
+    return `fecha_estreno.lte.${hoyLocal()},and(preventa_habilitada.is.true,fecha_estreno.lte.${ultimoEstrenoEnPreventa()})`;
   }
 }

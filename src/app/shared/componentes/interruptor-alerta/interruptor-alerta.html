@@ -1,0 +1,20 @@
+@if (!auth.haySesion()) {
+  <a class="interruptor-alerta__ingresar" routerLink="/cuenta/ingreso">Ingresá para recibir un aviso</a>
+} @else if (auth.rol() === "cliente") {
+  <button
+    type="button"
+    class="interruptor-alerta"
+    [class.interruptor-alerta--activa]="activa()"
+    [disabled]="procesando()"
+    (click)="alternar()"
+  >
+    <svg class="interruptor-alerta__icono" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3a6 6 0 0 0-6 6v4l-2 3h16l-2-3V9a6 6 0 0 0-6-6Z" />
+      <path d="M10 19a2 2 0 0 0 4 0" />
+    </svg>
+    <span>{{ activa() ? "Aviso activado · Quitar" : "Avisame cuando salga a la venta" }}</span>
+  </button>
+  @if (error()) {
+    <p class="interruptor-alerta__error">No se pudo actualizar el aviso. Intentá de nuevo.</p>
+  }
+}

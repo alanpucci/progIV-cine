@@ -196,16 +196,27 @@ Cancelación hasta 2 horas antes, liberación de butacas, generación de crédit
 > en ledgers ajenos. El motivo del admin se guarda en la nueva columna
 > `ventas.motivo_cancelacion`. No se creó `features/cancelaciones/`.
 
-### Fase 10 — Próximamente y notificaciones (M11) ⬜
+### Fase 10 — Próximamente y notificaciones (M11) ✅
 Sección "Próximamente", alertas de estreno, preventa 7 días antes,
 notificación in-app al habilitarse la venta.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 10.1 | Sección pública "Próximamente" (películas con preventa habilitada o estreno futuro) | ⬜ |
-| 10.2 | Suscripción a alertas de estreno desde el perfil (`alertas_estreno`) | ⬜ |
-| 10.3 | Preventa: habilitación de venta 7 días antes del estreno con `precio_preventa` | ⬜ |
-| 10.4 | Notificaciones in-app al habilitarse la preventa/venta (`notificaciones`) + indicador de no leídas | ⬜ |
+| 10.1 | Sección pública "Próximamente" (películas con preventa habilitada o estreno futuro) | ✅ |
+| 10.2 | Suscripción a alertas de estreno desde el perfil (`alertas_estreno`) | ✅ |
+| 10.3 | Preventa: habilitación de venta 7 días antes del estreno con `precio_preventa` | ✅ |
+| 10.4 | Notificaciones in-app al habilitarse la preventa/venta (`notificaciones`) + indicador de no leídas | ✅ |
+
+> **Alertas desde Próximamente, avisos generados por el frontend.** La
+> alerta se activa desde Próximamente o desde el detalle de la película, y
+> el perfil suma "Alertas de estreno" para ver las pendientes y quitarlas.
+> La ventana de preventa se calcula en la aplicación a partir de
+> `fecha_estreno`, sin columna ni job programado. Como la apertura de la
+> venta depende del paso del tiempo, el aviso lo genera el frontend al
+> abrir la app con sesión: inserta la notificación y marca la alerta como
+> cumplida. Para eso se agregó `notificaciones.pelicula_id` y una política
+> de insert propio. El catálogo pasa a mostrar solo películas estrenadas o
+> en preventa.
 
 ### Fase 11 — Reportes y estadísticas (M12) ⬜
 Facturación diaria, entradas vendidas, exportación PDF/Excel, gráficos de

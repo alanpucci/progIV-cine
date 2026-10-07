@@ -4,6 +4,7 @@ import { Boton } from "../../../../shared/componentes/boton/boton";
 import { PeliculasService } from "../../../../core/servicios/peliculas.service";
 import { AuthService } from "../../../../core/servicios/auth.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
+import { AlertasEstrenoService } from "../../../../core/servicios/alertas-estreno.service";
 import { PeliculaDetalle } from "../../../../core/modelos/pelicula.model";
 import { FuncionDisponible } from "../../../../core/modelos/funcion.model";
 import {
@@ -13,6 +14,8 @@ import {
   formatearFechaFuncion,
   formatearHoraFuncion,
 } from "../../../../core/helpers/pelicula.formato";
+import { aperturaDeVenta, estadoVenta, precioEntrada } from "../../../../core/helpers/preventa.helpers";
+import { InterruptorAlerta } from "../../../../shared/componentes/interruptor-alerta/interruptor-alerta";
 
 interface GrupoFunciones {
   fecha: string;
@@ -20,7 +23,7 @@ interface GrupoFunciones {
 }
 
 @Component({
-  imports: [RouterLink, Boton],
+  imports: [RouterLink, Boton, InterruptorAlerta],
   selector: "app-pelicula-detalle",
   styleUrl: "./pelicula-detalle.scss",
   templateUrl: "./pelicula-detalle.html",
@@ -29,12 +32,14 @@ export class PeliculaDetallePagina {
   private readonly ruta = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly peliculasService = inject(PeliculasService);
+  private readonly alertas = inject(AlertasEstrenoService);
   protected readonly cargaGlobal = inject(CargaGlobalService);
   protected readonly auth = inject(AuthService);
 
   protected readonly detalle = signal<PeliculaDetalle | null>(null);
   protected readonly error = signal(false);
   protected readonly funcionSeleccionada = signal<string | null>(null);
+  protected readonly alertaActiva = signal(false);
 
   protected readonly rangoEstrellas = [1, 2, 3, 4, 5] as const;
 
@@ -42,6 +47,7 @@ export class PeliculaDetallePagina {
   protected readonly formatearClasificacion = formatearClasificacion;
   protected readonly formatearFechaEstreno = formatearFechaEstreno;
   protected readonly formatearHoraFuncion = formatearHoraFuncion;
+  protected readonly estadoVenta = estadoVenta;
 
   constructor() {
     this.cargarDetalle(this.ruta.snapshot.paramMap.get("id")!);
@@ -56,6 +62,15 @@ export class PeliculaDetallePagina {
       grupos.set(fecha, lista);
     }
     return [...grupos.entries()].map(([fecha, funciones]) => ({ fecha, funciones }));
+  }
+
+  protected apertura(pelicula: PeliculaDetalle): string {
+    return formatearFechaEstreno(aperturaDeVenta(pelicula));
+  }
+
+  protected precioFuncion(funcion: FuncionDisponible): number {
+    const pelicula = this.detalle();
+    return pelicula ? precioEntrada(funcion.precioBase, pelicula) : funcion.precioBase;
   }
 
   protected promedioRedondeado(): number {
@@ -82,6 +97,20 @@ export class PeliculaDetallePagina {
       this.detalle.set(resultado);
     } catch {
       this.error.set(true);
+      return;
+    }
+    await this.cargarAlerta(id);
+  }
+
+  private async cargarAlerta(peliculaId: string): Promise<void> {
+    const pelicula = this.detalle();
+    const usuarioId = this.auth.sesion()?.user.id;
+    if (!pelicula || !usuarioId || estadoVenta(pelicula) !== "proximamente") return;
+    try {
+      const ids = await this.alertas.obtenerIdsPeliculasConAlerta(usuarioId);
+      this.alertaActiva.set(ids.includes(peliculaId));
+    } catch {
+      this.alertaActiva.set(false);
     }
   }
 }

@@ -3,6 +3,46 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 10] - 2026-10-07
+
+### Added
+- Migración `avisos_venta`: columna `notificaciones.pelicula_id` y política
+  `notificaciones_insert_propio` (solo notificaciones propias y no leídas).
+- `core/helpers/preventa.helpers.ts`: `estadoVenta()` (`proximamente`,
+  `preventa` o `en-venta`), `inicioPreventa()`, `aperturaDeVenta()` y
+  `precioEntrada()`. La preventa abre 7 días antes del estreno.
+- Feature `proximamente/` con la página pública `/proximamente`
+  (`ProximamenteInicio`): estrenos futuros en orden de fecha, con el estado
+  de la venta y el botón para activar la alerta. Enlace "Próximamente" en el
+  encabezado y acceso desde el catálogo.
+- `AlertasEstrenoService` y `NotificacionesService` en `core/servicios/`,
+  con los modelos `AlertaEstreno` y `Notificacion`.
+- Componente compartido `InterruptorAlerta`: activa o quita la alerta de
+  una película; sin sesión invita a ingresar.
+- "Alertas de estreno" en el perfil (`MisAlertas`): alertas pendientes con
+  la fecha en que abre la venta y opción de quitarlas.
+- Campana de notificaciones en el encabezado (`CampanaNotificaciones`,
+  solo clientes): genera los avisos de venta pendientes, muestra el
+  contador de no leídas y un panel con las últimas 20; cada aviso lleva a
+  la película y se puede marcar todo como leído.
+
+### Changed
+- El catálogo ("En cartelera" y "Las 3 más vendidas") muestra solo
+  películas estrenadas o en preventa; las de preventa llevan un sello.
+- `PeliculaResumen` incluye `fechaEstreno`, `preventaHabilitada` y
+  `precioPreventa`.
+- Detalle de película: en preventa muestra el precio de preventa en cada
+  función; si todavía no está a la venta, oculta las funciones, informa
+  cuándo abre la venta y ofrece la alerta.
+- `FuncionMapa` trae el precio de entrada vigente (de preventa si
+  corresponde) y `enPreventa`; el mapa de butacas lo aclara.
+- Formulario de películas (admin): ayuda sobre la ventana de preventa.
+- `README.md`: secciones sobre la ventana de preventa y la generación de
+  avisos de venta.
+- `docs/01_Analisis_Funcional_Cine.pdf`: resuelto el canal de las alertas
+  (solo in-app). `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: resuelta la
+  preventa, los avisos de venta y la nueva `notificaciones.pelicula_id`.
+
 ## [Fase 9] - 2026-10-07
 
 ### Added
