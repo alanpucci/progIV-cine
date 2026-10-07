@@ -3,6 +3,13 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Docs: roadmap Fase 7] - 2026-10-07
+
+### Changed
+- `docs/ROADMAP.md` y `docs/ROADMAP.pdf`: sub-tareas 7.1 a 7.6 y la Fase 7
+  marcadas como hechas, descripción de la 7.4 ajustada (sala automática o
+  elegida a mano) y nota sobre el admin que no opera como cliente.
+
 ## [Fix: el admin no opera como cliente] - 2026-10-07
 
 ### Added
