@@ -7,8 +7,10 @@ import {
   FilaComboItem,
   codigosQrPorButaca,
   filaVenta,
+  filasCanjes,
   filasEntradas,
   filasItemsVenta,
+  filasMovimientosCanjes,
   filasMovimientosPuntos,
   filasPagos,
   productosRequeridos,
@@ -98,7 +100,14 @@ export class VentasService {
           .insert({ usuario_id: usuarioId, venta_id: ventaId, tipo: 'uso', monto: -solicitud.credito }),
       );
     }
-    const movimientosPuntos = filasMovimientosPuntos(usuarioId, ventaId, solicitud);
+    const canjes = filasCanjes(usuarioId, ventaId, solicitud);
+    if (canjes.length > 0) {
+      await this.ejecutar(this.supabase.from('canjes').insert(canjes));
+    }
+    const movimientosPuntos = [
+      ...filasMovimientosCanjes(canjes),
+      ...filasMovimientosPuntos(usuarioId, ventaId, solicitud),
+    ];
     if (movimientosPuntos.length > 0) {
       await this.ejecutar(this.supabase.from('movimientos_puntos').insert(movimientosPuntos));
     }

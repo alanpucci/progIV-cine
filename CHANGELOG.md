@@ -3,6 +3,76 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 8] - 2026-10-07
+
+### Added
+- `RecompensasAdministracionService` (listado con cantidad de canjes,
+  obtener por id, crear, actualizar, activar/desactivar y eliminar).
+- Página `ListadoRecompensas` (`/administracion/recompensas`): fichas con
+  costo en puntos, tipo (entrada o Candy Bar), qué se entrega, estado y
+  canjes. "Eliminar" deshabilitado si la recompensa ya se canjeó.
+- Página `FormularioRecompensa` (`/administracion/recompensas/nueva` y
+  `/administracion/recompensas/:id`): nombre, tipo, producto (solo para el
+  tipo producto), costo en puntos y estado, con vista previa de la ficha.
+- Validador de grupo `productoRequerido`.
+- Modelo compartido `Recompensa`/`TipoRecompensa` en `core/modelos/`.
+- Canje de recompensas en el checkout: componente `RecompensasCompra`
+  (dentro del bloque de saldo de `/compra/datos-comprador`, solo con sesión
+  y saldo de puntos) que lista las recompensas activas, bloquea las que no
+  alcanzan o las de entrada cuando ya están todas cubiertas, y muestra los
+  canjes aplicados con opción de quitarlos.
+- `RecompensasService` en `core/servicios/` (recompensas activas, sin las de
+  productos desactivados).
+- `CarritoService`: signal `canjes` (en `sessionStorage`), `canjear()`,
+  `quitarCanje()`, `quitarCanjes()`, `canjesEfectivos()`,
+  `entradasCanjeadas()`, `entradaCanjeada()`, `montoEntradasCanjeadas()`,
+  `productosCanjeados()` y `puntosCanjes()`.
+- `filasCanjes()` y `filasMovimientosCanjes()` en `venta.filas.ts`: al
+  confirmar la compra se insertan los `canjes` y un débito de puntos por
+  canje con su `canje_id`.
+- Migración `canje_recompensas`: política `canjes_insert_propio`.
+- Migración `saldos_solo_por_movimientos`: `proteger_campos_sensibles_perfil`
+  rechaza cualquier `update` directo de `puntos_saldo`/`credito_saldo`,
+  también el de un admin; los saldos solo cambian con los triggers de los
+  ledgers. El rol sigue siendo editable solo por un admin.
+- "Mi billetera" (perfil) muestra las recompensas activas, con cuántos
+  puntos faltan para cada una, y aclara que los puntos y el crédito no se
+  transfieren.
+
+### Changed
+- Nueva sección "Recompensas" en el panel de administración.
+- La entrada cubierta por un canje se graba con precio 0 y el producto
+  canjeado como ítem `recompensa` con precio 0, que también descuenta stock.
+- `subtotalEntradas()` resta las entradas cubiertas por canjes. El carrito
+  las marca con la etiqueta "canje" y muestra los productos canjeados; el
+  pago y la confirmación listan las recompensas.
+- `SaldosCompra`: los puntos para pago parcial excluyen los comprometidos en
+  canjes. Sin sesión, los canjes se descartan como el resto del saldo.
+- El historial de compras muestra el nombre del producto canjeado.
+- "Mi billetera" unifica el historial de puntos y crédito en una sola lista
+  ordenada por fecha, con una marca de moneda por movimiento. Las fichas de
+  saldo pasan a filtrar el historial (otro clic, o "Ver todos", vuelve a la
+  lista completa).
+- `MovimientoPuntos` trae el nombre de la recompensa canjeada
+  (`canjes ( recompensas ( nombre ) )`): el historial muestra "Canje: …" y
+  el débito por pago parcial pasa a "Pago con puntos".
+- `README.md`: nueva sección sobre el canje de recompensas.
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: resuelto que los canjes se
+  hacen dentro de una compra y cómo se graban.
+- `README.md`: nueva sección "Puntos y crédito no transferibles", con las
+  garantías de RLS y triggers y cómo se verificaron. La nota sobre el
+  trigger de `perfiles` ya no dice que un admin puede editar saldos.
+- `docs/ROADMAP.md` y `docs/ROADMAP.pdf`: Fase 8 marcada como hecha, la 8.3
+  pasa a "canje de recompensas en el checkout" y nota sobre el desvío.
+- Acreditación de puntos (8.1): sin cambios de código, ya se hacía al
+  confirmar la compra (1 punto por peso pagado con tarjeta, vía
+  `movimientos_puntos`). Lo canjeado vale $0 y no suma puntos.
+- No transferencia (8.5) verificada: con todas las migraciones aplicadas
+  sobre PGlite se probaron como `authenticated` 20 casos (transferencias,
+  edición directa de saldos por cliente y admin, edición/borrado de
+  movimientos, canjes a nombre de otro, lectura cruzada y una compra con
+  canjes que descuenta el saldo por trigger). Todos pasan.
+
 ## [Docs: roadmap Fase 7] - 2026-10-07
 
 ### Changed

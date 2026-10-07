@@ -678,6 +678,43 @@ Al confirmar la compra, el uso se registra en
 `movimientos_credito`/`movimientos_puntos`, y los triggers de esos ledgers
 actualizan el saldo cacheado en `perfiles`.
 
+### Recompensas: se canjean dentro de la compra
+
+Además de usar puntos como pago parcial a $1 cada uno, el cliente puede
+canjearlos por recompensas que configura el admin
+(`/administracion/recompensas`), cada una con su propio costo en puntos:
+
+- **entrada**: cubre una entrada de la compra, de cualquier función. Si la
+  compra tiene varias entradas, cubre la de menor precio;
+- **producto**: suma un producto del Candy Bar sin cargo.
+
+El canje no es un paso aparte ni un voucher para usar después: se elige en
+el checkout, en el mismo bloque del saldo (`RecompensasCompra`, dentro de
+`SaldosCompra`), y se graba junto con la compra. Así cada canje queda
+atado a la venta donde se usó (`canjes.venta_id`) y no hace falta un flujo
+para consumir canjes pendientes.
+
+`CarritoService.canjes` guarda las recompensas elegidas (respaldado en
+`sessionStorage`, como el resto del carrito). `canjesEfectivos()` descarta
+los canjes de entrada que sobran si después se sacan butacas, y de ahí se
+derivan las entradas cubiertas (`entradasCanjeadas()`), su monto, que se
+resta de `subtotalEntradas()`, y los puntos comprometidos
+(`puntosCanjes()`). Los puntos disponibles para pago parcial son el saldo
+menos los comprometidos en canjes, y viceversa.
+
+Al confirmar la compra:
+
+- la entrada cubierta se graba como un `venta_items` de tipo `entrada` con
+  precio 0, para que siga ocupando la butaca en el índice único;
+- el producto se graba como un `venta_items` de tipo `recompensa` con su
+  `producto_id` y precio 0, y descuenta stock igual que una venta;
+- cada canje inserta una fila en `canjes` y un débito en
+  `movimientos_puntos` con su `canje_id`. La migración `canje_recompensas`
+  agrega la política de alta en `canjes`, acotada a los propios.
+
+Como lo canjeado vale $0 en la venta, no suma puntos: la acreditación sigue
+saliendo de lo pagado con tarjeta.
+
 ### Pago simulado y confirmación de compra desde el frontend
 
 `/compra/pago` (`Pago`, en `CompraModule`) muestra el resumen como un
@@ -928,8 +965,9 @@ criterio parejo:
   confirmación de compra más arriba).
 - `perfiles.rol`, `credito_saldo` y `puntos_saldo` están protegidos además
   por un trigger (no solo por RLS): ni siquiera con una política de UPDATE
-  "propio" un usuario puede autopromoverse a admin o cargarse saldo, porque
-  el trigger rechaza el cambio si quien lo hace no es admin.
+  "propio" un usuario puede autopromoverse a admin. El rol solo lo cambia un
+  admin, y los saldos no los edita nadie directamente (ver "Puntos y crédito
+  no transferibles").
 - El alta de `perfiles` la hace el frontend después del signup, acotada por
   la política `perfiles_insert_alta` (ver "Alta de perfil desde el
   frontend").
@@ -938,6 +976,37 @@ Las migraciones no se aplican solas contra el proyecto de Supabase real desde
 acá: se corren con `supabase db push` (requiere `supabase link` con
 credenciales propias del proyecto) o pegando el contenido de cada archivo, en
 orden, en el SQL Editor del dashboard.
+
+### Puntos y crédito no transferibles
+
+Los puntos (RN08/RN-010) y el crédito son personales. La regla no depende
+del frontend: el saldo cacheado en `perfiles` solo cambia cuando se
+inserta un movimiento en el ledger, y cada usuario solo inserta
+movimientos propios.
+
+- `movimientos_puntos`, `movimientos_credito` y `canjes`: la única
+  escritura permitida es el `insert` con `usuario_id = auth.uid()`. Nadie
+  puede acreditar ni debitar a otra cuenta, ni siquiera un admin. No hay
+  políticas de `update`/`delete`, así que el historial no se edita.
+- `perfiles.puntos_saldo`/`credito_saldo`: el trigger
+  `proteger_campos_sensibles_perfil` rechaza cualquier `update` directo,
+  también el de un admin (migración `saldos_solo_por_movimientos`). Solo
+  pasan los `update` que hacen los triggers de los ledgers
+  (`pg_trigger_depth() > 1`), así que saldo e historial no pueden quedar
+  desfasados.
+- Cada usuario lee solo sus propios saldos, movimientos y canjes.
+
+Lo que la regla no cubre, por la decisión de grabar la compra desde el
+frontend: un usuario con la clave pública puede insertarse movimientos
+propios con el importe que quiera (ver "Pago simulado y confirmación de
+compra desde el frontend"). Eso nunca toca la cuenta de otro.
+
+Estas reglas se verificaron aplicando todas las migraciones sobre un
+Postgres en memoria (PGlite), con un esquema `auth` mínimo, y probando
+cada caso como `authenticated`: transferencias de puntos y crédito, edición
+directa de saldos (cliente y admin), edición y borrado de movimientos,
+canjes a nombre de otro, y una compra con canjes que el trigger descuenta
+del saldo.
 
 ### Contador cacheado para datos agregados públicos
 

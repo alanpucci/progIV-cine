@@ -16,6 +16,8 @@ import { FormularioCombo } from './paginas/formulario-combo/formulario-combo';
 import { CategoriasProducto } from './paginas/categorias-producto/categorias-producto';
 import { ListadoCupones } from './paginas/listado-cupones/listado-cupones';
 import { FormularioCupon } from './paginas/formulario-cupon/formulario-cupon';
+import { ListadoRecompensas } from './paginas/listado-recompensas/listado-recompensas';
+import { FormularioRecompensa } from './paginas/formulario-recompensa/formulario-recompensa';
 import { Boton } from '../../shared/componentes/boton/boton';
 
 @NgModule({
@@ -35,6 +37,8 @@ import { Boton } from '../../shared/componentes/boton/boton';
     CategoriasProducto,
     ListadoCupones,
     FormularioCupon,
+    ListadoRecompensas,
+    FormularioRecompensa,
   ],
   imports: [AdministracionRoutingModule, ReactiveFormsModule, Boton],
 })

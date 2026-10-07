@@ -11,7 +11,11 @@
 
   @if (saldos() && !tieneSaldo()) {
     <p class="saldos__vacio">Todavía no tenés crédito ni puntos para usar. Esta compra te suma puntos.</p>
-  } @else if (saldos()) {
+  } @else if (saldos(); as cuenta) {
+    @if (cuenta.puntos > 0) {
+      <app-recompensas-compra [puntosSaldo]="cuenta.puntos" />
+    }
+
     <form class="saldos__formulario" [formGroup]="formulario" (ngSubmit)="aplicar()">
       <div class="saldos__campos">
         <div class="saldos__campo">

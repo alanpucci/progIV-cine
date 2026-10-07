@@ -8,36 +8,63 @@
       <button
         type="button"
         class="billetera__ficha billetera__ficha--puntos"
-        [class.billetera__ficha--activa]="pestana() === 'puntos'"
-        (click)="elegirPestana('puntos')"
+        [class.billetera__ficha--activa]="filtro() === 'puntos'"
+        (click)="alternarFiltro('puntos')"
       >
         <span class="billetera__ficha-etiqueta">Puntos</span>
         <span class="billetera__ficha-valor">{{ puntosSaldo() }}</span>
-        <span class="billetera__ficha-pie">Canjeables por recompensas</span>
+        <span class="billetera__ficha-pie">Canjeables por recompensas al comprar</span>
       </button>
 
       <button
         type="button"
         class="billetera__ficha billetera__ficha--credito"
-        [class.billetera__ficha--activa]="pestana() === 'credito'"
-        (click)="elegirPestana('credito')"
+        [class.billetera__ficha--activa]="filtro() === 'credito'"
+        (click)="alternarFiltro('credito')"
       >
         <span class="billetera__ficha-etiqueta">Crédito</span>
         <span class="billetera__ficha-valor">{{ creditoSaldo() }}</span>
         <span class="billetera__ficha-pie">Disponible para tus compras</span>
       </button>
     </div>
+    <p class="billetera__nota">Tus puntos y tu crédito son personales: no se pueden transferir a otra cuenta.</p>
 
-    <h3 class="billetera__subtitulo">
-      Movimientos de {{ pestana() === "puntos" ? "puntos" : "crédito" }}
-    </h3>
+    @if (recompensas().length > 0) {
+      <h3 class="billetera__subtitulo">Recompensas</h3>
+      <ul class="billetera__recompensas">
+        @for (recompensa of recompensas(); track recompensa.id) {
+          <li class="billetera__recompensa" [class.billetera__recompensa--alcanza]="puntosFaltantes(recompensa) === 0">
+            <span class="billetera__recompensa-costo">{{ formatearPuntos(recompensa.puntosCosto) }} pts</span>
+            <span class="billetera__recompensa-nombre">{{ recompensa.nombre }}</span>
+            <span class="billetera__recompensa-estado">
+              @if (puntosFaltantes(recompensa) === 0) {
+                Te alcanza
+              } @else {
+                Te faltan {{ formatearPuntos(puntosFaltantes(recompensa)) }} pts
+              }
+            </span>
+          </li>
+        }
+      </ul>
+      <p class="billetera__nota">Las recompensas se canjean al comprar, en el paso de tus datos.</p>
+    }
+
+    <div class="billetera__encabezado-historial">
+      <h3 class="billetera__subtitulo">{{ tituloHistorial() }}</h3>
+      @if (filtro() !== "todos") {
+        <button type="button" class="billetera__ver-todo" (click)="filtro.set('todos')">Ver todos</button>
+      }
+    </div>
 
     @if (filas().length === 0) {
       <p class="billetera__vacio">Todavía no tenés movimientos.</p>
     } @else {
       <ol class="billetera__historial">
-        @for (fila of filas(); track fila.id) {
+        @for (fila of filas(); track fila.moneda + fila.id) {
           <li class="billetera__movimiento">
+            <span class="billetera__movimiento-moneda billetera__movimiento-moneda--{{ fila.moneda }}">
+              {{ fila.moneda === "puntos" ? "pts" : "$" }}
+            </span>
             <div class="billetera__movimiento-detalle">
               <span class="billetera__movimiento-concepto">{{ fila.concepto }}</span>
               <span class="billetera__movimiento-fecha">{{ fila.fecha }}</span>

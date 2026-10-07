@@ -61,8 +61,8 @@ export const COLUMNAS_PELICULA_VISTA = `
 `;
 
 function nombreExtra(item: FilaItemCompra): string {
-  if (item.tipo_item === 'recompensa') return 'Recompensa canjeada';
   const nombre = unico(item.productos)?.nombre ?? unico(item.combos)?.nombre;
+  if (item.tipo_item === 'recompensa') return nombre ? `${nombre} (canje)` : 'Recompensa canjeada';
   return nombre ?? (item.tipo_item === 'combo' ? 'Combo' : 'Producto');
 }
 

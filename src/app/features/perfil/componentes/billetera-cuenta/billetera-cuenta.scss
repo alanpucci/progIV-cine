@@ -105,6 +105,85 @@
   font-size: 0.8rem;
 }
 
+.billetera__nota {
+  margin: 0;
+  color: var(--color-texto-silenciado);
+  font-size: 0.8rem;
+}
+
+.billetera__recompensas {
+  display: flex;
+  gap: var(--espacio-sm);
+  margin: 0;
+  padding: 0 0 var(--espacio-xs);
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.billetera__recompensa {
+  display: flex;
+  flex: 0 0 11rem;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+  padding: var(--espacio-md);
+  border: 1px dashed var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo-alterno);
+  scroll-snap-align: start;
+}
+
+.billetera__recompensa--alcanza {
+  border-style: solid;
+  border-color: var(--color-acento-secundario);
+
+  .billetera__recompensa-estado {
+    color: var(--color-exito);
+  }
+}
+
+.billetera__recompensa-costo {
+  color: var(--color-acento-secundario);
+  font-family: var(--fuente-titulo);
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.billetera__recompensa-nombre {
+  color: var(--color-texto-primario);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.billetera__recompensa-estado {
+  margin-top: auto;
+  color: var(--color-texto-silenciado);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.billetera__encabezado-historial {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--espacio-md);
+}
+
+.billetera__ver-todo {
+  border: none;
+  background: none;
+  color: var(--color-acento-secundario);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .billetera__subtitulo {
   margin-top: var(--espacio-sm);
   color: var(--color-texto-secundario);
@@ -142,8 +221,31 @@
   }
 }
 
+.billetera__movimiento-moneda {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+
+  &--puntos {
+    color: var(--color-acento-secundario);
+  }
+
+  &--credito {
+    color: var(--color-acento-terciario);
+  }
+}
+
 .billetera__movimiento-detalle {
   display: flex;
+  flex: 1;
   flex-direction: column;
   min-width: 0;
 }
