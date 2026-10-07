@@ -9,3 +9,10 @@ export const adminGuard: CanMatchFn = async () => {
   if (auth.esAdmin()) return true;
   return router.createUrlTree([auth.haySesion() ? '/' : '/cuenta/ingreso']);
 };
+
+export const noAdminGuard: CanMatchFn = async () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  await auth.cargarSesion();
+  return auth.esAdmin() ? router.createUrlTree(['/']) : true;
+};

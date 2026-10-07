@@ -247,6 +247,14 @@ El guard es solo para la navegación. Lo que impide de verdad que un no-admin
 modifique el catálogo son las políticas RLS `*_admin_todo`, que ya estaban
 en el esquema inicial.
 
+A la inversa, un admin no opera como cliente: puede recorrer el catálogo y
+ver el detalle y las funciones de cada película, pero no comprar. El
+detalle deshabilita la elección de función y reemplaza el botón de
+continuar por un aviso, el encabezado no le muestra "Mis entradas" ni "Mi
+perfil", y `noAdminGuard` (`CanMatchFn`, también en `rol.guard.ts`) cierra
+esas rutas (`/butacas`, `/compra`, `/mis-entradas`, `/cuenta/perfil`)
+redirigiendo al catálogo si se escriben a mano.
+
 El panel (`features/administracion/`) es un `NgModule` con una ruta padre,
 `PanelAdministracion`, que dibuja la barra lateral y un `<router-outlet>`
 donde se cargan las secciones como rutas hijas. Las secciones salen de la

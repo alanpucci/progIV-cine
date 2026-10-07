@@ -3,6 +3,21 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fix: el admin no opera como cliente] - 2026-10-07
+
+### Added
+- `noAdminGuard` (`CanMatchFn`) en `core/guardias/rol.guard.ts`: redirige
+  al catálogo a un admin. Aplicado a `/butacas`, `/compra`, `/mis-entradas`
+  y `/cuenta/perfil`.
+
+### Changed
+- El encabezado (escritorio y menú móvil) ya no muestra "Mis entradas" ni
+  "Mi perfil" a un usuario admin: solo "Administración" y "Cerrar sesión".
+- En el detalle de película, un admin ve las funciones pero no puede
+  elegirlas: en lugar de "Continuar a selección de butacas" se muestra un
+  aviso.
+- `README.md`: el admin no opera como cliente.
+
 ## [Fase 7.6] - 2026-10-07
 
 ### Added
