@@ -158,6 +158,11 @@ retroactivamente solo por esto.
   `input()` no está disponible en el constructor: si el componente necesita
   su valor para cargar datos, hacerlo en `ngOnInit()`.
 - Preferir signals/`async` pipe sobre subscribes manuales sin unsubscribe.
+- En formularios reactivos, leer los valores con `formulario.value`, nunca
+  con `getRawValue()`. Tener en cuenta que `.value` excluye los controles
+  deshabilitados (llegan como `undefined`).
+- No escribir `novalidate` en los `<form>`: `ReactiveFormsModule`/
+  `FormsModule` ya lo agregan solos.
 - **No generar tests unitarios** (`*.spec.ts`) salvo que se pida
   explícitamente. Al crear componentes con `ng generate`, usar
   `--skip-tests`.

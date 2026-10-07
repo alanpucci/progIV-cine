@@ -10,7 +10,7 @@ export const SECCIONES_ADMINISTRACION: SeccionAdministracion[] = [
     ruta: 'peliculas',
     titulo: 'Películas',
     descripcion: 'Cartelera, géneros, clasificación y preventa.',
-    disponible: false,
+    disponible: true,
   },
   {
     ruta: 'salas',

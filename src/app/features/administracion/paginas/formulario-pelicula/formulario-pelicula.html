@@ -1,0 +1,159 @@
+<header class="formulario-pelicula__cabecera">
+  <a class="formulario-pelicula__enlace" routerLink="/administracion/peliculas">← Volver a películas</a>
+  <p class="formulario-pelicula__etiqueta">{{ edicion() ? "Edición" : "Alta" }}</p>
+  <h2 class="formulario-pelicula__titulo">{{ edicion() ? "Editar película" : "Nueva película" }}</h2>
+</header>
+
+@if (noEncontrada()) {
+  <p class="formulario-pelicula__vacio">No encontramos la película que querés editar.</p>
+} @else if (!cargaGlobal.visible()) {
+  <form class="formulario-pelicula" [formGroup]="formulario" (ngSubmit)="guardar()">
+    <div class="formulario-pelicula__columna">
+      <fieldset class="formulario-pelicula__bloque">
+        <legend>Ficha</legend>
+
+        <div class="formulario-pelicula__campo">
+          <label for="pelicula-nombre">Nombre</label>
+          <input id="pelicula-nombre" type="text" formControlName="nombre" [attr.aria-invalid]="mostrarError(formulario.controls.nombre)" />
+          @if (mostrarError(formulario.controls.nombre)) {
+            <p class="formulario-pelicula__error">Ingresá el nombre de la película.</p>
+          }
+        </div>
+
+        <div class="formulario-pelicula__fila">
+          <div class="formulario-pelicula__campo">
+            <label for="pelicula-duracion">Duración (minutos)</label>
+            <input
+              id="pelicula-duracion"
+              type="number"
+              min="1"
+              step="1"
+              formControlName="duracionMinutos"
+              [attr.aria-invalid]="mostrarError(formulario.controls.duracionMinutos)"
+            />
+            @if (mostrarError(formulario.controls.duracionMinutos)) {
+              <p class="formulario-pelicula__error">Ingresá una duración en minutos enteros, mayor a 0.</p>
+            }
+          </div>
+
+          <div class="formulario-pelicula__campo">
+            <label for="pelicula-clasificacion">Clasificación</label>
+            <select id="pelicula-clasificacion" formControlName="clasificacionEdad">
+              @for (clasificacion of clasificaciones; track clasificacion.etiqueta) {
+                <option [ngValue]="clasificacion.valor">{{ clasificacion.etiqueta }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="formulario-pelicula__campo">
+            <label for="pelicula-estreno">Estreno</label>
+            <input
+              id="pelicula-estreno"
+              type="date"
+              formControlName="fechaEstreno"
+              [attr.aria-invalid]="mostrarError(formulario.controls.fechaEstreno)"
+            />
+            @if (mostrarError(formulario.controls.fechaEstreno)) {
+              <p class="formulario-pelicula__error">Ingresá la fecha de estreno.</p>
+            }
+          </div>
+        </div>
+
+        <div class="formulario-pelicula__campo">
+          <label for="pelicula-sinopsis">Sinopsis</label>
+          <textarea
+            id="pelicula-sinopsis"
+            rows="5"
+            formControlName="sinopsis"
+            [attr.aria-invalid]="mostrarError(formulario.controls.sinopsis)"
+          ></textarea>
+          @if (mostrarError(formulario.controls.sinopsis)) {
+            <p class="formulario-pelicula__error">Ingresá la sinopsis.</p>
+          }
+        </div>
+      </fieldset>
+
+      <fieldset class="formulario-pelicula__bloque">
+        <legend>Géneros</legend>
+        @if (generos().length === 0) {
+          <p class="formulario-pelicula__ayuda">
+            No hay géneros cargados.
+            <a class="formulario-pelicula__enlace" routerLink="/administracion/peliculas/generos">Crealos acá</a>.
+          </p>
+        } @else {
+          <div class="formulario-pelicula__generos">
+            @for (genero of generos(); track genero.id) {
+              <label class="ficha-genero" [class.ficha-genero--activa]="generoSeleccionado(genero.id)">
+                <input type="checkbox" [checked]="generoSeleccionado(genero.id)" (change)="alternarGenero(genero.id)" />
+                {{ genero.nombre }}
+              </label>
+            }
+          </div>
+        }
+        @if (mostrarError(formulario.controls.generoIds)) {
+          <p class="formulario-pelicula__error">Elegí al menos un género.</p>
+        }
+      </fieldset>
+
+      <fieldset class="formulario-pelicula__bloque">
+        <legend>Publicación y preventa</legend>
+
+        <label class="formulario-pelicula__interruptor">
+          <input type="checkbox" formControlName="publicada" />
+          <span>Visible en el catálogo público</span>
+        </label>
+
+        <label class="formulario-pelicula__interruptor">
+          <input type="checkbox" formControlName="preventaHabilitada" (change)="sincronizarPrecioPreventa()" />
+          <span>Preventa habilitada</span>
+        </label>
+
+        <div class="formulario-pelicula__campo formulario-pelicula__campo--angosto">
+          <label for="pelicula-precio-preventa">Precio de preventa ($)</label>
+          <input
+            id="pelicula-precio-preventa"
+            type="number"
+            min="1"
+            formControlName="precioPreventa"
+            [attr.aria-invalid]="mostrarErrorPreventa() || mostrarError(formulario.controls.precioPreventa)"
+          />
+          @if (mostrarErrorPreventa()) {
+            <p class="formulario-pelicula__error">Con la preventa habilitada, el precio es obligatorio.</p>
+          } @else if (mostrarError(formulario.controls.precioPreventa)) {
+            <p class="formulario-pelicula__error">El precio tiene que ser mayor a 0.</p>
+          }
+        </div>
+      </fieldset>
+    </div>
+
+    <aside class="formulario-pelicula__afiche">
+      <div class="marquesina">
+        @if (vistaPrevia()) {
+          <img class="marquesina__imagen" [src]="vistaPrevia()" alt="Vista previa del afiche" />
+        } @else {
+          <span class="marquesina__vacia">Sin afiche</span>
+        }
+      </div>
+
+      <div class="formulario-pelicula__campo">
+        <label for="pelicula-imagen">URL del afiche</label>
+        <input
+          id="pelicula-imagen"
+          type="url"
+          formControlName="imagenUrl"
+          placeholder="https://…"
+          [attr.aria-invalid]="mostrarError(formulario.controls.imagenUrl)"
+        />
+        @if (mostrarError(formulario.controls.imagenUrl)) {
+          <p class="formulario-pelicula__error">Ingresá una URL que empiece con http:// o https://.</p>
+        }
+      </div>
+
+      @if (errorEnvio(); as mensaje) {
+        <p class="formulario-pelicula__error-envio">{{ mensaje }}</p>
+      }
+
+      <app-boton tipo="submit" tamano="grande">{{ edicion() ? "Guardar cambios" : "Crear película" }}</app-boton>
+    </aside>
+  </form>
+}

@@ -145,7 +145,10 @@ en el componente (`FormBuilder.nonNullable.group`), los validadores propios
 son funciones puras testeables en `features/perfil/validadores/`, y la regla
 cruzada es un validador de grupo. Los validadores de fecha de nacimiento
 (`fechaNacimientoValida`, `fechaIsoLocal`) viven en `shared/validadores/`
-porque también los usa el formulario de datos del comprador en `compra`.
+porque también los usa el formulario de datos del comprador en `compra`, y
+por el mismo motivo `sinEspaciosVacios` (rechaza un texto hecho solo de
+espacios, que `Validators.required` deja pasar) está ahí y lo usan el
+registro, el perfil y los formularios del panel de administración.
 
 Encaje con zoneless: el estado del `FormGroup` (errores, `touched`) no es
 un signal, pero sólo cambia como consecuencia de eventos del DOM
@@ -253,6 +256,45 @@ inicio del panel se arman desde esa lista, y cada entrada tiene un
 disponibles se muestran deshabilitadas en vez de enlazar a una ruta que
 todavía no está definida.
 
+### ABM de películas y géneros: servicios propios del panel
+
+Las consultas del panel viven en servicios de la feature
+(`PeliculasAdministracionService`, `GenerosAdministracionService` en
+`features/administracion/servicios/`) y no se agregan a `PeliculasService`
+de `core/`. No comparten nada con las del catálogo público: el catálogo lee
+solo películas publicadas y con las columnas de una tarjeta; el panel lee
+todas (la política `peliculas_select_publico` ya deja ver las ocultas a un
+admin), con todas las columnas editables, y escribe. Es la regla general de
+"si algo se usa desde una sola feature, vive en esa feature".
+
+- **Baja de una película.** `funciones.pelicula_id` no tiene
+  `on delete cascade`: borrar una película con funciones cargadas falla por
+  clave foránea, a propósito, para no perder la programación ni las ventas.
+  El listado ofrece dos acciones: "Ocultar" (`publicada = false`, la saca del
+  catálogo sin borrar nada) y "Eliminar" (borrado físico). Para no ofrecer
+  una acción que va a fallar, el listado trae la cantidad de funciones de
+  cada película en la misma consulta (`funciones ( count )`) y deshabilita
+  "Eliminar" si tiene alguna. Si igual llega el rechazo de Postgres (código
+  `23503`), el servicio lo traduce a un mensaje claro.
+- **Géneros de una película.** Al guardar, el servicio borra las filas de
+  `pelicula_genero` de esa película y vuelve a insertar las elegidas, en vez
+  de calcular qué se agregó y qué se quitó. Son dos requests sin
+  transacción: si falla la segunda, la película queda sin géneros hasta que
+  se vuelva a guardar. Se acepta por simplicidad.
+- **Reglas reforzadas en Postgres.** La migración `reglas_peliculas_generos`
+  agrega dos `check` en `peliculas` (el precio de preventa, si está, es
+  mayor a 0, y es obligatorio con la preventa habilitada) y un índice único
+  sobre `lower(generos.nombre)`, para que "Drama" y "drama" no convivan. El
+  formulario valida lo mismo antes de enviar: el precio de preventa con un
+  validador de grupo (depende de otro campo) y los géneros como un
+  `FormControl<string[]>` con `Validators.required`, que trata un array
+  vacío como faltante.
+- **Mensajes de error.** `PostgrestError` extiende `Error`, así que mostrar
+  `error.message` sin filtrar dejaría ver mensajes técnicos de Postgres. Los
+  servicios del panel tiran un `Error` propio solo para los casos conocidos
+  (película con funciones, género repetido), y el helper `mensajeDeError()`
+  muestra ese mensaje o, si es un `PostgrestError`, uno genérico.
+
 ### Estado de carga global: un overlay compartido, no uno por componente
 
 Ningún componente arma su propio indicador de carga. Existe
@@ -318,9 +360,10 @@ regla general (ver más arriba) sea "si algo se usa desde una sola feature,
 vive en esa feature". No es una excepción: ambos se van a consumir desde más
 de una feature (el detalle de película de `catalogo` necesita las funciones
 disponibles; `salas-butacas` necesita `FuncionesService` para el mapa de
-butacas; `administracion` va a necesitar los dos para los ABM de películas y
-funciones; `compra` va a necesitar `FuncionesService` para el checkout), así que la regla los sube a `core/` desde que se crean, en vez de
-nacer en una feature y migrarse después.
+butacas; `compra` necesita `FuncionesService` para el checkout), así que la
+regla los sube a `core/` desde que se crean, en vez de nacer en una feature
+y migrarse después. El ABM de películas del panel no los reutiliza porque
+sus consultas son otras (ver "ABM de películas y géneros").
 
 Por eso `PeliculasService.obtenerDetalle()` no arma su propia query contra la
 tabla `funciones`: delega en `FuncionesService.obtenerDisponiblesPorPelicula()`.

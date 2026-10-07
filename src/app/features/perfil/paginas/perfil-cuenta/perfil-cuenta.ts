@@ -19,7 +19,7 @@ import {
   fechaIsoLocal,
   fechaNacimientoValida,
 } from "../../../../shared/validadores/fecha.validadores";
-import { sinEspaciosVacios } from "../../validadores/registro.validadores";
+import { sinEspaciosVacios } from "../../../../shared/validadores/texto.validadores";
 
 @Component({
   imports: [ReactiveFormsModule, Boton, BilleteraCuenta, MisPeliculas, HistorialCompras],

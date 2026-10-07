@@ -12,7 +12,7 @@
   @if (saldos() && !tieneSaldo()) {
     <p class="saldos__vacio">Todavía no tenés crédito ni puntos para usar. Esta compra te suma puntos.</p>
   } @else if (saldos()) {
-    <form class="saldos__formulario" [formGroup]="formulario" (ngSubmit)="aplicar()" novalidate>
+    <form class="saldos__formulario" [formGroup]="formulario" (ngSubmit)="aplicar()">
       <div class="saldos__campos">
         <div class="saldos__campo">
           <label for="saldos-credito">Crédito a usar ($)</label>
