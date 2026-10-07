@@ -3,6 +3,38 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 9] - 2026-10-07
+
+### Added
+- Migración `cancelacion_ventas`: columna `ventas.motivo_cancelacion`,
+  políticas `ventas_update_cancelar_propia` y `ventas_update_cancelar_admin`
+  (solo la transición `pagada` → `cancelada`) y
+  `propagar_cancelacion_venta` extendida: además de marcar los
+  `venta_items`, pasa las entradas a `cancelada`, acredita en
+  `movimientos_credito` lo pagado con tarjeta o crédito
+  (`total - puntos_usados`) y revierte el neto de puntos de la venta con un
+  movimiento `ajuste`.
+- `ComprasService.cancelarCompra()`.
+- Helpers `dentroDelPlazoDeCancelacion()` y `creditoPorCancelacion()` en
+  `core/helpers/cancelacion.helpers.ts`.
+- "Mis compras" (perfil): botón "Cancelar compra" en las ventas pagadas
+  cuya función empieza en más de 2 horas, con confirmación que anticipa el
+  crédito. El plazo se vuelve a validar al confirmar.
+- Sección "Ventas" en el panel de administración
+  (`/administracion/ventas`, `ListadoVentas` +
+  `VentasAdministracionService`): últimas 100 ventas, pagadas y canceladas,
+  con búsqueda por mail, cliente, película u operación, y cancelación sin
+  plazo con motivo obligatorio. Las canceladas muestran fecha y motivo.
+
+### Changed
+- `Compra` incluye `puntosUsados`.
+- `BilleteraCuenta` expone `recargar()`; el perfil la recarga al cancelar
+  una compra.
+- Etiquetas de movimientos: "Crédito por cancelación" y "Ajuste por
+  cancelación".
+- Modelo de datos (PDF): resuelto cómo se calcula el crédito de una
+  cancelación y agregada `ventas.motivo_cancelacion`.
+
 ## [Fix: carga del perfil y de los datos del comprador] - 2026-10-07
 
 ### Fixed
