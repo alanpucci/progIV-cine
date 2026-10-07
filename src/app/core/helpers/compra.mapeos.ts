@@ -22,6 +22,7 @@ export interface FilaCompra {
   id: string;
   estado: string;
   total: number | string;
+  puntos_usados: number;
   created_at: string;
   venta_items: FilaItemCompra[] | null;
 }
@@ -42,6 +43,7 @@ export const COLUMNAS_COMPRA = `
   id,
   estado,
   total,
+  puntos_usados,
   created_at,
   venta_items (
     id,
@@ -81,6 +83,7 @@ export function mapearCompra(fila: FilaCompra): Compra {
     fecha: fila.created_at,
     estado: fila.estado as EstadoVenta,
     total: Number(fila.total),
+    puntosUsados: fila.puntos_usados,
     funcion: funcion
       ? {
           peliculaId: pelicula?.id ?? '',

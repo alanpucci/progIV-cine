@@ -17,6 +17,7 @@ import { ListadoCupones } from './paginas/listado-cupones/listado-cupones';
 import { FormularioCupon } from './paginas/formulario-cupon/formulario-cupon';
 import { ListadoRecompensas } from './paginas/listado-recompensas/listado-recompensas';
 import { FormularioRecompensa } from './paginas/formulario-recompensa/formulario-recompensa';
+import { ListadoVentas } from './paginas/listado-ventas/listado-ventas';
 
 const RUTAS_ADMINISTRACION: Routes = [
   {
@@ -46,6 +47,7 @@ const RUTAS_ADMINISTRACION: Routes = [
       { path: 'recompensas', component: ListadoRecompensas },
       { path: 'recompensas/nueva', component: FormularioRecompensa },
       { path: 'recompensas/:id', component: FormularioRecompensa },
+      { path: 'ventas', component: ListadoVentas },
     ],
   },
 ];

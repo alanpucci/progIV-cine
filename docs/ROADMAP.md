@@ -18,9 +18,8 @@ src/app/
     compra/          # M05/M06/M07 - carrito, candy/combos, cupones, pago mock (NgModule)
     fidelizacion/    # M08 - puntos, crédito, canjes
     entradas/        # M09 - ticket PDF + QR (vista cliente)
-    cancelaciones/   # M10
     proximamente/    # M11 - estrenos, alertas
-    perfil/          # M01 - registro, login, datos del cliente, Mis películas
+    perfil/          # M01 - registro, login, datos del cliente, Mis películas, cancelación (M10)
     empleado/        # validación QR/código manual
     administracion/  # M12/M13 + ABM de todo lo anterior (NgModule)
   app.routes.ts      # composición de rutas lazy por feature
@@ -179,14 +178,23 @@ historial, no transferencia.
 > `features/fidelizacion/`: el servicio de recompensas vive en `core/` y
 > los componentes en `compra/`, `perfil/` y `administracion/`.
 
-### Fase 9 — Cancelaciones (M10) ⬜
+### Fase 9 — Cancelaciones (M10) ✅
 Cancelación hasta 2 horas antes, liberación de butacas, generación de crédito.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 9.1 | Cancelación de compra desde "Mis entradas"/perfil, con validación de ventana (hasta 2 hs antes de la función) | ⬜ |
-| 9.2 | Cancelación: marca `ventas`/`venta_items` cancelados (libera el índice único de butaca), genera `movimientos_credito`, actualiza `peliculas.entradas_vendidas` | ⬜ |
-| 9.3 | Cancelación desde el panel de administración (con motivo, sin restricción de ventana horaria) | ⬜ |
+| 9.1 | Cancelación de compra desde "Mis entradas"/perfil, con validación de ventana (hasta 2 hs antes de la función) | ✅ |
+| 9.2 | Cancelación: marca `ventas`/`venta_items` cancelados (libera el índice único de butaca), genera `movimientos_credito`, actualiza `peliculas.entradas_vendidas` | ✅ |
+| 9.3 | Cancelación desde el panel de administración (con motivo, sin restricción de ventana horaria) | ✅ |
+
+> **Cancelación desde el perfil y crédito por trigger.** El cliente cancela
+> desde "Mis compras" del perfil (la cancelación es por venta, y "Mis
+> entradas" agrupa por función). El frontend solo pasa la venta a
+> `cancelada`; el trigger de cancelación cancela ítems y entradas, acredita
+> `total - puntos_usados` como crédito y revierte el neto de puntos de la
+> venta, así funciona igual cuando cancela el admin, que no puede escribir
+> en ledgers ajenos. El motivo del admin se guarda en la nueva columna
+> `ventas.motivo_cancelacion`. No se creó `features/cancelaciones/`.
 
 ### Fase 10 — Próximamente y notificaciones (M11) ⬜
 Sección "Próximamente", alertas de estreno, preventa 7 días antes,

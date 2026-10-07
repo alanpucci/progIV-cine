@@ -37,7 +37,7 @@ src/app/
 
 Cada carpeta dentro de `features/` corresponde a un módulo funcional del
 análisis (`catalogo`, `salas-butacas`, `compra`, `fidelizacion`, `entradas`,
-`cancelaciones`, `proximamente`, `perfil`, `empleado`, `administracion`) y
+`proximamente`, `perfil`, `empleado`, `administracion`) y
 agrupa **todo** lo que esa feature necesita: sus componentes, sus servicios de
 dominio, sus modelos y sus rutas.
 
@@ -987,7 +987,9 @@ movimientos propios.
 - `movimientos_puntos`, `movimientos_credito` y `canjes`: la única
   escritura permitida es el `insert` con `usuario_id = auth.uid()`. Nadie
   puede acreditar ni debitar a otra cuenta, ni siquiera un admin. No hay
-  políticas de `update`/`delete`, así que el historial no se edita.
+  políticas de `update`/`delete`, así que el historial no se edita. La
+  única escritura en una cuenta ajena es la del trigger de cancelación de
+  ventas (ver "Cancelación de compras").
 - `perfiles.puntos_saldo`/`credito_saldo`: el trigger
   `proteger_campos_sensibles_perfil` rechaza cualquier `update` directo,
   también el de un admin (migración `saldos_solo_por_movimientos`). Solo
@@ -1007,6 +1009,53 @@ cada caso como `authenticated`: transferencias de puntos y crédito, edición
 directa de saldos (cliente y admin), edición y borrado de movimientos,
 canjes a nombre de otro, y una compra con canjes que el trigger descuenta
 del saldo.
+
+### Cancelación de compras: un `update` de la venta, el resto en el trigger
+
+La cancelación (RN07) no tiene una feature propia: es una acción sobre una
+venta que aparece en dos pantallas que ya existían. El cliente cancela
+desde "Mis compras" del perfil (`HistorialCompras`) y el admin desde la
+sección "Ventas" del panel (`ListadoVentas`, en `AdministracionModule`).
+Por eso no hay carpeta `features/cancelaciones/`: las reglas compartidas
+(plazo y crédito a devolver) viven en `core/helpers/cancelacion.helpers.ts`.
+
+En los dos casos el frontend hace lo mismo: un `update` de `ventas` de
+`pagada` a `cancelada` con `cancelled_at` (y `motivo_cancelacion`,
+obligatorio, cuando cancela el admin). Las políticas
+`ventas_update_cancelar_propia` y `ventas_update_cancelar_admin`
+(migración `cancelacion_ventas`) solo permiten esa transición, al dueño de
+la venta o a un admin.
+
+Todo lo demás lo hace el trigger `propagar_cancelacion_venta`, que ya
+marcaba `venta_items.cancelado`:
+
+1. marca los `venta_items` como cancelados, lo que libera el índice único
+   de butacas y descuenta `peliculas.entradas_vendidas`;
+2. pasa las `entradas` de la venta a `cancelada`;
+3. si la venta es de un cliente registrado, acredita en
+   `movimientos_credito` lo que se pagó con tarjeta o con crédito
+   (`total - puntos_usados`) y revierte el neto de puntos de la venta en
+   `movimientos_puntos` con un movimiento `ajuste`: vuelven los puntos
+   usados como pago o en canjes y se descuentan los que sumó la compra.
+   Una compra anónima libera las butacas sin generar crédito.
+
+Se resolvió en el trigger, y no con inserts desde el frontend como en la
+compra, por dos motivos. El admin no puede insertar movimientos en cuentas
+ajenas (ver "Puntos y crédito no transferibles"), y abrirle esa política
+solo para esto debilitaba la regla para todos los casos. Y la cancelación
+y el crédito quedan en la misma transacción: no puede haber una venta
+cancelada sin su crédito. El trigger toma los importes de la fila anterior
+al `update` (`old`), así que el `update` no puede inflar el crédito.
+
+El plazo de 2 horas antes de la función se valida solo en el frontend,
+al mostrar el botón y otra vez al confirmar (por si la página quedó
+abierta). El admin no tiene plazo. No se repone el stock del Candy Bar.
+
+Igual que con los saldos, el trigger se verificó sobre PGlite con todas
+las migraciones: cancelación del dueño y de un admin, intento sobre una
+venta ajena y doble cancelación (sin filas afectadas), crédito y puntos
+resultantes, entradas canceladas, contador de vendidas y reventa de la
+butaca liberada.
 
 ### Contador cacheado para datos agregados públicos
 
