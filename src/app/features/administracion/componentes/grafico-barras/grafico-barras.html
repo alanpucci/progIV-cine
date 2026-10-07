@@ -1,0 +1,26 @@
+<figure class="grafico">
+  <figcaption class="grafico__cabecera">
+    <span class="grafico__titulo">{{ titulo() }}</span>
+    @if (subtitulo()) {
+      <span class="grafico__subtitulo">{{ subtitulo() }}</span>
+    }
+  </figcaption>
+
+  @if (barras().length === 0) {
+    <p class="grafico__vacio">{{ mensajeVacio() }}</p>
+  } @else {
+    <ol class="grafico__lista">
+      @for (barra of barras(); track barra.etiqueta; let indice = $index) {
+        <li class="barra">
+          <span class="barra__puesto">{{ indice + 1 }}</span>
+          <span class="barra__etiqueta">{{ barra.etiqueta }}</span>
+          <span class="barra__pista">
+            <span class="barra__relleno" [style.--largo]="largo(barra)"></span>
+            <span class="barra__valor">{{ barra.valor }}</span>
+          </span>
+          <span class="barra__detalle">{{ barra.detalle }}</span>
+        </li>
+      }
+    </ol>
+  }
+</figure>

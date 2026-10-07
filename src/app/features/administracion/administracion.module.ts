@@ -19,6 +19,8 @@ import { FormularioCupon } from './paginas/formulario-cupon/formulario-cupon';
 import { ListadoRecompensas } from './paginas/listado-recompensas/listado-recompensas';
 import { FormularioRecompensa } from './paginas/formulario-recompensa/formulario-recompensa';
 import { ListadoVentas } from './paginas/listado-ventas/listado-ventas';
+import { Reportes } from './paginas/reportes/reportes';
+import { GraficoBarras } from './componentes/grafico-barras/grafico-barras';
 import { Boton } from '../../shared/componentes/boton/boton';
 
 @NgModule({
@@ -41,6 +43,8 @@ import { Boton } from '../../shared/componentes/boton/boton';
     ListadoRecompensas,
     FormularioRecompensa,
     ListadoVentas,
+    Reportes,
+    GraficoBarras,
   ],
   imports: [AdministracionRoutingModule, FormsModule, ReactiveFormsModule, Boton],
 })

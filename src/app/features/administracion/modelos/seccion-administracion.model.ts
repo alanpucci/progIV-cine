@@ -48,4 +48,10 @@ export const SECCIONES_ADMINISTRACION: SeccionAdministracion[] = [
     descripcion: 'Compras confirmadas y cancelaciones con motivo.',
     disponible: true,
   },
+  {
+    ruta: 'reportes',
+    titulo: 'Reportes',
+    descripcion: 'Facturación diaria, entradas vendidas y estadísticas.',
+    disponible: true,
+  },
 ];

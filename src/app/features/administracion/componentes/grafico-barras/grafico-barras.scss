@@ -1,0 +1,119 @@
+.grafico {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+  margin: 0;
+  padding: var(--espacio-lg);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-superficie);
+}
+
+.grafico__cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.grafico__titulo {
+  color: var(--color-texto-primario);
+  font-family: var(--fuente-titulo);
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+}
+
+.grafico__subtitulo {
+  color: var(--color-texto-silenciado);
+  font-size: 0.8rem;
+}
+
+.grafico__vacio {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.grafico__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.barra {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  grid-template-areas:
+    "puesto etiqueta"
+    "puesto pista";
+  align-items: center;
+  column-gap: var(--espacio-sm);
+  row-gap: 4px;
+  padding: var(--espacio-sm);
+  border-radius: var(--radio-sm);
+  transition: background var(--transicion-rapida);
+
+  &:hover {
+    background: var(--color-superficie-elevada);
+
+    .barra__detalle {
+      opacity: 1;
+    }
+  }
+}
+
+.barra__puesto {
+  grid-area: puesto;
+  color: var(--color-texto-silenciado);
+  font-family: var(--fuente-titulo);
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.barra__etiqueta {
+  grid-area: etiqueta;
+  overflow: hidden;
+  color: var(--color-texto-primario);
+  font-size: 0.85rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barra__detalle {
+  grid-area: etiqueta;
+  justify-self: end;
+  padding: 0 var(--espacio-sm);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie-elevada);
+  color: var(--color-texto-secundario);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity var(--transicion-rapida);
+  pointer-events: none;
+}
+
+.barra__pista {
+  display: flex;
+  grid-area: pista;
+  align-items: center;
+  gap: var(--espacio-sm);
+}
+
+.barra__relleno {
+  flex: none;
+  width: calc((100% - 3.5rem) * var(--largo) / 100);
+  min-width: 4px;
+  height: 14px;
+  border-radius: 0 4px 4px 0;
+  background: var(--color-grafico);
+}
+
+.barra__valor {
+  color: var(--color-texto-primario);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
