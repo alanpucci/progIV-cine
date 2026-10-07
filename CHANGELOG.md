@@ -3,6 +3,28 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 7.1] - 2026-10-06
+
+### Added
+- Tipo `Rol` y `PerfilesService.obtenerRol(usuarioId)`.
+- `AuthService.rol` (signal) y `esAdmin()`: el rol se lee de `perfiles` al
+  cargar la sesión o iniciarla, se fija en `cliente` al registrarse y se
+  limpia al cerrar sesión.
+- `adminGuard` (`CanMatchFn`) en `core/guardias/rol.guard.ts`.
+- Feature `administracion` como `NgModule` (`AdministracionModule` +
+  `AdministracionRoutingModule`), cargada con `loadChildren` en
+  `/administracion` y protegida con `adminGuard`.
+- `PanelAdministracion`: layout del panel con barra lateral de secciones
+  y `<router-outlet>` para las rutas hijas.
+- `InicioAdministracion`: inicio del panel con una tarjeta por sección.
+- `SECCIONES_ADMINISTRACION`: lista de secciones del panel, con las que
+  todavía no tienen ABM marcadas como no disponibles.
+
+### Changed
+- El header muestra el enlace "Administración" solo a usuarios admin.
+- `README.md`: nueva sección sobre el rol del usuario y el acceso al panel,
+  y pasos para crear el primer usuario administrador.
+
 ## [Fase 2.7] - 2026-10-05
 
 ### Added

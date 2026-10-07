@@ -1,0 +1,28 @@
+<header class="inicio">
+  <p class="inicio__etiqueta">Sala de control</p>
+  <h2 class="inicio__titulo">¿Qué querés programar hoy?</h2>
+  <p class="inicio__bajada">Elegí una sección para gestionar la cartelera, las salas y la venta del cine.</p>
+</header>
+
+<div class="inicio__grilla">
+  @for (seccion of secciones; track seccion.ruta) {
+    @if (seccion.disponible) {
+      <a class="claqueta" [routerLink]="['/administracion', seccion.ruta]">
+        <span class="claqueta__franja"></span>
+        <span class="claqueta__cuerpo">
+          <span class="claqueta__titulo">{{ seccion.titulo }}</span>
+          <span class="claqueta__descripcion">{{ seccion.descripcion }}</span>
+        </span>
+      </a>
+    } @else {
+      <div class="claqueta claqueta--pendiente">
+        <span class="claqueta__franja"></span>
+        <span class="claqueta__cuerpo">
+          <span class="claqueta__titulo">{{ seccion.titulo }}</span>
+          <span class="claqueta__descripcion">{{ seccion.descripcion }}</span>
+          <span class="claqueta__estado">Próximamente</span>
+        </span>
+      </div>
+    }
+  }
+</div>

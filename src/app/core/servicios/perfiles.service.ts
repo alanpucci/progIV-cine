@@ -1,6 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { SupabaseService } from './supabase.service';
-import { DatosPerfil } from '../modelos/usuario.model';
+import { DatosPerfil, Rol } from '../modelos/usuario.model';
 import { COLUMNAS_PERFIL, aFilaPerfil, mapearPerfil } from '../helpers/perfil.mapeos';
 
 @Service()
@@ -20,6 +20,12 @@ export class PerfilesService {
       .single();
     if (error) throw error;
     return mapearPerfil(data);
+  }
+
+  async obtenerRol(usuarioId: string): Promise<Rol> {
+    const { data, error } = await this.supabase.from('perfiles').select('rol').eq('id', usuarioId).single();
+    if (error) throw error;
+    return data.rol as Rol;
   }
 
   async actualizar(usuarioId: string, datos: DatosPerfil): Promise<void> {

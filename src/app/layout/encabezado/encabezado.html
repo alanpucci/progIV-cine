@@ -25,6 +25,9 @@
     @if (auth.haySesion()) {
       <a routerLink="/mis-entradas" routerLinkActive="activo">Mis entradas</a>
       <a routerLink="/cuenta/perfil" routerLinkActive="activo">Mi perfil</a>
+      @if (auth.esAdmin()) {
+        <a routerLink="/administracion" routerLinkActive="activo">Administración</a>
+      }
       <button type="button" [disabled]="cerrandoSesion()" (click)="cerrarSesion()">Cerrar sesión</button>
     } @else {
       <a routerLink="/cuenta/ingreso" routerLinkActive="activo">Ingresar</a>
@@ -59,6 +62,9 @@
     @if (auth.haySesion()) {
       <a routerLink="/mis-entradas" routerLinkActive="activo" (click)="cerrarMenu()">Mis entradas</a>
       <a routerLink="/cuenta/perfil" routerLinkActive="activo" (click)="cerrarMenu()">Mi perfil</a>
+      @if (auth.esAdmin()) {
+        <a routerLink="/administracion" routerLinkActive="activo" (click)="cerrarMenu()">Administración</a>
+      }
       <button type="button" [disabled]="cerrandoSesion()" (click)="cerrarSesion()">Cerrar sesión</button>
     } @else {
       <a routerLink="/cuenta/ingreso" routerLinkActive="activo" (click)="cerrarMenu()">Ingresar</a>

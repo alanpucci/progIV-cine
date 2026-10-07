@@ -17,3 +17,5 @@ export interface DatosRegistro extends DatosPerfil {
   email: string;
   contrasena: string;
 }
+
+export type Rol = 'cliente' | 'empleado' | 'admin';

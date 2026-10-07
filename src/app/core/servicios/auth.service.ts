@@ -2,7 +2,7 @@ import { Service, inject, signal } from '@angular/core';
 import { AuthError, Session } from '@supabase/supabase-js';
 import { SupabaseService } from './supabase.service';
 import { PerfilesService } from './perfiles.service';
-import { DatosRegistro } from '../modelos/usuario.model';
+import { DatosRegistro, Rol } from '../modelos/usuario.model';
 
 const MENSAJES_ERROR_AUTH: Record<string, string> = {
   user_already_exists: 'Ya existe una cuenta registrada con ese mail.',
@@ -21,6 +21,7 @@ export class AuthService {
   private readonly perfiles = inject(PerfilesService);
 
   readonly sesion = signal<Session | null>(null);
+  readonly rol = signal<Rol | null>(null);
 
   constructor() {
     this.cargarSesion();
@@ -30,9 +31,14 @@ export class AuthService {
     return this.sesion() !== null;
   }
 
+  esAdmin(): boolean {
+    return this.rol() === 'admin';
+  }
+
   async cargarSesion(): Promise<void> {
     const { data } = await this.supabase.auth.getSession();
     this.sesion.set(data.session);
+    await this.cargarRol();
   }
 
   async registrar(datos: DatosRegistro): Promise<void> {
@@ -43,18 +49,30 @@ export class AuthService {
     if (error || !data.user) throw new Error(this.traducirError(error, 'No se pudo completar el registro. Intentá de nuevo en unos minutos.'));
     await this.perfiles.crear(data.user.id, datos);
     this.sesion.set(data.session);
+    this.rol.set(data.session ? 'cliente' : null);
   }
 
   async iniciarSesion(email: string, contrasena: string): Promise<void> {
     const { data, error } = await this.supabase.auth.signInWithPassword({ email, password: contrasena });
     if (error) throw new Error(this.traducirError(error, 'No se pudo iniciar sesión. Intentá de nuevo en unos minutos.'));
     this.sesion.set(data.session);
+    await this.cargarRol();
   }
 
   async cerrarSesion(): Promise<void> {
     const { error } = await this.supabase.auth.signOut();
     if (error) throw new Error(this.traducirError(error, 'No se pudo cerrar la sesión. Intentá de nuevo.'));
     this.sesion.set(null);
+    this.rol.set(null);
+  }
+
+  private async cargarRol(): Promise<void> {
+    const usuarioId = this.sesion()?.user.id;
+    if (!usuarioId) {
+      this.rol.set(null);
+      return;
+    }
+    if (this.rol() === null) this.rol.set(await this.perfiles.obtenerRol(usuarioId));
   }
 
   private traducirError(error: AuthError | null, mensajePorDefecto: string): string {
