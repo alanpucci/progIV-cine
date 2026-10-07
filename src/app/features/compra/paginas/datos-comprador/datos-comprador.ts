@@ -93,6 +93,7 @@ export class DatosComprador implements OnInit {
     }
 
     this.carrito.aplicarSaldos(null);
+    this.carrito.quitarCanjes();
     if (guardado) {
       this.formulario.patchValue({
         email: guardado.emailContacto,

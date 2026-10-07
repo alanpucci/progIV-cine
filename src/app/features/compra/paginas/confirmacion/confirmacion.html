@@ -59,6 +59,12 @@
               <span>{{ formatearPesos(extra.precioUnitario * extra.cantidad) }}</span>
             </li>
           }
+          @for (recompensa of compra.recompensas; track $index) {
+            <li class="confirmacion__linea">
+              <span>{{ recompensa.nombre }}</span>
+              <span>{{ formatearPuntos(recompensa.puntosCosto) }} pts</span>
+            </li>
+          }
         </ul>
 
         <dl class="confirmacion__importes">

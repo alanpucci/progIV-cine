@@ -33,8 +33,15 @@
                 <span class="carrito-compra__descripcion">
                   Fila {{ butaca.fila }} · Butaca {{ butaca.numero }}
                   <span class="carrito-compra__tipo carrito-compra__tipo--{{ butaca.tipo }}">{{ butaca.tipo }}</span>
+                  @if (carrito.entradaCanjeada(butaca.id)) {
+                    <span class="carrito-compra__tipo carrito-compra__tipo--canje">canje</span>
+                  }
                 </span>
-                <span class="carrito-compra__monto">${{ butaca.precio }}</span>
+                @if (carrito.entradaCanjeada(butaca.id)) {
+                  <span class="carrito-compra__monto"><s>${{ butaca.precio }}</s> $0</span>
+                } @else {
+                  <span class="carrito-compra__monto">${{ butaca.precio }}</span>
+                }
               </li>
             }
           </ul>
@@ -51,8 +58,17 @@
           </a>
         </div>
 
-        @if (carrito.extras().length > 0) {
+        @if (carrito.extras().length > 0 || carrito.productosCanjeados().length > 0) {
           <ul class="carrito-compra__lista">
+            @for (canje of carrito.productosCanjeados(); track $index) {
+              <li class="carrito-compra__linea">
+                <span class="carrito-compra__descripcion">
+                  {{ canje.nombre }}
+                  <span class="carrito-compra__tipo carrito-compra__tipo--canje">canje</span>
+                </span>
+                <span class="carrito-compra__monto">$0</span>
+              </li>
+            }
             @for (extra of carrito.extras(); track extra.tipo + extra.id) {
               <li class="carrito-compra__linea carrito-compra__linea--extra">
                 <span class="carrito-compra__descripcion">

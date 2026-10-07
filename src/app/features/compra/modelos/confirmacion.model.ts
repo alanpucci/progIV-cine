@@ -1,5 +1,6 @@
 import { ButacaElegida, FuncionMapa } from '../../../core/modelos/funcion.model';
 import { ExtraCarrito } from './carrito.model';
+import { Recompensa } from '../../../core/modelos/recompensa.model';
 
 export interface EntradaEmitida extends ButacaElegida {
   codigoQr: string;
@@ -13,6 +14,7 @@ export interface CompraConfirmada {
   funcion: FuncionMapa;
   entradas: EntradaEmitida[];
   extras: ExtraCarrito[];
+  recompensas: Recompensa[];
   cuponCodigo: string | null;
   subtotal: number;
   descuento: number;

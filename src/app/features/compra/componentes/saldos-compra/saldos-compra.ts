@@ -49,6 +49,10 @@ export class SaldosCompra implements OnInit {
     return saldos !== null && (saldos.credito > 0 || saldos.puntos > 0);
   }
 
+  protected puntosParaPago(saldos: SaldosCuenta): number {
+    return saldos.puntos - this.carrito.puntosCanjes();
+  }
+
   protected aplicar(): void {
     this.error.set("");
     const saldos = this.saldos();
@@ -68,7 +72,7 @@ export class SaldosCompra implements OnInit {
     const saldos = this.saldos();
     if (!saldos) return;
     const credito = Math.min(saldos.credito, this.carrito.total());
-    const puntos = Math.min(saldos.puntos, Math.floor((this.carrito.total() - credito) / VALOR_PUNTO_EN_PESOS));
+    const puntos = Math.min(this.puntosParaPago(saldos), Math.floor((this.carrito.total() - credito) / VALOR_PUNTO_EN_PESOS));
     this.formulario.setValue({ credito, puntos });
     this.aplicar();
   }
@@ -83,7 +87,9 @@ export class SaldosCompra implements OnInit {
     if (credito < 0 || puntos < 0) return "Los montos no pueden ser negativos.";
     if (!Number.isInteger(puntos)) return "Los puntos se usan en unidades enteras.";
     if (credito > saldos.credito) return `Tu crédito disponible es de ${formatearPesos(saldos.credito)}.`;
-    if (puntos > saldos.puntos) return `Tenés ${formatearPuntos(saldos.puntos)} puntos disponibles.`;
+    if (puntos > this.puntosParaPago(saldos)) {
+      return `Tenés ${formatearPuntos(this.puntosParaPago(saldos))} puntos disponibles fuera de tus canjes.`;
+    }
     if (credito + puntos * VALOR_PUNTO_EN_PESOS > this.carrito.total()) {
       return "El saldo aplicado supera el total de la compra.";
     }

@@ -1,0 +1,50 @@
+<div class="recompensas">
+  <header class="recompensas__cabecera">
+    <h3 class="recompensas__titulo">Canjeá tus puntos</h3>
+    <p class="recompensas__libres">
+      Te quedan <strong>{{ formatearPuntos(puntosLibres()) }}</strong> pts
+    </p>
+  </header>
+
+  @if (error()) {
+    <p class="recompensas__error">{{ error() }}</p>
+  } @else if (recompensas().length === 0) {
+    <p class="recompensas__vacio">Por ahora no hay recompensas disponibles.</p>
+  } @else {
+    <ul class="recompensas__lista">
+      @for (recompensa of recompensas(); track recompensa.id) {
+        <li class="recompensas__ficha" [attr.data-tipo]="recompensa.tipo">
+          <span class="recompensas__costo">{{ formatearPuntos(recompensa.puntosCosto) }}<small>pts</small></span>
+          <span class="recompensas__datos">
+            <span class="recompensas__nombre">{{ recompensa.nombre }}</span>
+            <span class="recompensas__detalle">{{ motivoBloqueo(recompensa) || detalle(recompensa) }}</span>
+          </span>
+          <app-boton
+            variante="secundario"
+            tamano="chico"
+            [deshabilitado]="motivoBloqueo(recompensa) !== ''"
+            (click)="canjear(recompensa)"
+          >
+            Canjear
+          </app-boton>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (carrito.canjes().length > 0) {
+    <ul class="recompensas__aplicadas">
+      @for (canje of carrito.canjes(); track $index) {
+        <li class="recompensas__aplicada">
+          <span>{{ canje.nombre }}</span>
+          <span class="recompensas__aplicada-costo">−{{ formatearPuntos(canje.puntosCosto) }} pts</span>
+          <button type="button" class="recompensas__quitar" (click)="carrito.quitarCanje($index)">Quitar</button>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (carrito.puntosUsados() > 0) {
+    <p class="recompensas__ayuda">Los puntos que usás como pago no se pueden canjear: quitá el saldo para liberarlos.</p>
+  }
+</div>

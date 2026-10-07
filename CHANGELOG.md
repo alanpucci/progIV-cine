@@ -16,9 +16,35 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   tipo producto), costo en puntos y estado, con vista previa de la ficha.
 - Validador de grupo `productoRequerido`.
 - Modelo compartido `Recompensa`/`TipoRecompensa` en `core/modelos/`.
+- Canje de recompensas en el checkout: componente `RecompensasCompra`
+  (dentro del bloque de saldo de `/compra/datos-comprador`, solo con sesión
+  y saldo de puntos) que lista las recompensas activas, bloquea las que no
+  alcanzan o las de entrada cuando ya están todas cubiertas, y muestra los
+  canjes aplicados con opción de quitarlos.
+- `RecompensasService` en `core/servicios/` (recompensas activas, sin las de
+  productos desactivados).
+- `CarritoService`: signal `canjes` (en `sessionStorage`), `canjear()`,
+  `quitarCanje()`, `quitarCanjes()`, `canjesEfectivos()`,
+  `entradasCanjeadas()`, `entradaCanjeada()`, `montoEntradasCanjeadas()`,
+  `productosCanjeados()` y `puntosCanjes()`.
+- `filasCanjes()` y `filasMovimientosCanjes()` en `venta.filas.ts`: al
+  confirmar la compra se insertan los `canjes` y un débito de puntos por
+  canje con su `canje_id`.
+- Migración `canje_recompensas`: política `canjes_insert_propio`.
 
 ### Changed
 - Nueva sección "Recompensas" en el panel de administración.
+- La entrada cubierta por un canje se graba con precio 0 y el producto
+  canjeado como ítem `recompensa` con precio 0, que también descuenta stock.
+- `subtotalEntradas()` resta las entradas cubiertas por canjes. El carrito
+  las marca con la etiqueta "canje" y muestra los productos canjeados; el
+  pago y la confirmación listan las recompensas.
+- `SaldosCompra`: los puntos para pago parcial excluyen los comprometidos en
+  canjes. Sin sesión, los canjes se descartan como el resto del saldo.
+- El historial de compras muestra el nombre del producto canjeado.
+- `README.md`: nueva sección sobre el canje de recompensas.
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: resuelto que los canjes se
+  hacen dentro de una compra y cómo se graban.
 
 ## [Docs: roadmap Fase 7] - 2026-10-07
 

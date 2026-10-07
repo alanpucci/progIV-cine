@@ -9,12 +9,19 @@ export interface ExtraSolicitud {
   precioUnitario: number;
 }
 
+export interface CanjeSolicitud {
+  recompensaId: string;
+  productoId: string | null;
+  puntosCosto: number;
+}
+
 export interface SolicitudCompra {
   funcionId: string;
   adultoRequerido: boolean;
   entradas: EntradaSolicitud[];
   productos: ExtraSolicitud[];
   combos: ExtraSolicitud[];
+  canjes: CanjeSolicitud[];
   cuponId: string | null;
   emailContacto: string;
   fechaNacimiento: string | null;

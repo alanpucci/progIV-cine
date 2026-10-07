@@ -678,6 +678,43 @@ Al confirmar la compra, el uso se registra en
 `movimientos_credito`/`movimientos_puntos`, y los triggers de esos ledgers
 actualizan el saldo cacheado en `perfiles`.
 
+### Recompensas: se canjean dentro de la compra
+
+Además de usar puntos como pago parcial a $1 cada uno, el cliente puede
+canjearlos por recompensas que configura el admin
+(`/administracion/recompensas`), cada una con su propio costo en puntos:
+
+- **entrada**: cubre una entrada de la compra, de cualquier función. Si la
+  compra tiene varias entradas, cubre la de menor precio;
+- **producto**: suma un producto del Candy Bar sin cargo.
+
+El canje no es un paso aparte ni un voucher para usar después: se elige en
+el checkout, en el mismo bloque del saldo (`RecompensasCompra`, dentro de
+`SaldosCompra`), y se graba junto con la compra. Así cada canje queda
+atado a la venta donde se usó (`canjes.venta_id`) y no hace falta un flujo
+para consumir canjes pendientes.
+
+`CarritoService.canjes` guarda las recompensas elegidas (respaldado en
+`sessionStorage`, como el resto del carrito). `canjesEfectivos()` descarta
+los canjes de entrada que sobran si después se sacan butacas, y de ahí se
+derivan las entradas cubiertas (`entradasCanjeadas()`), su monto, que se
+resta de `subtotalEntradas()`, y los puntos comprometidos
+(`puntosCanjes()`). Los puntos disponibles para pago parcial son el saldo
+menos los comprometidos en canjes, y viceversa.
+
+Al confirmar la compra:
+
+- la entrada cubierta se graba como un `venta_items` de tipo `entrada` con
+  precio 0, para que siga ocupando la butaca en el índice único;
+- el producto se graba como un `venta_items` de tipo `recompensa` con su
+  `producto_id` y precio 0, y descuenta stock igual que una venta;
+- cada canje inserta una fila en `canjes` y un débito en
+  `movimientos_puntos` con su `canje_id`. La migración `canje_recompensas`
+  agrega la política de alta en `canjes`, acotada a los propios.
+
+Como lo canjeado vale $0 en la venta, no suma puntos: la acreditación sigue
+saliendo de lo pagado con tarjeta.
+
 ### Pago simulado y confirmación de compra desde el frontend
 
 `/compra/pago` (`Pago`, en `CompraModule`) muestra el resumen como un
