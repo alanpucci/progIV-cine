@@ -62,6 +62,8 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
 - `README.md`: nueva sección "Puntos y crédito no transferibles", con las
   garantías de RLS y triggers y cómo se verificaron. La nota sobre el
   trigger de `perfiles` ya no dice que un admin puede editar saldos.
+- `docs/ROADMAP.md` y `docs/ROADMAP.pdf`: Fase 8 marcada como hecha, la 8.3
+  pasa a "canje de recompensas en el checkout" y nota sobre el desvío.
 - Acreditación de puntos (8.1): sin cambios de código, ya se hacía al
   confirmar la compra (1 punto por peso pagado con tarjeta, vía
   `movimientos_puntos`). Lo canjeado vale $0 y no suma puntos.

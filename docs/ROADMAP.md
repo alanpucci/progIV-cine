@@ -159,17 +159,25 @@ RN01/RN02/RN03), productos/categorías, combos, cupones y preventa.
 > encabezado no le muestra "Mis entradas"/"Mi perfil" y `noAdminGuard`
 > cierra `/butacas`, `/compra`, `/mis-entradas` y `/cuenta/perfil`.
 
-### Fase 8 — Fidelización y crédito (M08) ⬜
+### Fase 8 — Fidelización y crédito (M08) ✅
 Acreditación de puntos, configuración y canje de recompensas, saldo e
 historial, no transferencia.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 8.1 | Acreditación de puntos al confirmar una compra (integra con la confirmación de compra de la Fase 4, vía `movimientos_puntos`) | ⬜ |
-| 8.2 | ABM de recompensas desde administración (`recompensas`: tipo entrada/producto, costo en puntos) | ⬜ |
-| 8.3 | Canje de recompensas desde el perfil del cliente (`canjes` + débito de puntos) | ⬜ |
-| 8.4 | Vista de saldo e historial unificado de puntos y crédito en el perfil | ⬜ |
-| 8.5 | Verificación de la regla "no transferencia": puntos/crédito solo se mueven por operaciones propias del usuario (políticas RLS + trigger de saldos), nunca por edición directa | ⬜ |
+| 8.1 | Acreditación de puntos al confirmar una compra (integra con la confirmación de compra de la Fase 4, vía `movimientos_puntos`) | ✅ |
+| 8.2 | ABM de recompensas desde administración (`recompensas`: tipo entrada/producto, costo en puntos) | ✅ |
+| 8.3 | Canje de recompensas en el checkout (`canjes` + débito de puntos, atado a la venta) | ✅ |
+| 8.4 | Vista de saldo e historial unificado de puntos y crédito en el perfil | ✅ |
+| 8.5 | Verificación de la regla "no transferencia": puntos/crédito solo se mueven por operaciones propias del usuario (políticas RLS + trigger de saldos), nunca por edición directa | ✅ |
+
+> **Canje dentro de la compra.** La 8.3 se planeó como canje desde el
+> perfil, pero se resolvió canjear durante la compra: la recompensa de
+> entrada cubre la entrada de menor precio y la de producto lo suma sin
+> cargo. El perfil muestra el catálogo de recompensas y el historial de
+> canjes. La 8.1 ya estaba hecha desde la Fase 4.6. No se creó la carpeta
+> `features/fidelizacion/`: el servicio de recompensas vive en `core/` y
+> los componentes en `compra/`, `perfil/` y `administracion/`.
 
 ### Fase 9 — Cancelaciones (M10) ⬜
 Cancelación hasta 2 horas antes, liberación de butacas, generación de crédito.
