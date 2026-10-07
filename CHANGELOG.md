@@ -31,6 +31,9 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   confirmar la compra se insertan los `canjes` y un débito de puntos por
   canje con su `canje_id`.
 - Migración `canje_recompensas`: política `canjes_insert_propio`.
+- "Mi billetera" (perfil) muestra las recompensas activas, con cuántos
+  puntos faltan para cada una, y aclara que los puntos y el crédito no se
+  transfieren.
 
 ### Changed
 - Nueva sección "Recompensas" en el panel de administración.
@@ -42,6 +45,13 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
 - `SaldosCompra`: los puntos para pago parcial excluyen los comprometidos en
   canjes. Sin sesión, los canjes se descartan como el resto del saldo.
 - El historial de compras muestra el nombre del producto canjeado.
+- "Mi billetera" unifica el historial de puntos y crédito en una sola lista
+  ordenada por fecha, con una marca de moneda por movimiento. Las fichas de
+  saldo pasan a filtrar el historial (otro clic, o "Ver todos", vuelve a la
+  lista completa).
+- `MovimientoPuntos` trae el nombre de la recompensa canjeada
+  (`canjes ( recompensas ( nombre ) )`): el historial muestra "Canje: …" y
+  el débito por pago parcial pasa a "Pago con puntos".
 - `README.md`: nueva sección sobre el canje de recompensas.
 - `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: resuelto que los canjes se
   hacen dentro de una compra y cómo se graban.
