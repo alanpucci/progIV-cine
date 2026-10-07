@@ -3,6 +3,45 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 6] - 2026-10-07
+
+### Added
+- Migración `validacion_empleado`: políticas `entradas_update_validar`
+  (`emitida` → `validada`), `ventas_update_entregar_candy`
+  (`candy_entregado_at` de nulo a completo), `usos_qr_insert_personal` y
+  `usos_qr_select_propio`, todas para `empleado`/`admin`, y trigger
+  `proteger_candy_entregado`: solo el personal completa
+  `candy_entregado_at` y nadie lo vuelve a cambiar.
+- `personalGuard` (`CanMatchFn`) y `AuthService.esPersonal()`; enlace
+  "Control de acceso" en el encabezado para empleados y administradores.
+- Feature `empleado/` con la página `/empleado` (`ControlAcceso`): elección
+  de concepto (ingreso a sala o retiro de Candy), escaneo por cámara,
+  ingreso manual del código, ficha de la entrada con aviso de adulto
+  acompañante o lista del Candy, y confirmación.
+- `ValidacionService`: búsqueda por `codigo_qr`, validación de entrada y
+  entrega de Candy con `update` condicionado al estado, registro de cada
+  intento en `usos_qr` e historial de la sesión.
+- `motivoRechazo()`: código inexistente, compra cancelada o sin pagar,
+  entrada ya usada, compra sin Candy o Candy ya entregado.
+- Componentes `EscanerQr` (cámara con `jsQR`, nueva dependencia, cargada
+  bajo demanda) e `HistorialValidaciones`.
+
+### Changed
+- El empleado no opera como cliente, igual que el admin: `noAdminGuard`
+  pasa a ser `noPersonalGuard` (bloquea `/butacas`, `/compra`,
+  `/mis-entradas` y `/cuenta/perfil` a admin y empleado), el encabezado no
+  le muestra "Mis entradas" ni "Mi perfil" y el detalle de película no le
+  deja elegir función. `noPersonalGuard` también cierra `/proximamente`
+  (a admin y empleado) y se ocultan sus enlaces en el encabezado y el
+  catálogo.
+- `adminGuard`, `personalGuard` y `noPersonalGuard` se arman con una sola
+  función, `guardDeRol()`, que recibe la condición sobre `AuthService`.
+- `README.md`: secciones sobre el control de acceso del empleado y el
+  escaneo por cámara; cómo crear un empleado.
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: resuelto que
+  `candy_entregado_at` queda a nivel de venta y cómo se registran los
+  `usos_qr`.
+
 ## [Fase 11] - 2026-10-07
 
 ### Added

@@ -1,0 +1,113 @@
+@use "formularios";
+
+:host {
+  display: block;
+}
+
+.historial {
+  @include formularios.panel;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+  padding: var(--espacio-lg);
+}
+
+.historial__cabecera {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+}
+
+.historial__titulo {
+  margin: 0;
+  color: var(--color-texto-primario);
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+}
+
+.historial__resumen {
+  display: flex;
+  gap: var(--espacio-md);
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.historial__total {
+  &--validado {
+    color: var(--color-exito);
+  }
+
+  &--rechazado {
+    color: var(--color-error);
+  }
+}
+
+.historial__lista {
+  display: flex;
+  flex-direction: column;
+  max-height: 32rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.historial__vacio {
+  padding: var(--espacio-lg) 0;
+  color: var(--color-texto-silenciado);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.registro {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  gap: var(--espacio-sm);
+  align-items: baseline;
+  padding: var(--espacio-sm) 0;
+  border-bottom: 1px dashed var(--color-borde);
+  font-size: 0.85rem;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.registro__hora {
+  color: var(--color-texto-silenciado);
+  font-variant-numeric: tabular-nums;
+}
+
+.registro__concepto {
+  padding: 0 var(--espacio-sm);
+  border-radius: var(--radio-completo);
+  background: var(--color-superficie-elevada);
+  color: var(--color-texto-secundario);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.registro__detalle {
+  overflow: hidden;
+  color: var(--color-texto-primario);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  code {
+    color: var(--color-texto-silenciado);
+  }
+}
+
+.registro__resultado {
+  font-weight: 700;
+}
+
+.registro--validado .registro__resultado {
+  color: var(--color-exito);
+}
+
+.registro--rechazado .registro__resultado {
+  color: var(--color-error);
+}

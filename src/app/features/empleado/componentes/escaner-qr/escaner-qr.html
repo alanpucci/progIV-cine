@@ -1,0 +1,17 @@
+<div class="escaner" [class.escaner--encendida]="encendida()">
+  <video #video class="escaner__video" muted playsinline></video>
+  <div class="escaner__visor">
+    <span class="escaner__esquina escaner__esquina--a"></span>
+    <span class="escaner__esquina escaner__esquina--b"></span>
+    <span class="escaner__esquina escaner__esquina--c"></span>
+    <span class="escaner__esquina escaner__esquina--d"></span>
+    <span class="escaner__haz"></span>
+  </div>
+  @if (error(); as mensaje) {
+    <p class="escaner__aviso escaner__aviso--error">{{ mensaje }}</p>
+  } @else if (!encendida()) {
+    <p class="escaner__aviso">Encendiendo el proyector…</p>
+  } @else {
+    <p class="escaner__leyenda">Centrá el QR de la entrada en el recuadro</p>
+  }
+</div>

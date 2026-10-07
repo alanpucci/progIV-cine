@@ -243,17 +243,28 @@ sesión, a `/cuenta/ingreso` si no) en vez de navegar a mano: en `canMatch`
 devolver `false` haría que el router siga probando rutas y termine en el
 comodín `**`, que redirige siempre al inicio.
 
+Los guards de rol (`adminGuard`, `personalGuard` y `noPersonalGuard`)
+salen de una sola función, `guardDeRol()`, que recibe la condición sobre
+`AuthService` y arma el `CanMatchFn`: cargar la sesión, dejar pasar si se
+cumple y, si no, el mismo `UrlTree`. Cada guard exportado queda en una
+línea y las rutas siguen leyéndose por nombre (`canMatch: [adminGuard]`)
+en vez de con un parámetro suelto.
+
 El guard es solo para la navegación. Lo que impide de verdad que un no-admin
 modifique el catálogo son las políticas RLS `*_admin_todo`, que ya estaban
 en el esquema inicial.
 
-A la inversa, un admin no opera como cliente: puede recorrer el catálogo y
-ver el detalle y las funciones de cada película, pero no comprar. El
-detalle deshabilita la elección de función y reemplaza el botón de
-continuar por un aviso, el encabezado no le muestra "Mis entradas" ni "Mi
-perfil", y `noAdminGuard` (`CanMatchFn`, también en `rol.guard.ts`) cierra
-esas rutas (`/butacas`, `/compra`, `/mis-entradas`, `/cuenta/perfil`)
-redirigiendo al catálogo si se escriben a mano.
+A la inversa, el personal del cine (admin y empleado) no opera como
+cliente: puede recorrer el catálogo y ver el detalle y las funciones de
+cada película, pero no comprar. El detalle deshabilita la elección de
+función y reemplaza el botón de continuar por un aviso, el encabezado no
+le muestra "Mis entradas" ni "Mi perfil", y `noPersonalGuard`
+(`CanMatchFn`, también en `rol.guard.ts`, a partir de
+`AuthService.esPersonal()`) cierra esas rutas (`/butacas`, `/compra`,
+`/mis-entradas`, `/cuenta/perfil`) redirigiendo al catálogo si se escriben
+a mano. Tampoco ven "Próximamente" (ni el enlace del encabezado ni el del
+catálogo), y el mismo guard cierra `/proximamente`, porque es la vitrina
+de estrenos para que el cliente active alertas.
 
 El panel (`features/administracion/`) es un `NgModule` con una ruta padre,
 `PanelAdministracion`, que dibuja la barra lateral y un `<router-outlet>`
@@ -1169,6 +1180,67 @@ distribuye fuera del registro, y `exceljs` por tamaño. Las dos librerías se
 importan con `await import(...)` dentro de cada método, así quedan en
 chunks aparte que solo se descargan al exportar.
 
+### Control de acceso del empleado: lectura de QR y consumo condicionado
+
+La feature `empleado/` es standalone (una sola página, `ControlAcceso`, en
+`/empleado`) y se protege con `personalGuard`, otro `CanMatchFn` de
+`rol.guard.ts` que deja pasar a `empleado` y a `admin`
+(`AuthService.esPersonal()`); el encabezado muestra "Control de acceso" con
+la misma condición. Como el admin, el empleado no opera como cliente (ver
+"Rol del usuario y acceso al panel de administración").
+
+La pantalla trabaja por concepto, ingreso a sala o retiro de Candy, porque
+son dos consumos independientes del mismo QR (RN05): validar la entrada no
+gasta el Candy ni al revés. El código se lee con la cámara o se escribe a
+mano (se normaliza sin espacios y en mayúsculas, igual que se imprime en el
+ticket). Con el código se busca la entrada con una consulta embebida hasta
+su función, su butaca y su venta con los ítems, y
+`motivoRechazo()` (`validacion.helpers.ts`) decide si se puede consumir:
+código inexistente, compra cancelada o sin pagar, entrada ya usada, compra
+sin Candy o Candy ya entregado. Si se puede, la pantalla muestra los datos
+(película, función, butaca, aviso de adulto acompañante o la lista de
+productos) y el empleado confirma.
+
+El consumo es un `update` condicionado al estado, no una lectura seguida de
+una escritura: `entradas` pasa a `validada` solo `where estado = 'emitida'`,
+y `ventas.candy_entregado_at` se completa solo `where candy_entregado_at is
+null`, ambos con `.select('id')`. Si otro puesto lo consumió primero, el
+`update` no devuelve filas y el intento se rechaza. La migración
+`validacion_empleado` agrega las políticas que lo permiten solo a
+`empleado`/`admin` (y el `with check` exige el estado final, así que esas
+políticas no sirven para otra cosa), el insert en `usos_qr` con el
+`empleado_id` propio y la lectura de los `usos_qr` propios.
+
+Además, un trigger (`proteger_candy_entregado`) solo deja completar
+`candy_entregado_at` a `empleado`/`admin` y no deja cambiarlo una vez
+completo. Las políticas solas no alcanzan: en un `update`, Postgres acepta la
+fila si pasa el `using` de alguna política y el `with check` de alguna
+otra, no necesariamente de la misma. Un cliente pasa el `using` de
+`ventas_update_cancelar_propia` (venta propia pagada) y el `with check` de
+`ventas_update_confirmar` (sigue propia y pagada), así que sin el trigger
+podría volver a poner el campo en nulo y retirar el Candy otra vez.
+
+Cada intento, aceptado o rechazado, queda en `usos_qr`; un código que no
+existe se guarda con `entrada_id` nulo. El historial de la derecha
+(`HistorialValidaciones`, presentacional) se relee de `usos_qr` después de
+cada intento y se limita a la sesión en curso con
+`user.last_sign_in_at` de Supabase Auth, así sobrevive a una recarga de la
+página y se reinicia al volver a ingresar.
+
+### Escaneo de QR por cámara: `jsQR` sobre `getUserMedia`
+
+`EscanerQr` abre la cámara trasera con `getUserMedia`, muestra el video con
+un visor propio y cada 200 ms copia el cuadro a un `<canvas>` y lo pasa a
+`jsQR`. Al leer un código emite `leido` y apaga la cámara; también la apaga
+en `ngOnDestroy`. Se eligió `jsQR` porque solo decodifica: el visor y los
+mensajes son del diseño del cine, a diferencia de `html5-qrcode`, que trae
+su propia interfaz. La API nativa `BarcodeDetector` no está disponible en
+Safari ni en Firefox, así que no alcanza para un celular cualquiera.
+`jsQR` se importa con `await import(...)` como `jspdf` (queda en un chunk
+aparte) y figura en `allowedCommonJsDependencies` porque se publica como
+UMD. La cámara exige HTTPS o `localhost`; si el navegador no da permiso,
+queda el ingreso manual.
+
 ### Contador cacheado para datos agregados públicos
 
 El destacado "3 más vendidas" del catálogo necesita un ranking de películas
@@ -1243,4 +1315,4 @@ commit;
 ```
 
 Si el usuario tenía la app abierta, tiene que recargar la página para que
-se vuelva a leer el rol.
+se vuelva a leer el rol. Un empleado se crea igual, con `rol = 'empleado'`.

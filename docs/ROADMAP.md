@@ -128,17 +128,29 @@ PDF de entrada + QR, pantalla "Mis entradas".
 | 5.2 | Generación de PDF de entrada (función, sala, butaca, QR), con `jspdf` cargado bajo demanda | ✅ |
 | 5.3 | Pantalla "Mis entradas": listado propio, separación próximas/pasadas, estado (`emitida`/`validada`/`cancelada`) | ✅ |
 
-### Fase 6 — Panel de empleado: validación (M09, operación) ⬜
+### Fase 6 — Panel de empleado: validación (M09, operación) ✅
 Escaneo/ingreso manual de código, validación de entrada y retiro de Candy,
 invalidación de QR usado.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 6.1 | Guard de rol `empleado` + layout mínimo del panel | ⬜ |
-| 6.2 | Escaneo de QR por cámara + ingreso manual de código como alternativa | ⬜ |
-| 6.3 | Validación de entrada: marca `validada`, registra en `usos_qr`, rechaza código inexistente/ya usado | ⬜ |
-| 6.4 | Retiro de Candy: marca `ventas.candy_entregado_at`, independiente de la validación de entradas | ⬜ |
-| 6.5 | Historial de validaciones de la sesión del empleado en curso | ⬜ |
+| 6.1 | Guard de rol `empleado` + layout mínimo del panel | ✅ |
+| 6.2 | Escaneo de QR por cámara + ingreso manual de código como alternativa | ✅ |
+| 6.3 | Validación de entrada: marca `validada`, registra en `usos_qr`, rechaza código inexistente/ya usado | ✅ |
+| 6.4 | Retiro de Candy: marca `ventas.candy_entregado_at`, independiente de la validación de entradas | ✅ |
+| 6.5 | Historial de validaciones de la sesión del empleado en curso | ✅ |
+
+> **Una pantalla por concepto, consumo condicionado en Postgres.** Todo
+> quedó en `/empleado` (`ControlAcceso`), para empleado y admin: se elige
+> ingreso a sala o retiro de Candy, se escanea con la cámara (`jsQR`) o se
+> escribe el código, y se confirma después de ver la ficha. Cada consumo es
+> un `update` condicionado al estado y cada intento queda en `usos_qr`; el
+> historial es el de los `usos_qr` propios desde el último ingreso.
+> `candy_entregado_at` quedó a nivel de venta. Al probar las políticas se
+> agregó un trigger que impide que un cliente complete o borre el retiro de
+> Candy de su propia venta. También se extendió al empleado la regla de no
+> operar como cliente (`noAdminGuard` pasó a `noPersonalGuard`), y el
+> personal ya no ve Próximamente.
 
 ### Fase 7 — Panel de administración: ABM base (M03/M04/M06/M07 admin) ✅
 CRUD de películas, salas/butacas, funciones (asignación automática de sala +
@@ -234,7 +246,7 @@ películas más vistas y producto más vendido.
 > (hoy, esta semana, este mes) o rango, y pestañas de facturación diaria,
 > entradas y Candy Bar. Se consultan las ventas pagadas del período con sus
 > ítems y se suman en el navegador, sin migración. "Más vistas" se mide por
-> entradas vendidas (la validación de la Fase 6 sigue pendiente) y el
+> entradas vendidas (al cerrarla, la validación de la Fase 6 seguía pendiente) y el
 > producto más vendido cuenta también los que vienen en combos. Los gráficos
 > son barras propias en HTML/CSS y el Excel usa `write-excel-file`.
 

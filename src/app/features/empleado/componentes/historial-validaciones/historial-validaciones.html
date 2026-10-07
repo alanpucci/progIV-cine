@@ -1,0 +1,28 @@
+<aside class="historial">
+  <header class="historial__cabecera">
+    <h2 class="historial__titulo">Esta sesión</h2>
+    <p class="historial__resumen">
+      <span class="historial__total historial__total--validado">{{ cantidad("validado") }} validadas</span>
+      <span class="historial__total historial__total--rechazado">{{ cantidad("rechazado") }} rechazadas</span>
+    </p>
+  </header>
+
+  <ol class="historial__lista">
+    @for (uso of historial(); track uso.id) {
+      <li class="registro registro--{{ uso.resultado }}">
+        <span class="registro__hora">{{ formatearHoraFuncion(uso.creadoAt) }}</span>
+        <span class="registro__concepto">{{ etiquetaConcepto(uso.concepto) }}</span>
+        <span class="registro__detalle">
+          @if (uso.peliculaNombre) {
+            {{ uso.peliculaNombre }}@if (uso.butaca) { · {{ uso.butaca }} }
+          } @else {
+            <code>{{ uso.codigoQr }}</code>
+          }
+        </span>
+        <span class="registro__resultado">{{ uso.resultado === "validado" ? "OK" : "✕" }}</span>
+      </li>
+    } @empty {
+      <li class="historial__vacio">Todavía no validaste ningún código en esta sesión.</li>
+    }
+  </ol>
+</aside>
