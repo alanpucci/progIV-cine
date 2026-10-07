@@ -171,8 +171,13 @@
     border-color var(--transicion-base),
     background-color var(--transicion-base);
 
-  &:hover {
+  &:hover:enabled {
     border-color: var(--color-acento-secundario);
+  }
+
+  &:disabled {
+    color: inherit;
+    cursor: default;
   }
 
   &:focus-visible {
