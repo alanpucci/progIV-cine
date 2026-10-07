@@ -141,18 +141,23 @@ invalidación de QR usado.
 | 6.4 | Retiro de Candy: marca `ventas.candy_entregado_at`, independiente de la validación de entradas | ⬜ |
 | 6.5 | Historial de validaciones de la sesión del empleado en curso | ⬜ |
 
-### Fase 7 — Panel de administración: ABM base (M03/M04/M06/M07 admin) ⬜
+### Fase 7 — Panel de administración: ABM base (M03/M04/M06/M07 admin) ✅
 CRUD de películas, salas/butacas, funciones (asignación automática de sala +
 RN01/RN02/RN03), productos/categorías, combos, cupones y preventa.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 7.1 | Estructura `NgModule` de la feature `administracion` + guard de rol `admin` + layout del panel | ⬜ |
-| 7.2 | ABM de películas y géneros (incluye `preventa_habilitada`/`precio_preventa`) | ⬜ |
-| 7.3 | ABM de salas y butacas (layout de filas/columnas, tipo normal/accesible/VIP) | ⬜ |
-| 7.4 | ABM de funciones: asignación de sala, validación de solapamiento (RN01/RN02/RN03, margen de 30 min ya reforzado en Postgres) | ⬜ |
-| 7.5 | ABM de productos/categorías y combos (con `combo_items`) | ⬜ |
-| 7.6 | ABM de cupones (tipo, vigencia, porcentaje) | ⬜ |
+| 7.1 | Estructura `NgModule` de la feature `administracion` + guard de rol `admin` + layout del panel | ✅ |
+| 7.2 | ABM de películas y géneros (incluye `preventa_habilitada`/`precio_preventa`) | ✅ |
+| 7.3 | ABM de salas y butacas (layout de filas/columnas, tipo normal/accesible/VIP) | ✅ |
+| 7.4 | ABM de funciones: asignación automática de sala o elegida a mano, validación de solapamiento con margen de 30 min (RN01/RN02/RN03) | ✅ |
+| 7.5 | ABM de productos/categorías y combos (con `combo_items`) | ✅ |
+| 7.6 | ABM de cupones (tipo, vigencia, porcentaje) | ✅ |
+
+> **El admin no opera como cliente.** Cerrada la Fase 7 se agregó que un
+> admin puede recorrer el catálogo y ver las funciones, pero no comprar: el
+> encabezado no le muestra "Mis entradas"/"Mi perfil" y `noAdminGuard`
+> cierra `/butacas`, `/compra`, `/mis-entradas` y `/cuenta/perfil`.
 
 ### Fase 8 — Fidelización y crédito (M08) ⬜
 Acreditación de puntos, configuración y canje de recompensas, saldo e
