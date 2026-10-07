@@ -3,6 +3,19 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 13.1] - 2026-10-07
+
+### Added
+- `@angular/pwa`: `ngsw-config.json`, `public/manifest.webmanifest`, íconos
+  en `public/icons/` y `provideServiceWorker` en `app.config.ts`. El
+  service worker se registra solo en producción.
+- Dependencia `@angular/service-worker` fijada en la versión de
+  `@angular/core` (22.1.6).
+
+### Changed
+- `index.html`: enlace al manifest y aviso `<noscript>` en español.
+- `angular.json`: `serviceWorker` en la configuración `production`.
+
 ## [Fase 6] - 2026-10-07
 
 ### Added
