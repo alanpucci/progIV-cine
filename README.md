@@ -552,6 +552,36 @@ política, toda consulta nueva sobre `venta_items` que deba devolver solo lo
 del usuario tiene que filtrarlo explícitamente (por ejemplo con
 `ventas!inner ( usuario_id )`), sin depender de RLS.
 
+### Butacas vendidas en tiempo real: Supabase Realtime sobre `venta_items`
+
+Mientras el mapa está abierto, una compra confirmada por otro usuario
+bloquea esas butacas al instante, sin recargar. La migración
+`realtime_butacas_vendidas` agrega `venta_items` a la publicación
+`supabase_realtime`, y `FuncionesService.escucharButacasVendidas()` abre un
+canal de `postgres_changes` con eventos `INSERT` filtrados por
+`funcion_id`. Devuelve una función para cerrar el canal, que el mapa llama
+en `ngOnDestroy()`; el componente nunca toca el cliente de Supabase.
+
+- **RLS también filtra los eventos.** Realtime solo envía a cada cliente
+  los cambios que su rol puede leer, así que la política pública de
+  entradas vendidas alcanza para que reciban eventos los visitantes con o
+  sin sesión, sin exponer productos ni combos ajenos.
+- **Por qué `INSERT` de `venta_items` y no `ventas`.** La compra inserta un
+  ítem por butaca y desde ese momento el índice `ux_butaca_por_funcion` ya
+  impide volver a venderla, aunque la venta siga `pendiente`: el mapa
+  muestra lo mismo que la base hace cumplir.
+- **Butaca elegida que se vende.** Se descarta de la selección en curso y
+  el resumen avisa que otra persona la compró. Si la selección ya se
+  confirmó y el usuario está en el resumen o el pago, el conflicto sigue
+  apareciendo al pagar, como antes.
+- **Cancelaciones no se escuchan.** Una butaca que se libera por
+  cancelación aparece disponible recién al volver a cargar el mapa: el
+  `UPDATE` a `cancelado = true` deja la fila fuera de la política pública,
+  así que Realtime no lo envía a los demás.
+
+La selección en curso de otros usuarios (antes de confirmar la compra)
+todavía no se refleja: depende del bloqueo temporal en `reservas_butaca`.
+
 ### Carrito: `CarritoService` dentro de la feature `compra`
 
 `features/compra/` es el primer `NgModule` del proyecto: `CompraModule`

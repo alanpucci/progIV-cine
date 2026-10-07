@@ -1,4 +1,4 @@
-import { Component, inject, signal } from "@angular/core";
+import { Component, OnDestroy, inject, signal } from "@angular/core";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { FuncionesService } from "../../../../core/servicios/funciones.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
@@ -19,7 +19,7 @@ interface FilaDeButacas {
   styleUrl: "./butacas-inicio.scss",
   templateUrl: "./butacas-inicio.html",
 })
-export class ButacasInicio {
+export class ButacasInicio implements OnDestroy {
   private readonly ruta = inject(ActivatedRoute);
   private readonly funcionesService = inject(FuncionesService);
   protected readonly cargaGlobal = inject(CargaGlobalService);
@@ -33,9 +33,16 @@ export class ButacasInicio {
   protected readonly idsVendidos = signal<string[]>([]);
   protected readonly error = signal(false);
   protected readonly idsSeleccionados = signal<string[]>([]);
+  protected readonly seleccionGanada = signal(false);
+
+  private dejarDeEscuchar: (() => void) | null = null;
 
   constructor() {
     this.cargarMapa(this.ruta.snapshot.paramMap.get("id")!);
+  }
+
+  ngOnDestroy(): void {
+    this.dejarDeEscuchar?.();
   }
 
   protected filasDeButacas(): FilaDeButacas[] {
@@ -71,6 +78,7 @@ export class ButacasInicio {
   }
 
   protected alternarButaca(butacaId: string): void {
+    this.seleccionGanada.set(false);
     this.idsSeleccionados.update((ids) =>
       ids.includes(butacaId) ? ids.filter((id) => id !== butacaId) : [...ids, butacaId],
     );
@@ -119,8 +127,18 @@ export class ButacasInicio {
       this.idsSeleccionados.set(
         this.seleccionButacas.idsElegidosPara(funcionId).filter((id) => idsDisponibles.includes(id)),
       );
+      this.dejarDeEscuchar = this.funcionesService.escucharButacasVendidas(funcionId, (butacaId) =>
+        this.marcarVendida(butacaId),
+      );
     } catch {
       this.error.set(true);
     }
+  }
+
+  private marcarVendida(butacaId: string): void {
+    this.idsVendidos.update((ids) => (ids.includes(butacaId) ? ids : [...ids, butacaId]));
+    if (!this.idsSeleccionados().includes(butacaId)) return;
+    this.idsSeleccionados.update((ids) => ids.filter((id) => id !== butacaId));
+    this.seleccionGanada.set(true);
   }
 }
