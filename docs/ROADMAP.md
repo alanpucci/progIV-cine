@@ -259,13 +259,13 @@ Registro y consulta de logs de acciones administrativas y de validación.
 | 12.2 | Registro en `logs_actividad` de las validaciones de QR/Candy del panel de empleado (Fase 6) | ⬜ |
 | 12.3 | Pantalla de consulta de logs en administración, con filtros por usuario/entidad/acción/fecha | ⬜ |
 
-### Fase 13 — PWA y pulido final ⬜
+### Fase 13 — PWA y pulido final 🔄
 Manifest + service worker, instalabilidad, revisión de RLS, accesibilidad,
 responsive final, despliegue a Vercel, README de arquitectura (RNF-008).
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 13.1 | Manifest + service worker + instalabilidad (Angular PWA) | ⬜ |
+| 13.1 | Manifest + service worker + instalabilidad (Angular PWA) | ✅ |
 | 13.2 | Revisión final de políticas RLS: cobertura de las 26 tablas y de cada rol (anon/authenticated/empleado/admin) | ⬜ |
 | 13.3 | Accesibilidad (a11y): contraste, foco, roles ARIA en componentes propios del design system | ⬜ |
 | 13.4 | Responsive final en todas las features | ⬜ |
