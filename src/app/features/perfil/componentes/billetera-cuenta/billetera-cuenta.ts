@@ -50,6 +50,10 @@ export class BilleteraCuenta implements OnInit {
     void this.cargar();
   }
 
+  recargar(): void {
+    void this.cargar();
+  }
+
   protected puntosSaldo(): string {
     return formatearPuntos(this.saldos()?.puntos ?? 0);
   }

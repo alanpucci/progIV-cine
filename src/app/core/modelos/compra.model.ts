@@ -17,6 +17,7 @@ export interface Compra {
   fecha: string;
   estado: EstadoVenta;
   total: number;
+  puntosUsados: number;
   funcion: FuncionCompra | null;
   butacas: string[];
   extras: ExtraCompra[];

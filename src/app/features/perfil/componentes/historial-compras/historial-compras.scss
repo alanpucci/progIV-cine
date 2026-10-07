@@ -92,6 +92,43 @@ a.compras__pelicula:hover {
   color: var(--color-texto-silenciado);
 }
 
+.compras__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-sm);
+  margin-top: var(--espacio-sm);
+}
+
+.compras__plazo {
+  color: var(--color-texto-silenciado);
+  font-size: 0.75rem;
+}
+
+.compras__confirmacion {
+  margin-top: var(--espacio-sm);
+  padding: var(--espacio-sm) var(--espacio-md);
+  border-left: 3px solid var(--color-advertencia);
+  border-radius: var(--radio-sm);
+  background: var(--color-superficie);
+}
+
+.compras__confirmacion-texto {
+  margin: 0;
+  color: var(--color-texto-secundario);
+  font-size: 0.85rem;
+
+  strong {
+    color: var(--color-texto-primario);
+  }
+}
+
+.compras__aviso {
+  margin: var(--espacio-xs) 0 0;
+  color: var(--color-exito);
+  font-size: 0.85rem;
+}
+
 .compras__talon {
   display: flex;
   flex-shrink: 0;
