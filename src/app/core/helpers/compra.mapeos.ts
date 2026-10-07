@@ -37,6 +37,7 @@ export interface FilaPeliculaVista {
 export interface FilaCalificacion {
   pelicula_id: string;
   estrellas: number;
+  comentario: string | null;
 }
 
 export const COLUMNAS_COMPRA = `
@@ -114,12 +115,15 @@ export function mapearPeliculasVistas(
     const existente = porPelicula.get(pelicula.id);
     if (existente && existente.ultimaFuncion >= funcion.inicio) continue;
 
+    const calificacion = calificaciones.find((c) => c.pelicula_id === pelicula.id);
+
     porPelicula.set(pelicula.id, {
       id: pelicula.id,
       nombre: pelicula.nombre,
       imagenUrl: pelicula.imagen_url,
       ultimaFuncion: funcion.inicio,
-      estrellas: calificaciones.find((c) => c.pelicula_id === pelicula.id)?.estrellas ?? null,
+      estrellas: calificacion?.estrellas ?? null,
+      comentario: calificacion?.comentario ?? null,
     });
   }
 
