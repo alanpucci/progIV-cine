@@ -965,8 +965,9 @@ criterio parejo:
   confirmación de compra más arriba).
 - `perfiles.rol`, `credito_saldo` y `puntos_saldo` están protegidos además
   por un trigger (no solo por RLS): ni siquiera con una política de UPDATE
-  "propio" un usuario puede autopromoverse a admin o cargarse saldo, porque
-  el trigger rechaza el cambio si quien lo hace no es admin.
+  "propio" un usuario puede autopromoverse a admin. El rol solo lo cambia un
+  admin, y los saldos no los edita nadie directamente (ver "Puntos y crédito
+  no transferibles").
 - El alta de `perfiles` la hace el frontend después del signup, acotada por
   la política `perfiles_insert_alta` (ver "Alta de perfil desde el
   frontend").
@@ -975,6 +976,37 @@ Las migraciones no se aplican solas contra el proyecto de Supabase real desde
 acá: se corren con `supabase db push` (requiere `supabase link` con
 credenciales propias del proyecto) o pegando el contenido de cada archivo, en
 orden, en el SQL Editor del dashboard.
+
+### Puntos y crédito no transferibles
+
+Los puntos (RN08/RN-010) y el crédito son personales. La regla no depende
+del frontend: el saldo cacheado en `perfiles` solo cambia cuando se
+inserta un movimiento en el ledger, y cada usuario solo inserta
+movimientos propios.
+
+- `movimientos_puntos`, `movimientos_credito` y `canjes`: la única
+  escritura permitida es el `insert` con `usuario_id = auth.uid()`. Nadie
+  puede acreditar ni debitar a otra cuenta, ni siquiera un admin. No hay
+  políticas de `update`/`delete`, así que el historial no se edita.
+- `perfiles.puntos_saldo`/`credito_saldo`: el trigger
+  `proteger_campos_sensibles_perfil` rechaza cualquier `update` directo,
+  también el de un admin (migración `saldos_solo_por_movimientos`). Solo
+  pasan los `update` que hacen los triggers de los ledgers
+  (`pg_trigger_depth() > 1`), así que saldo e historial no pueden quedar
+  desfasados.
+- Cada usuario lee solo sus propios saldos, movimientos y canjes.
+
+Lo que la regla no cubre, por la decisión de grabar la compra desde el
+frontend: un usuario con la clave pública puede insertarse movimientos
+propios con el importe que quiera (ver "Pago simulado y confirmación de
+compra desde el frontend"). Eso nunca toca la cuenta de otro.
+
+Estas reglas se verificaron aplicando todas las migraciones sobre un
+Postgres en memoria (PGlite), con un esquema `auth` mínimo, y probando
+cada caso como `authenticated`: transferencias de puntos y crédito, edición
+directa de saldos (cliente y admin), edición y borrado de movimientos,
+canjes a nombre de otro, y una compra con canjes que el trigger descuenta
+del saldo.
 
 ### Contador cacheado para datos agregados públicos
 

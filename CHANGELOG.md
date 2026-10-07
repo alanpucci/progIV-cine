@@ -31,6 +31,10 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   confirmar la compra se insertan los `canjes` y un débito de puntos por
   canje con su `canje_id`.
 - Migración `canje_recompensas`: política `canjes_insert_propio`.
+- Migración `saldos_solo_por_movimientos`: `proteger_campos_sensibles_perfil`
+  rechaza cualquier `update` directo de `puntos_saldo`/`credito_saldo`,
+  también el de un admin; los saldos solo cambian con los triggers de los
+  ledgers. El rol sigue siendo editable solo por un admin.
 - "Mi billetera" (perfil) muestra las recompensas activas, con cuántos
   puntos faltan para cada una, y aclara que los puntos y el crédito no se
   transfieren.
@@ -55,6 +59,17 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
 - `README.md`: nueva sección sobre el canje de recompensas.
 - `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: resuelto que los canjes se
   hacen dentro de una compra y cómo se graban.
+- `README.md`: nueva sección "Puntos y crédito no transferibles", con las
+  garantías de RLS y triggers y cómo se verificaron. La nota sobre el
+  trigger de `perfiles` ya no dice que un admin puede editar saldos.
+- Acreditación de puntos (8.1): sin cambios de código, ya se hacía al
+  confirmar la compra (1 punto por peso pagado con tarjeta, vía
+  `movimientos_puntos`). Lo canjeado vale $0 y no suma puntos.
+- No transferencia (8.5) verificada: con todas las migraciones aplicadas
+  sobre PGlite se probaron como `authenticated` 20 casos (transferencias,
+  edición directa de saldos por cliente y admin, edición/borrado de
+  movimientos, canjes a nombre de otro, lectura cruzada y una compra con
+  canjes que descuenta el saldo por trigger). Todos pasan.
 
 ## [Docs: roadmap Fase 7] - 2026-10-07
 
