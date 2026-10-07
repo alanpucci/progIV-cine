@@ -1,0 +1,101 @@
+.inicio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-xs);
+  margin-bottom: var(--espacio-xl);
+}
+
+.inicio__etiqueta {
+  margin: 0;
+  color: var(--color-acento-secundario);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.inicio__titulo {
+  font-size: 2.2rem;
+}
+
+.inicio__bajada {
+  margin: 0;
+  color: var(--color-texto-secundario);
+}
+
+.inicio__grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--espacio-lg);
+}
+
+.claqueta {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background: var(--color-superficie);
+  color: var(--color-texto-primario);
+  text-decoration: none;
+  transition:
+    transform var(--transicion-base),
+    border-color var(--transicion-base),
+    box-shadow var(--transicion-base);
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-acento);
+    box-shadow: var(--sombra-elevada);
+  }
+
+  &--pendiente {
+    opacity: 0.55;
+
+    &:hover {
+      transform: none;
+      border-color: var(--color-borde);
+      box-shadow: none;
+    }
+  }
+}
+
+.claqueta__franja {
+  height: 0.9rem;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-texto-primario) 0 0.7rem,
+    var(--color-fondo) 0.7rem 1.4rem
+  );
+}
+
+.claqueta__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  padding: var(--espacio-lg);
+}
+
+.claqueta__titulo {
+  font-family: var(--fuente-titulo);
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+}
+
+.claqueta__descripcion {
+  color: var(--color-texto-secundario);
+  font-size: 0.9rem;
+}
+
+.claqueta__estado {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 0.15rem var(--espacio-sm);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-completo);
+  color: var(--color-texto-silenciado);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}

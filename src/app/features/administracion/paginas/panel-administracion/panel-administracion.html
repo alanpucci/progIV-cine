@@ -1,0 +1,36 @@
+<section class="panel">
+  <aside class="panel__cabina">
+    <p class="panel__etiqueta">Cabina de proyección</p>
+    <h1 class="panel__titulo">Administración</h1>
+
+    <nav class="panel__nav">
+      <a
+        class="panel__rollo"
+        routerLink="/administracion"
+        routerLinkActive="activo"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        <span class="panel__rollo-numero">00</span>
+        <span class="panel__rollo-titulo">Resumen</span>
+      </a>
+      @for (seccion of secciones; track seccion.ruta; let indice = $index) {
+        @if (seccion.disponible) {
+          <a class="panel__rollo" [routerLink]="['/administracion', seccion.ruta]" routerLinkActive="activo">
+            <span class="panel__rollo-numero">{{ numeroRollo(indice) }}</span>
+            <span class="panel__rollo-titulo">{{ seccion.titulo }}</span>
+          </a>
+        } @else {
+          <span class="panel__rollo panel__rollo--pendiente">
+            <span class="panel__rollo-numero">{{ numeroRollo(indice) }}</span>
+            <span class="panel__rollo-titulo">{{ seccion.titulo }}</span>
+            <span class="panel__rollo-estado">Pronto</span>
+          </span>
+        }
+      }
+    </nav>
+  </aside>
+
+  <div class="panel__contenido">
+    <router-outlet />
+  </div>
+</section>

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './core/guardias/rol.guard';
 
 export const routes: Routes = [
   {
@@ -21,6 +22,12 @@ export const routes: Routes = [
   {
     path: 'cuenta',
     loadChildren: () => import('./features/perfil/perfil.routes').then((m) => m.RUTAS_PERFIL),
+  },
+  {
+    path: 'administracion',
+    canMatch: [adminGuard],
+    loadChildren: () =>
+      import('./features/administracion/administracion.module').then((m) => m.AdministracionModule),
   },
   {
     path: '**',

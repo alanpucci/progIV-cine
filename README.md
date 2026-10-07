@@ -217,6 +217,42 @@ tanto el registro como el ingreso. `src/styles` está en
 `stylePreprocessorOptions.includePaths`, así que se importa con
 `@use "formularios"` sin rutas relativas.
 
+### Rol del usuario y acceso al panel de administración
+
+El rol (`cliente`, `empleado`, `admin`) vive en `perfiles.rol`, no en los
+metadatos del usuario de Supabase Auth. Así queda en el mismo lugar que
+leen las políticas RLS (`rol_actual()`) y el trigger que impide que un
+usuario se cambie el rol a sí mismo. `AuthService.rol` es un
+`signal<Rol | null>` que se llena junto con la sesión: `cargarSesion()` e
+`iniciarSesion()` lo leen de `perfiles` con un `select` (solo la primera
+vez por sesión, después se reutiliza el valor del signal), `registrar()` lo
+fija en `cliente` sin consultar y `cerrarSesion()` lo vuelve a `null`. El
+header muestra el enlace "Administración" solo si `esAdmin()`.
+
+La ruta `/administracion` se protege con `adminGuard`
+(`core/guardias/rol.guard.ts`), que es un `CanMatchFn` y no un
+`CanActivateFn` como los guards de sesión. La diferencia es cuándo corre:
+`canMatch` decide si la ruta coincide antes de que el router descargue el
+chunk de `loadChildren`, así un cliente nunca baja el código del panel. Con
+`canActivate` el módulo se descarga igual y recién después se bloquea la
+navegación. Si no pasa, el guard devuelve un `UrlTree` (al inicio si hay
+sesión, a `/cuenta/ingreso` si no) en vez de navegar a mano: en `canMatch`
+devolver `false` haría que el router siga probando rutas y termine en el
+comodín `**`, que redirige siempre al inicio.
+
+El guard es solo para la navegación. Lo que impide de verdad que un no-admin
+modifique el catálogo son las políticas RLS `*_admin_todo`, que ya estaban
+en el esquema inicial.
+
+El panel (`features/administracion/`) es un `NgModule` con una ruta padre,
+`PanelAdministracion`, que dibuja la barra lateral y un `<router-outlet>`
+donde se cargan las secciones como rutas hijas. Las secciones salen de la
+constante `SECCIONES_ADMINISTRACION`: la barra lateral y las tarjetas del
+inicio del panel se arman desde esa lista, y cada entrada tiene un
+`disponible` que vale `false` mientras su ABM no exista. Las secciones no
+disponibles se muestran deshabilitadas en vez de enlazar a una ruta que
+todavía no está definida.
+
 ### Estado de carga global: un overlay compartido, no uno por componente
 
 Ningún componente arma su propio indicador de carga. Existe
@@ -800,3 +836,23 @@ cp .env.example .env   # completar SUPABASE_URL y SUPABASE_ANON_KEY
 npm start              # ng serve (genera environment.ts antes de levantar)
 npm test               # vitest
 ```
+
+### Crear un usuario administrador
+
+Toda cuenta nueva se crea como `cliente`, y el trigger
+`trg_proteger_campos_sensibles_perfil` rechaza cambiar `rol` si quien lo
+hace no es admin. En el SQL Editor de Supabase `auth.uid()` es `null`, así
+que el trigger también rechaza el cambio ahí. Para promover al primer
+administrador, se desactivan los triggers solo dentro de esa transacción:
+
+```sql
+begin;
+set local session_replication_role = replica;
+update public.perfiles
+set rol = 'admin'
+where id = (select id from auth.users where email = 'admin@ejemplo.com');
+commit;
+```
+
+Si el usuario tenía la app abierta, tiene que recargar la página para que
+se vuelva a leer el rol.
