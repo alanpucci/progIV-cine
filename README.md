@@ -1114,6 +1114,61 @@ notificaciones propias y no leídas. El trigger
 `trg_notificaciones_proteger_contenido` sigue impidiendo editar el
 contenido después: el cliente solo puede marcarlas como leídas.
 
+### Reportes y estadísticas: agregación en el cliente
+
+La página de reportes del panel (`/administracion/reportes`) trae con una
+sola consulta las ventas `pagada` del período, con sus `venta_items`
+embebidos (función, película, sala, producto y los `combo_items` de cada
+combo), y `armarReporte()` (`administracion/helpers/`) arma todo en el
+navegador: facturación por día, entradas por película y por función, y
+unidades por producto. No hizo falta migración: las políticas del esquema
+inicial ya dejan al admin leer todas las ventas y sus ítems, y los combos y
+sus componentes son de lectura pública.
+
+Se descartó una vista o una función de Postgres que agregara con
+`group by`: el proyecto solo usa `.from(...).select()` sobre tablas, y con
+los volúmenes de un TP sumar en el cliente es instantáneo. Su límite es el
+máximo de filas que devuelve Supabase por consulta (1000 por defecto), que
+un período de un TP no alcanza. Criterios del cálculo:
+
+- Se agrupa por la **fecha de la venta** en la zona horaria del navegador,
+  y la facturación diaria lista también los días sin ventas.
+- **Facturado** suma `ventas.total` (ya con el descuento del cupón).
+  Crédito y puntos son medios de pago, no descuentos, así que no se restan.
+  Las ventas canceladas no suman.
+- **Películas más vistas** se mide por entradas vendidas, no validadas: es
+  el dato que existe para cualquier período, incluso para funciones que
+  todavía no ocurrieron.
+- **Producto más vendido** cuenta los productos sueltos y los que vienen
+  dentro de combos (cantidad del combo × `combo_items.cantidad`), con el
+  mismo criterio que el descuento de stock. Los canjes de recompensas no
+  cuentan como venta.
+
+El período se elige con atajos (hoy, esta semana, este mes) o con un rango
+de fechas, que cubre el pedido de estadísticas por semana o por mes.
+
+Los gráficos (`GraficoBarras`, declarado en el módulo de administración)
+son barras horizontales hechas con HTML y CSS, sin librería de gráficos:
+son rankings de una sola serie, así que alcanza con una barra por ítem cuyo
+largo se pasa como custom property (`[style.--largo]`). Una librería como
+Chart.js sumaba peso y una estética reconocible para algo que no necesita
+ejes ni escalas. El color de las barras es un token propio
+(`--color-grafico`) y no el dorado de marquesina, que también es el color de
+advertencia.
+
+### Exportación de reportes: PDF y Excel bajo demanda
+
+`ExportacionReportesService` arma los dos archivos a partir de las mismas
+tablas (`tablasDelReporte()`), así el PDF y el Excel tienen siempre las
+mismas columnas. El PDF se dibuja con `jspdf`, como las entradas: tablas con
+cabecera repetida en cada página y pie con la fecha de generación. El Excel
+usa `write-excel-file`, que genera `.xlsx` reales (una hoja de resumen y
+una por tabla) con una sola dependencia (`fflate`); se descartó `xlsx`
+(SheetJS) porque su versión en npm quedó desactualizada y la mantenida se
+distribuye fuera del registro, y `exceljs` por tamaño. Las dos librerías se
+importan con `await import(...)` dentro de cada método, así quedan en
+chunks aparte que solo se descargan al exportar.
+
 ### Contador cacheado para datos agregados públicos
 
 El destacado "3 más vendidas" del catálogo necesita un ranking de películas

@@ -3,6 +3,29 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 11] - 2026-10-07
+
+### Added
+- Página "Reportes" del panel de administración (`/administracion/reportes`,
+  rollo 08): período por atajos (hoy, esta semana, este mes) o rango de
+  fechas, indicadores de facturado, ventas, entradas y descuentos, y tres
+  vistas: facturación diaria, entradas (por película y por función) y
+  Candy Bar.
+- `ReportesAdministracionService` y `armarReporte()`: una consulta de las
+  ventas pagadas del período con sus ítems, agregada en el cliente. Los
+  productos cuentan sueltos y dentro de combos.
+- Componente `GraficoBarras` (barras horizontales en HTML y CSS) para
+  "Películas más vistas" y "Productos más vendidos".
+- `ExportacionReportesService`: exportación del reporte a PDF (`jspdf`) y a
+  Excel (`write-excel-file`, nueva dependencia), las dos cargadas bajo
+  demanda, a partir de las mismas tablas (`tablasDelReporte()`).
+- Helpers de período (`periodo-reporte.helpers.ts`) y token
+  `--color-grafico`.
+
+### Changed
+- `README.md`: secciones sobre la agregación de reportes en el cliente y la
+  exportación a PDF/Excel.
+
 ## [Fase 10] - 2026-10-07
 
 ### Added
