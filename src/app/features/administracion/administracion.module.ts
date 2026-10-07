@@ -10,6 +10,10 @@ import { ListadoSalas } from './paginas/listado-salas/listado-salas';
 import { FormularioSala } from './paginas/formulario-sala/formulario-sala';
 import { ListadoFunciones } from './paginas/listado-funciones/listado-funciones';
 import { FormularioFuncion } from './paginas/formulario-funcion/formulario-funcion';
+import { ListadoCandyBar } from './paginas/listado-candy-bar/listado-candy-bar';
+import { FormularioProducto } from './paginas/formulario-producto/formulario-producto';
+import { FormularioCombo } from './paginas/formulario-combo/formulario-combo';
+import { CategoriasProducto } from './paginas/categorias-producto/categorias-producto';
 import { Boton } from '../../shared/componentes/boton/boton';
 
 @NgModule({
@@ -23,6 +27,10 @@ import { Boton } from '../../shared/componentes/boton/boton';
     FormularioSala,
     ListadoFunciones,
     FormularioFuncion,
+    ListadoCandyBar,
+    FormularioProducto,
+    FormularioCombo,
+    CategoriasProducto,
   ],
   imports: [AdministracionRoutingModule, ReactiveFormsModule, Boton],
 })

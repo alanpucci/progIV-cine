@@ -1,0 +1,95 @@
+<header class="formulario-candy__cabecera">
+  <a class="formulario-candy__enlace" routerLink="/administracion/candy-bar">← Volver al Candy bar</a>
+  <p class="formulario-candy__etiqueta">{{ edicion() ? "Edición" : "Alta" }}</p>
+  <h2 class="formulario-candy__titulo">{{ edicion() ? "Editar producto" : "Nuevo producto" }}</h2>
+</header>
+
+@if (noEncontrado()) {
+  <p class="formulario-candy__vacio">No encontramos el producto que querés editar.</p>
+} @else if (!cargaGlobal.visible()) {
+  <form class="formulario-candy" [formGroup]="formulario" (ngSubmit)="guardar()">
+    <fieldset class="formulario-candy__bloque">
+      <legend>Producto</legend>
+
+      <div class="formulario-candy__fila">
+        <div class="formulario-candy__campo">
+          <label for="producto-nombre">Nombre</label>
+          <input
+            id="producto-nombre"
+            type="text"
+            formControlName="nombre"
+            [attr.aria-invalid]="mostrarError(formulario.controls.nombre)"
+          />
+          @if (mostrarError(formulario.controls.nombre)) {
+            <p class="formulario-candy__error">Ingresá el nombre del producto.</p>
+          }
+        </div>
+
+        <div class="formulario-candy__campo">
+          <label for="producto-categoria">Categoría</label>
+          <select
+            id="producto-categoria"
+            formControlName="categoriaId"
+            [attr.aria-invalid]="mostrarError(formulario.controls.categoriaId)"
+          >
+            <option value="" disabled>Elegí una categoría</option>
+            @for (categoria of categorias(); track categoria.id) {
+              <option [value]="categoria.id">{{ categoria.nombre }}</option>
+            }
+          </select>
+          @if (mostrarError(formulario.controls.categoriaId)) {
+            <p class="formulario-candy__error">Elegí la categoría.</p>
+          }
+        </div>
+      </div>
+
+      <div class="formulario-candy__campo">
+        <label for="producto-descripcion">Descripción (opcional)</label>
+        <textarea id="producto-descripcion" rows="3" formControlName="descripcion"></textarea>
+      </div>
+
+      <div class="formulario-candy__fila">
+        <div class="formulario-candy__campo">
+          <label for="producto-precio">Precio ($)</label>
+          <input
+            id="producto-precio"
+            type="number"
+            min="1"
+            formControlName="precio"
+            [attr.aria-invalid]="mostrarError(formulario.controls.precio)"
+          />
+          @if (mostrarError(formulario.controls.precio)) {
+            <p class="formulario-candy__error">Ingresá un precio mayor a 0.</p>
+          }
+        </div>
+
+        <div class="formulario-candy__campo">
+          <label for="producto-stock">Stock (vacío = sin control)</label>
+          <input
+            id="producto-stock"
+            type="number"
+            min="0"
+            step="1"
+            formControlName="stock"
+            [attr.aria-invalid]="mostrarError(formulario.controls.stock)"
+          />
+          @if (mostrarError(formulario.controls.stock)) {
+            <p class="formulario-candy__error">El stock tiene que ser un número entero, 0 o más.</p>
+          }
+        </div>
+      </div>
+
+      <label class="formulario-candy__interruptor">
+        <input type="checkbox" formControlName="activo" />
+        <span>Activo (se ofrece en la compra)</span>
+      </label>
+    </fieldset>
+
+    <div class="formulario-candy__pie">
+      @if (errorEnvio(); as mensaje) {
+        <p class="formulario-candy__error-envio">{{ mensaje }}</p>
+      }
+      <app-boton tipo="submit" tamano="grande">{{ edicion() ? "Guardar cambios" : "Crear producto" }}</app-boton>
+    </div>
+  </form>
+}

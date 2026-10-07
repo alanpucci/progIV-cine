@@ -1,0 +1,107 @@
+<header class="listado">
+  <div class="listado__encabezado">
+    <p class="listado__etiqueta">Rollo 04</p>
+    <h2 class="listado__titulo">Candy bar</h2>
+    <p class="listado__bajada">Productos por categoría y combos de precio fijo. Lo inactivo no se ofrece en la compra.</p>
+  </div>
+  <div class="listado__acciones">
+    <a class="listado__enlace" routerLink="/administracion/candy-bar/categorias">Categorías</a>
+    <app-boton variante="secundario" routerLink="/administracion/candy-bar/combos/nuevo">Nuevo combo</app-boton>
+    <app-boton routerLink="/administracion/candy-bar/productos/nuevo">Nuevo producto</app-boton>
+  </div>
+</header>
+
+@if (error(); as mensaje) {
+  <p class="listado__error">{{ mensaje }}</p>
+}
+
+<section class="seccion">
+  <h3 class="seccion__titulo">Combos</h3>
+  @if (!cargaGlobal.visible() && combos().length === 0) {
+    <p class="listado__vacio">Todavía no hay combos.</p>
+  }
+  <ul class="combos">
+    @for (combo of combos(); track combo.id) {
+      <li class="combo" [class.combo--inactivo]="!combo.activo">
+        <div class="combo__cabecera">
+          <p class="combo__nombre">{{ combo.nombre }}</p>
+          @if (combo.destacado) {
+            <span class="sello sello--destacado">★ Destacado</span>
+          }
+          @if (!combo.activo) {
+            <span class="sello">Inactivo</span>
+          }
+        </div>
+        <p class="combo__detalle">{{ detalleCombo(combo) }}</p>
+        <p class="combo__precio">
+          ${{ combo.precioFijo }}
+          <span class="combo__suelto">suelto ${{ precioSuelto(combo) }}</span>
+        </p>
+
+        <div class="acciones">
+          @if (idAEliminar() === combo.id) {
+            <app-boton tamano="chico" (click)="eliminarCombo(combo.id)">Sí, eliminar</app-boton>
+            <app-boton variante="fantasma" tamano="chico" (click)="idAEliminar.set(null)">Cancelar</app-boton>
+          } @else {
+            <app-boton variante="secundario" tamano="chico" [routerLink]="['/administracion/candy-bar/combos', combo.id]">
+              Editar
+            </app-boton>
+            <app-boton variante="fantasma" tamano="chico" (click)="alternarCombo(combo)">
+              {{ combo.activo ? "Desactivar" : "Activar" }}
+            </app-boton>
+            <app-boton variante="fantasma" tamano="chico" (click)="idAEliminar.set(combo.id)">Eliminar</app-boton>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+</section>
+
+<section class="seccion">
+  <h3 class="seccion__titulo">Productos</h3>
+  @if (!cargaGlobal.visible() && productos().length === 0) {
+    <p class="listado__vacio">Todavía no hay productos.</p>
+  }
+  <div class="pizarra">
+    @for (grupo of categoriasConProductos(); track grupo.categoria) {
+      <div class="pizarra__categoria">
+        <h4 class="pizarra__nombre-categoria">{{ grupo.categoria }}</h4>
+        <ul class="pizarra__lista">
+          @for (producto of grupo.productos; track producto.id) {
+            <li class="renglon" [class.renglon--inactivo]="!producto.activo">
+              <p class="renglon__linea">
+                <span class="renglon__nombre">{{ producto.nombre }}</span>
+                <span class="renglon__puntos"></span>
+                <span class="renglon__precio">${{ producto.precio }}</span>
+              </p>
+              <p class="renglon__meta">
+                {{ producto.stock === null ? "Sin control de stock" : "Stock: " + producto.stock }}
+                @if (!producto.activo) {
+                  · inactivo
+                }
+              </p>
+              <div class="acciones">
+                @if (idAEliminar() === producto.id) {
+                  <app-boton tamano="chico" (click)="eliminarProducto(producto.id)">Sí, eliminar</app-boton>
+                  <app-boton variante="fantasma" tamano="chico" (click)="idAEliminar.set(null)">Cancelar</app-boton>
+                } @else {
+                  <app-boton
+                    variante="secundario"
+                    tamano="chico"
+                    [routerLink]="['/administracion/candy-bar/productos', producto.id]"
+                  >
+                    Editar
+                  </app-boton>
+                  <app-boton variante="fantasma" tamano="chico" (click)="alternarProducto(producto)">
+                    {{ producto.activo ? "Desactivar" : "Activar" }}
+                  </app-boton>
+                  <app-boton variante="fantasma" tamano="chico" (click)="idAEliminar.set(producto.id)">Eliminar</app-boton>
+                }
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+</section>

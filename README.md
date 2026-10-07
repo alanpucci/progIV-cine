@@ -354,6 +354,29 @@ solapamiento en Postgres:
   no se puede editar (cambiar horario o sala dejaría entradas apuntando a
   otra función o a butacas de otra sala) ni eliminar.
 
+### ABM del Candy bar: un servicio por tabla y combos con `FormArray`
+
+El panel administra categorías, productos y combos con un servicio por
+tabla (`CategoriasProductoAdministracionService`,
+`ProductosAdministracionService`, `CombosAdministracionService`), separados
+de `CandyBarService` de `compra`, que solo lee lo activo para armar la
+carta (misma regla que con las películas).
+
+- **Desactivar en vez de borrar.** `combo_items.producto_id` y
+  `venta_items.producto_id`/`combo_id` no tienen cascada: un producto que
+  está en un combo o ya se vendió, o un combo vendido, no se pueden
+  eliminar. El servicio traduce el `23503` a un mensaje que sugiere
+  desactivarlo (`activo = false` lo saca de la compra). Una categoría con
+  productos tampoco se puede eliminar, y el listado ya trae la cantidad
+  (`productos ( count )`) para deshabilitar el botón.
+- **Stock opcional.** `productos.stock` vacío significa "sin control de
+  stock", que la compra ya respetaba (no descuenta ni limita).
+- **Contenido del combo.** El formulario usa un `FormArray` de grupos
+  `{ productoId, cantidad }` con `Validators.minLength(1)`, y muestra el
+  precio de los productos sueltos y el ahorro contra el precio fijo. Al
+  guardar, los `combo_items` se reemplazan enteros (borrar e insertar),
+  igual que los géneros de una película.
+
 ### Estado de carga global: un overlay compartido, no uno por componente
 
 Ningún componente arma su propio indicador de carga. Existe
