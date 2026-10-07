@@ -1,0 +1,73 @@
+<header class="listado">
+  <div class="listado__encabezado">
+    <p class="listado__etiqueta">Rollo 02</p>
+    <h2 class="listado__titulo">Salas y butacas</h2>
+    <p class="listado__bajada">Distribución de cada sala. Una sala desactivada no recibe funciones nuevas.</p>
+  </div>
+  <app-boton routerLink="/administracion/salas/nueva">Nueva sala</app-boton>
+</header>
+
+@if (error(); as mensaje) {
+  <p class="listado__error">{{ mensaje }}</p>
+}
+
+@if (!cargaGlobal.visible() && salas().length === 0) {
+  <p class="listado__vacio">Todavía no hay salas cargadas.</p>
+}
+
+<ul class="pasillo">
+  @for (sala of salas(); track sala.id) {
+    <li class="puerta" [class.puerta--inactiva]="!sala.activa">
+      <div class="puerta__cartel">
+        <span class="puerta__luz" [class.puerta__luz--encendida]="sala.activa"></span>
+        <h3 class="puerta__nombre">{{ sala.nombre }}</h3>
+      </div>
+
+      <dl class="puerta__datos">
+        <div class="puerta__dato">
+          <dt>Butacas</dt>
+          <dd>{{ sala.cantidadButacas }}</dd>
+        </div>
+        <div class="puerta__dato puerta__dato--vip">
+          <dt>VIP</dt>
+          <dd>{{ sala.cantidadVip }}</dd>
+        </div>
+        <div class="puerta__dato puerta__dato--accesible">
+          <dt>Accesibles</dt>
+          <dd>{{ sala.cantidadAccesibles }}</dd>
+        </div>
+        <div class="puerta__dato">
+          <dt>Funciones</dt>
+          <dd>{{ sala.cantidadFunciones }}</dd>
+        </div>
+      </dl>
+
+      <div class="puerta__acciones">
+        @if (salaAEliminar() === sala.id) {
+          <p class="puerta__confirmacion">¿Eliminar la sala y su distribución?</p>
+          <app-boton tamano="chico" (click)="confirmarEliminacion(sala.id)">Sí, eliminar</app-boton>
+          <app-boton variante="fantasma" tamano="chico" (click)="salaAEliminar.set(null)">Cancelar</app-boton>
+        } @else {
+          <app-boton variante="secundario" tamano="chico" [routerLink]="['/administracion/salas', sala.id]">
+            Editar
+          </app-boton>
+          <app-boton variante="fantasma" tamano="chico" (click)="alternarActivacion(sala)">
+            {{ sala.activa ? "Desactivar" : "Activar" }}
+          </app-boton>
+          @if (sala.cantidadFunciones === 0) {
+            <app-boton variante="fantasma" tamano="chico" (click)="salaAEliminar.set(sala.id)">Eliminar</app-boton>
+          } @else {
+            <app-boton
+              variante="fantasma"
+              tamano="chico"
+              [deshabilitado]="true"
+              title="Tiene funciones cargadas: no se puede eliminar, pero sí desactivar."
+            >
+              Eliminar
+            </app-boton>
+          }
+        }
+      </div>
+    </li>
+  }
+</ul>

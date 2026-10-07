@@ -6,10 +6,20 @@ import { InicioAdministracion } from './paginas/inicio-administracion/inicio-adm
 import { ListadoPeliculas } from './paginas/listado-peliculas/listado-peliculas';
 import { FormularioPelicula } from './paginas/formulario-pelicula/formulario-pelicula';
 import { GenerosPeliculas } from './paginas/generos-peliculas/generos-peliculas';
+import { ListadoSalas } from './paginas/listado-salas/listado-salas';
+import { FormularioSala } from './paginas/formulario-sala/formulario-sala';
 import { Boton } from '../../shared/componentes/boton/boton';
 
 @NgModule({
-  declarations: [PanelAdministracion, InicioAdministracion, ListadoPeliculas, FormularioPelicula, GenerosPeliculas],
+  declarations: [
+    PanelAdministracion,
+    InicioAdministracion,
+    ListadoPeliculas,
+    FormularioPelicula,
+    GenerosPeliculas,
+    ListadoSalas,
+    FormularioSala,
+  ],
   imports: [AdministracionRoutingModule, ReactiveFormsModule, Boton],
 })
 export class AdministracionModule {}

@@ -1,0 +1,145 @@
+<header class="formulario-sala__cabecera">
+  <a class="formulario-sala__enlace" routerLink="/administracion/salas">← Volver a salas</a>
+  <p class="formulario-sala__etiqueta">{{ edicion() ? "Edición" : "Alta" }}</p>
+  <h2 class="formulario-sala__titulo">{{ edicion() ? "Editar sala" : "Nueva sala" }}</h2>
+</header>
+
+@if (noEncontrada()) {
+  <p class="formulario-sala__vacio">No encontramos la sala que querés editar.</p>
+} @else if (!cargaGlobal.visible()) {
+  <form class="formulario-sala" [formGroup]="formulario" (ngSubmit)="guardar()">
+    <div class="formulario-sala__bloques">
+      <fieldset class="formulario-sala__bloque">
+        <legend>Sala</legend>
+
+        <div class="formulario-sala__campo">
+          <label for="sala-nombre">Nombre</label>
+          <input id="sala-nombre" type="text" formControlName="nombre" [attr.aria-invalid]="mostrarError(formulario.controls.nombre)" />
+          @if (mostrarError(formulario.controls.nombre)) {
+            <p class="formulario-sala__error">Ingresá el nombre de la sala.</p>
+          }
+        </div>
+
+        <label class="formulario-sala__interruptor">
+          <input type="checkbox" formControlName="activa" />
+          <span>Activa (disponible para programar funciones)</span>
+        </label>
+      </fieldset>
+
+      <fieldset class="formulario-sala__bloque">
+        <legend>Distribución</legend>
+
+        <div class="formulario-sala__fila">
+          <div class="formulario-sala__campo">
+            <label for="sala-filas">Filas (A–Z)</label>
+            <input
+              id="sala-filas"
+              type="number"
+              min="1"
+              [max]="maximoFilas"
+              formControlName="filas"
+              [attr.aria-invalid]="mostrarError(formulario.controls.filas)"
+            />
+          </div>
+
+          <div class="formulario-sala__campo">
+            <label for="sala-columnas">Butacas por fila</label>
+            <input
+              id="sala-columnas"
+              type="number"
+              min="1"
+              [max]="maximoColumnas"
+              formControlName="columnas"
+              [attr.aria-invalid]="mostrarError(formulario.controls.columnas)"
+            />
+          </div>
+
+          <div class="formulario-sala__campo">
+            <label for="sala-adicional-vip">Adicional VIP ($)</label>
+            <input
+              id="sala-adicional-vip"
+              type="number"
+              min="0"
+              formControlName="adicionalVip"
+              [attr.aria-invalid]="mostrarError(formulario.controls.adicionalVip)"
+            />
+          </div>
+        </div>
+        @if (mostrarError(formulario.controls.filas) || mostrarError(formulario.controls.columnas)) {
+          <p class="formulario-sala__error">
+            Entre 1 y {{ maximoFilas }} filas, y entre 1 y {{ maximoColumnas }} butacas por fila.
+          </p>
+        }
+        @if (mostrarError(formulario.controls.adicionalVip)) {
+          <p class="formulario-sala__error">Ingresá el adicional VIP (0 si no tiene recargo).</p>
+        }
+      </fieldset>
+    </div>
+
+    <section class="plano">
+      <div class="plano__herramientas">
+        <p class="plano__instruccion">Elegí un tipo y tocá las butacas (o la letra de la fila para pintarla entera).</p>
+        <div class="plano__pinceles">
+          @for (opcion of pinceles; track opcion.estado) {
+            <button
+              type="button"
+              class="pincel"
+              [class.pincel--activo]="pincel() === opcion.estado"
+              (click)="pincel.set(opcion.estado)"
+            >
+              <span class="pincel__muestra" [attr.data-estado]="opcion.estado"></span>
+              {{ opcion.etiqueta }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="plano__pantalla">Pantalla</div>
+
+      <div class="plano__desplazable">
+        <div class="plano__grilla" [style.--columnas]="numerosGrilla().length">
+          <span></span>
+          @for (numero of numerosGrilla(); track numero) {
+            <span class="plano__numero">{{ numero }}</span>
+          }
+
+          @for (fila of filasGrilla(); track fila) {
+            <button type="button" class="plano__fila" [title]="'Pintar la fila ' + fila" (click)="pintarFila(fila)">
+              {{ fila }}
+            </button>
+            @for (numero of numerosGrilla(); track numero) {
+              <button
+                type="button"
+                class="plano__celda"
+                [attr.data-estado]="estadoCelda(fila, numero)"
+                [title]="fila + numero"
+                (click)="pintar(fila, numero)"
+              ></button>
+            }
+          }
+        </div>
+      </div>
+
+      <dl class="plano__resumen">
+        <div><dt>Butacas</dt><dd>{{ butacasDeseadas().length }}</dd></div>
+        <div><dt>Normales</dt><dd>{{ contar("normal") }}</dd></div>
+        <div><dt>Accesibles</dt><dd>{{ contar("accesible") }}</dd></div>
+        <div><dt>VIP</dt><dd>{{ contar("vip") }}</dd></div>
+      </dl>
+    </section>
+
+    @if (cantidadFunciones() > 0) {
+      <p class="formulario-sala__aviso">
+        La sala tiene {{ cantidadFunciones() }} {{ cantidadFunciones() === 1 ? "función cargada" : "funciones cargadas" }}:
+        los cambios de distribución también se ven en esas funciones.
+      </p>
+    }
+
+    <div class="formulario-sala__pie">
+      @if (errorEnvio(); as mensaje) {
+        <p class="formulario-sala__error-envio">{{ mensaje }}</p>
+      }
+      <app-boton tipo="submit" tamano="grande">{{ edicion() ? "Guardar cambios" : "Crear sala" }}</app-boton>
+    </div>
+  </form>
+}
