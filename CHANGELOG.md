@@ -3,6 +3,22 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 2.5] - 2026-10-07
+
+### Added
+- Migración `realtime_butacas_vendidas`: `venta_items` en la publicación
+  `supabase_realtime`.
+- `FuncionesService.escucharButacasVendidas()`: canal Realtime de `INSERT`
+  en `venta_items` filtrado por función; devuelve la función que cierra
+  el canal.
+- Aviso en el resumen del mapa cuando otra persona compra una butaca de la
+  selección en curso.
+
+### Changed
+- `ButacasInicio`: se suscribe después de cargar el mapa, marca como
+  vendidas las butacas que llegan por Realtime, las saca de la selección
+  y cierra el canal en `ngOnDestroy()`.
+
 ## [Fase 13.1] - 2026-10-07
 
 ### Added

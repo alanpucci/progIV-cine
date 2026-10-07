@@ -64,6 +64,9 @@
 
     <aside class="butacas-mapa__resumen" aria-live="polite">
       <div class="butacas-mapa__resumen-detalle">
+        @if (seleccionGanada()) {
+          <p class="butacas-mapa__resumen-aviso">Otra persona acaba de comprar una de tus butacas.</p>
+        }
         @if (butacasSeleccionadas().length === 0) {
           <p class="butacas-mapa__resumen-titulo">Elegí tus butacas en el mapa</p>
           <p class="butacas-mapa__resumen-texto">

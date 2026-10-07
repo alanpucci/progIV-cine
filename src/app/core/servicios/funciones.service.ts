@@ -57,4 +57,20 @@ export class FuncionesService {
     if (error) throw error;
     return (data ?? []).map((item) => item.butaca_id as string);
   }
+
+  escucharButacasVendidas(funcionId: string, alVenderse: (butacaId: string) => void): () => void {
+    const canal = this.supabase
+      .channel(`butacas-vendidas-${funcionId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'venta_items', filter: `funcion_id=eq.${funcionId}` },
+        (cambio) => {
+          const butacaId = cambio.new['butaca_id'] as string | null;
+          if (butacaId) alVenderse(butacaId);
+        },
+      )
+      .subscribe();
+
+    return () => void this.supabase.removeChannel(canal);
+  }
 }
