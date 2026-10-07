@@ -218,16 +218,25 @@ notificación in-app al habilitarse la venta.
 > de insert propio. El catálogo pasa a mostrar solo películas estrenadas o
 > en preventa.
 
-### Fase 11 — Reportes y estadísticas (M12) ⬜
+### Fase 11 — Reportes y estadísticas (M12) ✅
 Facturación diaria, entradas vendidas, exportación PDF/Excel, gráficos de
 películas más vistas y producto más vendido.
 
 | # | Sub-tarea | Estado |
 |---|---|---|
-| 11.1 | Reporte de facturación por día/rango de fechas | ⬜ |
-| 11.2 | Reporte de entradas vendidas por película/función/período | ⬜ |
-| 11.3 | Gráficos: películas más vistas y producto más vendido | ⬜ |
-| 11.4 | Exportación de reportes a PDF/Excel | ⬜ |
+| 11.1 | Reporte de facturación por día/rango de fechas | ✅ |
+| 11.2 | Reporte de entradas vendidas por película/función/período | ✅ |
+| 11.3 | Gráficos: películas más vistas y producto más vendido | ✅ |
+| 11.4 | Exportación de reportes a PDF/Excel | ✅ |
+
+> **Una sola página de reportes, agregada en el cliente.** Las cuatro
+> sub-tareas quedaron en `/administracion/reportes`: período por atajos
+> (hoy, esta semana, este mes) o rango, y pestañas de facturación diaria,
+> entradas y Candy Bar. Se consultan las ventas pagadas del período con sus
+> ítems y se suman en el navegador, sin migración. "Más vistas" se mide por
+> entradas vendidas (la validación de la Fase 6 sigue pendiente) y el
+> producto más vendido cuenta también los que vienen en combos. Los gráficos
+> son barras propias en HTML/CSS y el Excel usa `write-excel-file`.
 
 ### Fase 12 — Auditoría (M13) ⬜
 Registro y consulta de logs de acciones administrativas y de validación.
