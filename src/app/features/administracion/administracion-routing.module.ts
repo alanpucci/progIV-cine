@@ -9,6 +9,10 @@ import { ListadoSalas } from './paginas/listado-salas/listado-salas';
 import { FormularioSala } from './paginas/formulario-sala/formulario-sala';
 import { ListadoFunciones } from './paginas/listado-funciones/listado-funciones';
 import { FormularioFuncion } from './paginas/formulario-funcion/formulario-funcion';
+import { ListadoCandyBar } from './paginas/listado-candy-bar/listado-candy-bar';
+import { FormularioProducto } from './paginas/formulario-producto/formulario-producto';
+import { FormularioCombo } from './paginas/formulario-combo/formulario-combo';
+import { CategoriasProducto } from './paginas/categorias-producto/categorias-producto';
 
 const RUTAS_ADMINISTRACION: Routes = [
   {
@@ -26,6 +30,12 @@ const RUTAS_ADMINISTRACION: Routes = [
       { path: 'funciones', component: ListadoFunciones },
       { path: 'funciones/nueva', component: FormularioFuncion },
       { path: 'funciones/:id', component: FormularioFuncion },
+      { path: 'candy-bar', component: ListadoCandyBar },
+      { path: 'candy-bar/categorias', component: CategoriasProducto },
+      { path: 'candy-bar/productos/nuevo', component: FormularioProducto },
+      { path: 'candy-bar/productos/:id', component: FormularioProducto },
+      { path: 'candy-bar/combos/nuevo', component: FormularioCombo },
+      { path: 'candy-bar/combos/:id', component: FormularioCombo },
     ],
   },
 ];

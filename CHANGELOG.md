@@ -3,6 +3,30 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 7.5] - 2026-10-07
+
+### Added
+- `CategoriasProductoAdministracionService` (listado con cantidad de
+  productos, crear, renombrar, eliminar), `ProductosAdministracionService`
+  y `CombosAdministracionService` (listado, obtener por id, crear,
+  actualizar, activar/desactivar y eliminar; los combos reemplazan sus
+  `combo_items` al guardar).
+- Página `ListadoCandyBar` (`/administracion/candy-bar`): combos con su
+  contenido, precio fijo y precio suelto, y productos agrupados por
+  categoría con precio y stock.
+- Página `FormularioProducto` (`/administracion/candy-bar/productos/nuevo`
+  y `/:id`): categoría, nombre, descripción, precio, stock opcional y
+  estado.
+- Página `FormularioCombo` (`/administracion/candy-bar/combos/nuevo` y
+  `/:id`): datos del combo y contenido con `FormArray`, con precio suelto y
+  ahorro calculados.
+- Página `CategoriasProducto` (`/administracion/candy-bar/categorias`):
+  alta, renombrado y baja (solo sin productos).
+
+### Changed
+- La sección "Candy bar" del panel queda disponible.
+- `README.md`: nueva sección sobre el ABM del Candy bar.
+
 ## [Fase 7.4] - 2026-10-07
 
 ### Added

@@ -28,7 +28,7 @@ export const SECCIONES_ADMINISTRACION: SeccionAdministracion[] = [
     ruta: 'candy-bar',
     titulo: 'Candy bar',
     descripcion: 'Productos, categorías y combos.',
-    disponible: false,
+    disponible: true,
   },
   {
     ruta: 'cupones',
