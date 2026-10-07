@@ -1,0 +1,73 @@
+<header class="listado">
+  <div class="listado__encabezado">
+    <p class="listado__etiqueta">Rollo 03</p>
+    <h2 class="listado__titulo">Funciones</h2>
+    <p class="listado__bajada">Programación por sala y horario, con 30 minutos de margen entre funciones.</p>
+  </div>
+  <app-boton routerLink="/administracion/funciones/nueva">Nueva función</app-boton>
+</header>
+
+<div class="vistas">
+  <button type="button" class="vistas__opcion" [class.vistas__opcion--activa]="proximas()" (click)="cambiarVista(true)">
+    Próximas
+  </button>
+  <button type="button" class="vistas__opcion" [class.vistas__opcion--activa]="!proximas()" (click)="cambiarVista(false)">
+    Pasadas
+  </button>
+</div>
+
+@if (error(); as mensaje) {
+  <p class="listado__error">{{ mensaje }}</p>
+}
+
+@if (!cargaGlobal.visible() && funciones().length === 0) {
+  <p class="listado__vacio">{{ proximas() ? "No hay funciones programadas." : "No hay funciones pasadas." }}</p>
+}
+
+@for (grupo of diasProgramacion(); track grupo.dia) {
+  <section class="tablero">
+    <h3 class="tablero__dia">{{ grupo.dia }}</h3>
+
+    <ul class="tablero__lista">
+      @for (funcion of grupo.funciones; track funcion.id) {
+        <li class="horario" [class.horario--cancelada]="funcion.estado === 'cancelada'">
+          <p class="horario__hora">
+            {{ formatearHoraFuncion(funcion.inicio) }}
+            <span class="horario__fin">a {{ formatearHoraFuncion(funcion.fin) }}</span>
+          </p>
+
+          <div class="horario__datos">
+            <p class="horario__pelicula">{{ funcion.peliculaNombre }}</p>
+            <p class="horario__meta">
+              {{ funcion.salaNombre }} · {{ funcion.tipoProyeccion }} · {{ funcion.idioma }} · ${{ funcion.precioBase }}
+              @if (funcion.estado !== "programada") {
+                · {{ funcion.estado }}
+              }
+            </p>
+          </div>
+
+          <p class="horario__vendidas">
+            <span class="horario__cantidad">{{ funcion.entradasVendidas }}</span>
+            {{ funcion.entradasVendidas === 1 ? "entrada" : "entradas" }}
+          </p>
+
+          <div class="horario__acciones">
+            @if (funcionAEliminar() === funcion.id) {
+              <app-boton tamano="chico" (click)="confirmarEliminacion(funcion.id)">Sí, eliminar</app-boton>
+              <app-boton variante="fantasma" tamano="chico" (click)="funcionAEliminar.set(null)">Cancelar</app-boton>
+            } @else if (funcion.entradasVendidas === 0) {
+              <app-boton variante="secundario" tamano="chico" [routerLink]="['/administracion/funciones', funcion.id]">
+                Editar
+              </app-boton>
+              <app-boton variante="fantasma" tamano="chico" (click)="funcionAEliminar.set(funcion.id)">Eliminar</app-boton>
+            } @else {
+              <span class="horario__bloqueada" title="Con entradas vendidas no se puede cambiar el horario ni la sala.">
+                Con ventas
+              </span>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+}

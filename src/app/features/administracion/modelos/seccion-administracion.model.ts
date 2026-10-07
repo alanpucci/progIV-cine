@@ -22,7 +22,7 @@ export const SECCIONES_ADMINISTRACION: SeccionAdministracion[] = [
     ruta: 'funciones',
     titulo: 'Funciones',
     descripcion: 'Programación por sala y horario, sin solapamientos.',
-    disponible: false,
+    disponible: true,
   },
   {
     ruta: 'candy-bar',

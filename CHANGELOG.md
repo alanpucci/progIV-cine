@@ -3,6 +3,31 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 7.4] - 2026-10-07
+
+### Added
+- `FuncionesAdministracionService`: listado de próximas o pasadas con
+  película, sala y entradas vendidas; obtener por id; opciones de películas
+  y salas activas; crear y actualizar con asignación automática de sala o
+  validación de la sala elegida (margen de 30 minutos); eliminar.
+- Página `ListadoFunciones` (`/administracion/funciones`): programación
+  agrupada por día, con vista de próximas y pasadas. Editar y eliminar solo
+  en funciones sin entradas vendidas.
+- Página `FormularioFuncion` (`/administracion/funciones/nueva` y
+  `/administracion/funciones/:id`): película, fecha y hora, formato,
+  idioma, precio base y sala (automática o a elección), con vista previa
+  del horario de fin y de hasta cuándo queda ocupada la sala.
+- Validador `fechaHoraFutura` y helpers `sumarMinutos()` y
+  `fechaHoraLocal()`.
+
+### Changed
+- La sección "Funciones" del panel queda disponible.
+- Al crear una función se completa `created_by` con el administrador.
+- `README.md`: nueva sección sobre el ABM de funciones.
+- `docs/03_Modelo_de_Datos_Supabase_Cine.pdf`: nota de `funciones`
+  corregida: la asignación automática de sala la hace la aplicación, el
+  `exclude` es el respaldo.
+
 ## [Fase 7.3] - 2026-10-06
 
 ### Added

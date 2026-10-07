@@ -325,6 +325,35 @@ activas, dejando el hueco en la grilla.
   desactivar (`salas.activa = false`). Una sala inactiva no se ofrece para
   programar funciones nuevas.
 
+### ABM de funciones: asignación de sala en el servicio, solapamiento en Postgres
+
+El análisis pide que la sala se asigne sola buscando disponibilidad (RN03) y
+que entre funciones de una misma sala haya al menos 30 minutos después del
+fin (RN01/RN02). Las dos cosas se resuelven en
+`FuncionesAdministracionService`; el `exclude using gist` de `funciones`
+(`sin_solapamiento_por_sala`) del esquema inicial sigue rechazando un
+solapamiento en Postgres:
+
+- **Fin calculado en el cliente.** El formulario calcula `fin` como
+  `inicio + duracion_minutos` de la película y lo manda en el insert/update.
+  El trigger `calcular_fin_funcion` solo completa `fin` cuando llega vacío,
+  y en un update que cambia `inicio` sin tocar `fin` dejaría el valor viejo;
+  mandarlo siempre evita depender de ese caso.
+- **Salas ocupadas en una sola consulta.** Una función existente choca con
+  la nueva si `inicio < fin_nuevo + 30 min` y `fin > inicio_nuevo - 30 min`
+  (la misma intersección de rangos que evalúa el `exclude`). El servicio
+  trae las funciones que cumplen eso (excluyendo la que se está editando) y
+  se queda con sus `sala_id`.
+- **Automática o manual.** Por defecto la sala es "Automática": se elige la
+  primera sala activa, por nombre, que no esté ocupada; si no hay ninguna,
+  se rechaza con un mensaje. El formulario permite además elegir una sala a
+  mano, y en ese caso se valida que esté libre.
+- **Funciones con ventas.** El listado trae la cantidad de entradas
+  vendidas de cada función (`venta_items ( count )` filtrado por
+  `tipo_item = 'entrada'` y no cancelado). Con alguna vendida, la función
+  no se puede editar (cambiar horario o sala dejaría entradas apuntando a
+  otra función o a butacas de otra sala) ni eliminar.
+
 ### Estado de carga global: un overlay compartido, no uno por componente
 
 Ningún componente arma su propio indicador de carga. Existe
