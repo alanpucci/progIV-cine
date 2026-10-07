@@ -1,0 +1,121 @@
+<header class="listado">
+  <div class="listado__encabezado">
+    <p class="listado__etiqueta">Rollo 07</p>
+    <h2 class="listado__titulo">Ventas</h2>
+    <p class="listado__bajada">
+      Últimas compras confirmadas. Cancelar una venta libera sus butacas y, si la compra es de un cliente registrado,
+      le acredita el importe como crédito.
+    </p>
+  </div>
+</header>
+
+<div class="filtros">
+  <div class="vistas">
+    <button
+      type="button"
+      class="vistas__opcion"
+      [class.vistas__opcion--activa]="vista() === 'pagada'"
+      (click)="cambiarVista('pagada')"
+    >
+      Pagadas <span class="vistas__contador">{{ cantidad("pagada") }}</span>
+    </button>
+    <button
+      type="button"
+      class="vistas__opcion"
+      [class.vistas__opcion--activa]="vista() === 'cancelada'"
+      (click)="cambiarVista('cancelada')"
+    >
+      Canceladas <span class="vistas__contador">{{ cantidad("cancelada") }}</span>
+    </button>
+  </div>
+
+  <input
+    class="filtros__busqueda"
+    type="search"
+    placeholder="Buscar por mail, cliente, película u operación"
+    [value]="busqueda()"
+    (input)="buscar($event)"
+  />
+</div>
+
+@if (error(); as mensaje) {
+  <p class="listado__error">{{ mensaje }}</p>
+}
+
+@if (!cargaGlobal.visible() && ventasVisibles().length === 0) {
+  <p class="listado__vacio">
+    @if (busqueda()) {
+      No hay ventas que coincidan con la búsqueda.
+    } @else {
+      {{ vista() === "pagada" ? "No hay ventas pagadas." : "No hay ventas canceladas." }}
+    }
+  </p>
+}
+
+<ol class="planilla">
+  @for (venta of ventasVisibles(); track venta.id) {
+    <li class="boleta" [attr.data-estado]="venta.estado">
+      <div class="boleta__operacion">
+        <span class="boleta__numero">#{{ numeroOperacion(venta) }}</span>
+        <span class="boleta__fecha">{{ fecha(venta.fecha) }}</span>
+      </div>
+
+      <div class="boleta__datos">
+        <p class="boleta__pelicula">{{ venta.funcion?.peliculaNombre ?? "Candy Bar" }}</p>
+        @if (venta.funcion) {
+          <p class="boleta__meta">
+            {{ funcionTexto(venta) }}
+            @if (venta.butacas.length > 0) {
+              · Butacas {{ venta.butacas.join(", ") }}
+            }
+          </p>
+        }
+        @if (venta.extras.length > 0) {
+          <p class="boleta__meta boleta__meta--extras">{{ extrasTexto(venta) }}</p>
+        }
+        <p class="boleta__cliente">
+          <span class="boleta__nombre">{{ venta.cliente ?? "Compra anónima" }}</span> · {{ venta.email }}
+        </p>
+        @if (venta.estado === "cancelada") {
+          <p class="boleta__motivo">
+            Cancelada
+            @if (venta.fechaCancelacion) {
+              el {{ fecha(venta.fechaCancelacion) }}
+            }
+            · {{ venta.motivoCancelacion ? "Motivo: " + venta.motivoCancelacion : "Por el cliente" }}
+          </p>
+        }
+      </div>
+
+      <div class="boleta__importe">
+        <span class="boleta__total">{{ total(venta) }}</span>
+        @if (venta.estado === "pagada" && ventaACancelar() !== venta.id) {
+          <app-boton variante="fantasma" tamano="chico" (click)="pedirCancelacion(venta)">Cancelar venta</app-boton>
+        }
+      </div>
+
+      @if (ventaACancelar() === venta.id) {
+        <div class="boleta__cancelacion">
+          <div class="boleta__campo">
+            <label for="motivo-{{ venta.id }}">Motivo de la cancelación</label>
+            <textarea
+              id="motivo-{{ venta.id }}"
+              rows="2"
+              maxlength="200"
+              [formControl]="motivo"
+              [attr.aria-invalid]="motivoInvalido()"
+            ></textarea>
+            @if (motivoInvalido()) {
+              <p class="boleta__error">Indicá el motivo de la cancelación.</p>
+            }
+          </div>
+          <p class="boleta__aviso">{{ avisoCancelacion(venta) }}</p>
+          <div class="boleta__acciones">
+            <app-boton tamano="chico" (click)="confirmarCancelacion(venta)">Confirmar cancelación</app-boton>
+            <app-boton variante="fantasma" tamano="chico" (click)="ventaACancelar.set(null)">Volver</app-boton>
+          </div>
+        </div>
+      }
+    </li>
+  }
+</ol>

@@ -42,4 +42,10 @@ export const SECCIONES_ADMINISTRACION: SeccionAdministracion[] = [
     descripcion: 'Entradas y productos canjeables por puntos.',
     disponible: true,
   },
+  {
+    ruta: 'ventas',
+    titulo: 'Ventas',
+    descripcion: 'Compras confirmadas y cancelaciones con motivo.',
+    disponible: true,
+  },
 ];
