@@ -16,7 +16,7 @@ export const SECCIONES_ADMINISTRACION: SeccionAdministracion[] = [
     ruta: 'salas',
     titulo: 'Salas y butacas',
     descripcion: 'Distribución de filas y columnas, butacas accesibles y VIP.',
-    disponible: false,
+    disponible: true,
   },
   {
     ruta: 'funciones',

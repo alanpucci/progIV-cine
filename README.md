@@ -295,6 +295,36 @@ admin), con todas las columnas editables, y escribe. Es la regla general de
   (película con funciones, género repetido), y el helper `mensajeDeError()`
   muestra ese mensaje o, si es un `PostgrestError`, uno genérico.
 
+### ABM de salas: las butacas se desactivan, no se borran
+
+`venta_items.butaca_id` referencia a `butacas` sin `on delete cascade`, así
+que una butaca con entradas vendidas no se puede borrar. El editor de sala
+nunca borra butacas: un "pasillo" es una butaca con `activa = false` (o una
+posición sin fila en `butacas`), y el mapa público ya mostraba solo las
+activas, dejando el hueco en la grilla.
+
+- **Editor visual.** El formulario de sala tiene la cantidad de filas
+  (letras A–Z) y de butacas por fila, y una grilla donde se elige un
+  "pincel" (normal, accesible, VIP o pasillo) y se pinta butaca por butaca o
+  una fila entera. La grilla vive en un signal (`Record` de posición a
+  estado); achicar las dimensiones no pierde lo pintado afuera, solo deja de
+  guardarlo.
+- **Guardado por diferencia.** El componente manda la lista de butacas
+  activas que quiere; `SalasAdministracionService` lee las actuales y
+  `planificarCambiosButacas()` calcula qué insertar (posiciones nuevas) y qué
+  actualizar (cambio de tipo/precio, reactivar o desactivar). Las
+  actualizaciones se agrupan por fila y por valores
+  (`.update(...).eq('fila', ...).in('numero', [...])`), para no mandar un
+  request por butaca. Son varios requests sin transacción: si uno falla, la
+  sala queda a medio guardar hasta volver a guardar.
+- **Adicional VIP por sala.** `butacas.precio_adicional` es por butaca, pero
+  el formulario expone un único "adicional VIP" que se aplica a todas las
+  VIP de la sala; normales y accesibles quedan en 0.
+- **Baja.** Igual que con las películas: `funciones.sala_id` no tiene
+  cascada, así que una sala con funciones no se puede eliminar, solo
+  desactivar (`salas.activa = false`). Una sala inactiva no se ofrece para
+  programar funciones nuevas.
+
 ### Estado de carga global: un overlay compartido, no uno por componente
 
 Ningún componente arma su propio indicador de carga. Existe

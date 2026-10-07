@@ -3,6 +3,27 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 7.3] - 2026-10-06
+
+### Added
+- `SalasAdministracionService` (listado con cantidad de butacas por tipo y
+  de funciones, obtener sala y butacas, crear, actualizar la distribución
+  por diferencia, activar/desactivar y eliminar).
+- Helper `planificarCambiosButacas()`: compara las butacas actuales con las
+  deseadas y devuelve las altas y las actualizaciones agrupadas por fila.
+- Página `ListadoSalas` (`/administracion/salas`): una tarjeta por sala con
+  butacas, VIP, accesibles y funciones, y acciones editar,
+  activar/desactivar y eliminar con confirmación ("Eliminar" deshabilitado
+  si la sala tiene funciones).
+- Página `FormularioSala` (`/administracion/salas/nueva` y
+  `/administracion/salas/:id`): nombre, estado, filas, butacas por fila,
+  adicional VIP y editor visual de la distribución con pinceles
+  normal/accesible/VIP/pasillo, por butaca o por fila entera.
+
+### Changed
+- La sección "Salas y butacas" del panel queda disponible.
+- `README.md`: nueva sección sobre el ABM de salas.
+
 ## [Fase 7.2] - 2026-10-06
 
 ### Added
