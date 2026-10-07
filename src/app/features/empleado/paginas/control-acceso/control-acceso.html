@@ -1,0 +1,130 @@
+<section class="control">
+  <header class="control__cabecera">
+    <p class="control__etiqueta">Puerta de sala</p>
+    <h1 class="control__titulo">Control de acceso</h1>
+    <p class="control__operador">Operador: {{ operador() }}</p>
+  </header>
+
+  <div class="control__cuerpo">
+    <div class="control__lector">
+      <div class="conceptos">
+        <button
+          type="button"
+          class="conceptos__opcion"
+          [class.conceptos__opcion--activa]="concepto() === 'entrada'"
+          (click)="cambiarConcepto('entrada')"
+        >
+          <span class="conceptos__nombre">Ingreso a sala</span>
+          <span class="conceptos__detalle">Valida la entrada de una butaca</span>
+        </button>
+        <button
+          type="button"
+          class="conceptos__opcion"
+          [class.conceptos__opcion--activa]="concepto() === 'candy'"
+          (click)="cambiarConcepto('candy')"
+        >
+          <span class="conceptos__nombre">Retiro de Candy</span>
+          <span class="conceptos__detalle">Entrega los productos de la compra</span>
+        </button>
+      </div>
+
+      @if (escaneando()) {
+        <app-escaner-qr (leido)="alLeer($event)" />
+        <app-boton variante="fantasma" (click)="escaneando.set(false)">Cerrar cámara</app-boton>
+      } @else if (!lectura()) {
+        <app-boton tamano="grande" (click)="abrirCamara()">Escanear QR con la cámara</app-boton>
+      }
+
+      @if (!lectura()) {
+        <form class="manual" (ngSubmit)="buscarManual()">
+          <label class="manual__rotulo" for="codigo-manual">O ingresá el código impreso en la entrada</label>
+          <div class="manual__fila">
+            <input
+              id="codigo-manual"
+              class="manual__campo"
+              name="codigo"
+              autocomplete="off"
+              spellcheck="false"
+              placeholder="A1B2 C3D4 …"
+              [(ngModel)]="codigo"
+            />
+            <app-boton tipo="submit" variante="secundario" [deshabilitado]="!codigo().trim()">Buscar</app-boton>
+          </div>
+        </form>
+      }
+
+      @if (error(); as mensaje) {
+        <p class="control__error" role="alert">{{ mensaje }}</p>
+      }
+
+      @if (lectura(); as lectura) {
+        <article class="lectura lectura--{{ lectura.resultado ?? 'pendiente' }}">
+          <div class="lectura__sello">
+            @switch (lectura.resultado) {
+              @case ("validado") {
+                {{ lectura.concepto === "entrada" ? "Adelante" : "Entregado" }}
+              }
+              @case ("rechazado") {
+                Rechazado
+              }
+              @default {
+                {{ lectura.concepto === "entrada" ? "Verificar ingreso" : "Verificar retiro" }}
+              }
+            }
+          </div>
+
+          @if (lectura.motivoRechazo; as motivo) {
+            <p class="lectura__motivo">{{ motivo }}</p>
+          }
+
+          @if (lectura.entrada; as entrada) {
+            <div class="lectura__datos">
+              <div class="lectura__funcion">
+                <p class="lectura__pelicula">{{ entrada.funcion.peliculaNombre }}</p>
+                <p class="lectura__meta">
+                  {{ formatearFechaFuncion(entrada.funcion.inicio) }} · {{ formatearHoraFuncion(entrada.funcion.inicio) }} ·
+                  {{ entrada.funcion.salaNombre }}
+                </p>
+                <p class="lectura__meta">{{ entrada.funcion.tipoProyeccion }} · {{ entrada.funcion.idioma }}</p>
+              </div>
+              <div class="lectura__butaca">
+                <span class="lectura__ubicacion">{{ entrada.fila }}{{ entrada.numero }}</span>
+                <span class="lectura__tipo">{{ entrada.tipo }}</span>
+              </div>
+            </div>
+
+            @if (lectura.concepto === "entrada" && entrada.adultoRequerido) {
+              <p class="lectura__aviso">Menor de edad: debe ingresar con un adulto responsable.</p>
+            }
+
+            @if (lectura.concepto === "candy" && entrada.candy.length > 0) {
+              <ul class="lectura__candy">
+                @for (item of entrada.candy; track $index) {
+                  <li>
+                    <span class="lectura__cantidad">{{ item.cantidad }}×</span>
+                    {{ item.nombre }}
+                  </li>
+                }
+              </ul>
+            }
+          } @else {
+            <code class="lectura__codigo">{{ lectura.codigoQr }}</code>
+          }
+
+          <div class="lectura__acciones">
+            @if (lectura.resultado === null) {
+              <app-boton tamano="grande" (click)="confirmar()">
+                {{ lectura.concepto === "entrada" ? "Validar ingreso" : "Entregar Candy" }}
+              </app-boton>
+              <app-boton variante="fantasma" (click)="siguiente()">Descartar</app-boton>
+            } @else {
+              <app-boton tamano="grande" variante="secundario" (click)="siguiente()">Siguiente lectura</app-boton>
+            }
+          </div>
+        </article>
+      }
+    </div>
+
+    <app-historial-validaciones [historial]="historial()" />
+  </div>
+</section>

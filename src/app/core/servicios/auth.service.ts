@@ -35,6 +35,10 @@ export class AuthService {
     return this.rol() === 'admin';
   }
 
+  esPersonal(): boolean {
+    return this.rol() === 'empleado' || this.rol() === 'admin';
+  }
+
   async cargarSesion(): Promise<void> {
     const { data } = await this.supabase.auth.getSession();
     this.sesion.set(data.session);

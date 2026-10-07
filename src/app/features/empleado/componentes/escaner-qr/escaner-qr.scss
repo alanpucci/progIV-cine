@@ -1,0 +1,111 @@
+.escaner {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-md);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.12), transparent 60%),
+    var(--color-fondo);
+}
+
+.escaner__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--transicion-base);
+}
+
+.escaner--encendida .escaner__video {
+  opacity: 1;
+}
+
+.escaner__visor {
+  position: absolute;
+  inset: 18% 24%;
+  pointer-events: none;
+}
+
+.escaner__esquina {
+  position: absolute;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-color: var(--color-acento-secundario);
+  border-style: solid;
+  border-width: 0;
+
+  &--a {
+    top: 0;
+    left: 0;
+    border-top-width: 3px;
+    border-left-width: 3px;
+  }
+
+  &--b {
+    top: 0;
+    right: 0;
+    border-top-width: 3px;
+    border-right-width: 3px;
+  }
+
+  &--c {
+    bottom: 0;
+    left: 0;
+    border-bottom-width: 3px;
+    border-left-width: 3px;
+  }
+
+  &--d {
+    right: 0;
+    bottom: 0;
+    border-right-width: 3px;
+    border-bottom-width: 3px;
+  }
+}
+
+.escaner__haz {
+  position: absolute;
+  right: 6%;
+  left: 6%;
+  height: 2px;
+  background: var(--color-acento);
+  box-shadow: 0 0 12px 2px rgba(196, 40, 58, 0.7);
+  animation: barrido 2.2s ease-in-out infinite alternate;
+}
+
+.escaner__aviso,
+.escaner__leyenda {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: var(--espacio-sm) var(--espacio-md);
+  background: linear-gradient(transparent, rgba(11, 11, 18, 0.9));
+  color: var(--color-texto-secundario);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.escaner__aviso {
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(11, 11, 18, 0.75);
+
+  &--error {
+    color: var(--color-error);
+  }
+}
+
+@keyframes barrido {
+  from {
+    top: 4%;
+  }
+
+  to {
+    top: 96%;
+  }
+}

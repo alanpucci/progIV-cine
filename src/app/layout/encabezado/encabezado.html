@@ -22,11 +22,16 @@
       [routerLinkActiveOptions]="{ exact: true }"
       >Catálogo</a
     >
-    <a routerLink="/proximamente" routerLinkActive="activo">Próximamente</a>
+    @if (!auth.esPersonal()) {
+      <a routerLink="/proximamente" routerLinkActive="activo">Próximamente</a>
+    }
     @if (auth.haySesion()) {
+      @if (auth.esPersonal()) {
+        <a routerLink="/empleado" routerLinkActive="activo">Control de acceso</a>
+      }
       @if (auth.esAdmin()) {
         <a routerLink="/administracion" routerLinkActive="activo">Administración</a>
-      } @else {
+      } @else if (!auth.esPersonal()) {
         <a routerLink="/mis-entradas" routerLinkActive="activo">Mis entradas</a>
         <a routerLink="/cuenta/perfil" routerLinkActive="activo">Mi perfil</a>
       }
@@ -65,11 +70,16 @@
       (click)="cerrarMenu()"
       >Catálogo</a
     >
-    <a routerLink="/proximamente" routerLinkActive="activo" (click)="cerrarMenu()">Próximamente</a>
+    @if (!auth.esPersonal()) {
+      <a routerLink="/proximamente" routerLinkActive="activo" (click)="cerrarMenu()">Próximamente</a>
+    }
     @if (auth.haySesion()) {
+      @if (auth.esPersonal()) {
+        <a routerLink="/empleado" routerLinkActive="activo" (click)="cerrarMenu()">Control de acceso</a>
+      }
       @if (auth.esAdmin()) {
         <a routerLink="/administracion" routerLinkActive="activo" (click)="cerrarMenu()">Administración</a>
-      } @else {
+      } @else if (!auth.esPersonal()) {
         <a routerLink="/mis-entradas" routerLinkActive="activo" (click)="cerrarMenu()">Mis entradas</a>
         <a routerLink="/cuenta/perfil" routerLinkActive="activo" (click)="cerrarMenu()">Mi perfil</a>
       }

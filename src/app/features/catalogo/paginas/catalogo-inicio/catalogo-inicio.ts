@@ -1,6 +1,7 @@
 import { Component, inject, signal } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { FormsModule } from "@angular/forms";
+import { AuthService } from "../../../../core/servicios/auth.service";
 import { PeliculasService } from "../../../../core/servicios/peliculas.service";
 import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
 import { Genero, PeliculaResumen } from "../../../../core/modelos/pelicula.model";
@@ -19,6 +20,7 @@ import { FiltrarPeliculas } from "../../pipes/filtrar-peliculas.pipe";
 export class CatalogoInicio {
   private readonly peliculasService = inject(PeliculasService);
   protected readonly cargaGlobal = inject(CargaGlobalService);
+  protected readonly auth = inject(AuthService);
 
   protected readonly destacadas = signal<PeliculaResumen[]>([]);
   protected readonly errorDestacadas = signal(false);

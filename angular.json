@@ -31,7 +31,8 @@
               "canvg",
               "core-js",
               "raf",
-              "rgbcolor"
+              "rgbcolor",
+              "jsqr"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [

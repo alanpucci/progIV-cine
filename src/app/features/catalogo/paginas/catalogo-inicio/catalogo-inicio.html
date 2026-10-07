@@ -2,7 +2,9 @@
   <header class="catalogo-inicio__marquesina">
     <h1 class="catalogo-inicio__titulo-marquesina">En cartelera esta semana</h1>
     <p class="catalogo-inicio__lema">Butacas listas, proyector encendido.</p>
-    <a class="catalogo-inicio__proximamente" routerLink="/proximamente">Ver los próximos estrenos →</a>
+    @if (!auth.esPersonal()) {
+      <a class="catalogo-inicio__proximamente" routerLink="/proximamente">Ver los próximos estrenos →</a>
+    }
   </header>
 
   <section class="catalogo-inicio__seccion">
