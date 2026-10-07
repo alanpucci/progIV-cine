@@ -1,7 +1,5 @@
 import { Component, OnInit, inject, input, signal } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
-import { CargaGlobalService } from "../../../../core/servicios/carga-global.service";
-import { MovimientosService } from "../../../../core/servicios/movimientos.service";
 import { SaldosCuenta } from "../../../../core/modelos/movimiento.model";
 import { formatearPesos, formatearPuntos } from "../../../../core/helpers/movimiento.formato";
 import { CarritoService } from "../../servicios/carrito.service";
@@ -14,18 +12,15 @@ import { VALOR_PUNTO_EN_PESOS } from "../../modelos/carrito.model";
   templateUrl: "./saldos-compra.html",
 })
 export class SaldosCompra implements OnInit {
-  private readonly movimientos = inject(MovimientosService);
-  private readonly cargaGlobal = inject(CargaGlobalService);
   private readonly fb = inject(FormBuilder);
   protected readonly carrito = inject(CarritoService);
 
-  readonly usuarioId = input("");
+  readonly saldos = input<SaldosCuenta | null>(null);
 
   protected readonly valorPunto = VALOR_PUNTO_EN_PESOS;
   protected readonly formatearPesos = formatearPesos;
   protected readonly formatearPuntos = formatearPuntos;
 
-  protected readonly saldos = signal<SaldosCuenta | null>(null);
   protected readonly error = signal("");
 
   protected readonly formulario = this.fb.group({
@@ -33,15 +28,8 @@ export class SaldosCompra implements OnInit {
     puntos: [0],
   });
 
-  async ngOnInit(): Promise<void> {
-    const usuarioId = this.usuarioId();
-    if (!usuarioId) return;
-    try {
-      this.saldos.set(await this.cargaGlobal.envolver(() => this.movimientos.obtenerSaldos(usuarioId)));
-      this.formulario.setValue({ credito: this.carrito.creditoUsado(), puntos: this.carrito.puntosUsados() });
-    } catch {
-      this.error.set("No se pudo consultar el saldo de tu cuenta.");
-    }
+  ngOnInit(): void {
+    this.formulario.setValue({ credito: this.carrito.creditoUsado(), puntos: this.carrito.puntosUsados() });
   }
 
   protected tieneSaldo(): boolean {

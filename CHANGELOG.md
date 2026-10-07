@@ -3,9 +3,15 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
-## [Fix: fecha en Mis películas] - 2026-10-07
+## [Fix: carga del perfil y de los datos del comprador] - 2026-10-07
 
 ### Fixed
+- `/compra/datos-comprador` con sesión entraba en un ciclo de requests
+  (miles por segundo) y no se veía: `SaldosCompra` cargaba el saldo con la
+  carga global, la página oculta su contenido mientras la carga global está
+  visible, eso destruía `SaldosCompra` y al terminar se volvía a crear y a
+  cargar. Ahora `DatosComprador` pide el saldo junto con el perfil y se lo
+  pasa a `SaldosCompra` como `input()`.
 - "Mi perfil" quedaba con el spinner girando para cualquier usuario con una
   entrada pagada: `MisPeliculas.fechaVista()` pasaba `funciones.inicio` (un
   timestamp) a `formatearFechaEstreno()`, que espera `YYYY-MM-DD`. El
