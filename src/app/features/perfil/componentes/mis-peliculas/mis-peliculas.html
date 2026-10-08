@@ -9,24 +9,73 @@
     } @else {
       <ul class="mis-peliculas__tira">
         @for (pelicula of lista; track pelicula.id) {
-          <li class="mis-peliculas__cuadro">
+          <li class="mis-peliculas__cuadro" [class.mis-peliculas__cuadro--activo]="enResena()?.id === pelicula.id">
             <a class="mis-peliculas__enlace" [routerLink]="['/pelicula', pelicula.id]">
               <img class="mis-peliculas__poster" [src]="pelicula.imagenUrl" [alt]="pelicula.nombre" loading="lazy" />
               <span class="mis-peliculas__nombre">{{ pelicula.nombre }}</span>
               <span class="mis-peliculas__fecha">{{ fechaVista(pelicula) }}</span>
+            </a>
+            <button type="button" class="mis-peliculas__calificar" (click)="abrirResena(pelicula)">
               @if (pelicula.estrellas; as estrellas) {
                 <span class="mis-peliculas__estrellas">
                   @for (posicion of estrellasMaximas; track posicion) {
                     <span [class.mis-peliculas__estrella--llena]="posicion <= estrellas">★</span>
                   }
                 </span>
+                <span class="mis-peliculas__accion">Editar reseña</span>
               } @else {
-                <span class="mis-peliculas__sin-calificar">Sin calificar</span>
+                <span class="mis-peliculas__accion">Calificar</span>
               }
-            </a>
+            </button>
           </li>
         }
       </ul>
+
+      @if (enResena(); as pelicula) {
+        <form class="mis-peliculas__resena" [formGroup]="formulario" (ngSubmit)="guardarResena()">
+          <h3 class="mis-peliculas__resena-titulo">Tu reseña de {{ pelicula.nombre }}</h3>
+
+          <div class="mis-peliculas__selector">
+            @for (posicion of estrellasMaximas; track posicion) {
+              <button
+                type="button"
+                class="mis-peliculas__estrella-opcion"
+                [class.mis-peliculas__estrella-opcion--llena]="posicion <= formulario.controls.estrellas.value!"
+                [title]="posicion + (posicion === 1 ? ' estrella' : ' estrellas')"
+                (click)="elegirEstrellas(posicion)"
+              >
+                ★
+              </button>
+            }
+          </div>
+          @if (faltanEstrellas()) {
+            <p class="mis-peliculas__error-campo">Elegí de 1 a 5 estrellas.</p>
+          }
+
+          <div class="mis-peliculas__campo">
+            <label for="comentario-resena">Comentario (opcional)</label>
+            <textarea
+              id="comentario-resena"
+              formControlName="comentario"
+              rows="3"
+              [attr.maxlength]="largoMaximoComentario"
+              placeholder="¿Qué te pareció?"
+            ></textarea>
+            <span class="mis-peliculas__contador">
+              {{ formulario.controls.comentario.value!.length }}/{{ largoMaximoComentario }}
+            </span>
+          </div>
+
+          @if (errorEnvio(); as mensaje) {
+            <p class="mis-peliculas__error" role="alert">{{ mensaje }}</p>
+          }
+
+          <div class="mis-peliculas__acciones">
+            <app-boton variante="fantasma" (click)="cerrarResena()">Cancelar</app-boton>
+            <app-boton tipo="submit">Guardar reseña</app-boton>
+          </div>
+        </form>
+      }
     }
   }
 </section>

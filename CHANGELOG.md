@@ -20,6 +20,18 @@ entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachange
   detalle de los cambios de cada registro.
 - `AuditoriaAdministracionService` y mapeos con las etiquetas de entidades y
   acciones.
+## [Reseñas] - 2026-10-07
+
+### Added
+- `ResenasService.guardar()`: `upsert` en `resenas` sobre
+  `(pelicula_id, usuario_id)`.
+- "Mis películas" del perfil: cada película vista tiene "Calificar" o
+  "Editar reseña", que abre un formulario con selector de 1 a 5 estrellas
+  y un comentario opcional de hasta 500 caracteres (CU-06, RF-010).
+
+### Changed
+- `PeliculaVista` suma `comentario` y `ComprasService.obtenerPeliculasVistas()`
+  lo trae junto con las estrellas, para editar la reseña existente.
 
 ## [Fase 2.5] - 2026-10-07
 

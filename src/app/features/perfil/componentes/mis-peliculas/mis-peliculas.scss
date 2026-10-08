@@ -42,8 +42,15 @@
 }
 
 .mis-peliculas__cuadro {
+  display: flex;
   flex: 0 0 8.5rem;
+  flex-direction: column;
+  gap: var(--espacio-xs);
   scroll-snap-align: start;
+}
+
+.mis-peliculas__cuadro--activo .mis-peliculas__poster {
+  border-color: var(--color-acento-secundario);
 }
 
 .mis-peliculas__enlace {
@@ -82,7 +89,7 @@
 }
 
 .mis-peliculas__fecha,
-.mis-peliculas__sin-calificar {
+.mis-peliculas__accion {
   color: var(--color-texto-silenciado);
   font-size: 0.75rem;
 }
@@ -95,4 +102,120 @@
 
 .mis-peliculas__estrella--llena {
   color: var(--color-acento-secundario);
+}
+
+.mis-peliculas__calificar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover .mis-peliculas__accion {
+    color: var(--color-acento-secundario);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--sombra-foco);
+  }
+}
+
+.mis-peliculas__accion {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  transition: color var(--transicion-rapida);
+}
+
+.mis-peliculas__resena {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  padding: var(--espacio-lg);
+  border: 1px dashed var(--color-acento-secundario);
+  border-radius: var(--radio-md);
+  background: var(--color-fondo-alterno);
+}
+
+.mis-peliculas__resena-titulo {
+  margin: 0;
+  color: var(--color-acento-secundario);
+  font-family: var(--fuente-titulo);
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+}
+
+.mis-peliculas__selector {
+  display: flex;
+  width: fit-content;
+
+  &:hover .mis-peliculas__estrella-opcion {
+    color: var(--color-acento-secundario-hover);
+  }
+
+  .mis-peliculas__estrella-opcion:hover ~ .mis-peliculas__estrella-opcion {
+    color: var(--color-borde);
+  }
+}
+
+.mis-peliculas__estrella-opcion {
+  padding: 0 2px;
+  border: none;
+  background: none;
+  color: var(--color-borde);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--transicion-rapida);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--sombra-foco);
+  }
+}
+
+.mis-peliculas__estrella-opcion--llena {
+  color: var(--color-acento-secundario);
+}
+
+.mis-peliculas__error-campo {
+  @include formularios.error-campo;
+}
+
+.mis-peliculas__campo {
+  @include formularios.campo;
+
+  textarea {
+    width: 100%;
+    padding: var(--espacio-sm) var(--espacio-md);
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-sm);
+    background: var(--color-superficie);
+    color: var(--color-texto-primario);
+    font: inherit;
+    resize: vertical;
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--color-acento);
+      box-shadow: var(--sombra-foco);
+    }
+  }
+}
+
+.mis-peliculas__contador {
+  align-self: flex-end;
+  color: var(--color-texto-silenciado);
+  font-size: 0.75rem;
+}
+
+.mis-peliculas__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espacio-sm);
 }
