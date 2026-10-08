@@ -29,4 +29,5 @@ export interface PeliculaVista {
   imagenUrl: string;
   ultimaFuncion: string;
   estrellas: number | null;
+  comentario: string | null;
 }

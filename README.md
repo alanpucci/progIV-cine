@@ -1155,6 +1155,19 @@ notificaciones propias y no leídas. El trigger
 `trg_notificaciones_proteger_contenido` sigue impidiendo editar el
 contenido después: el cliente solo puede marcarlas como leídas.
 
+### Reseñas: se califica desde "Mis películas"
+
+El cliente califica (de 1 a 5 estrellas, con un comentario opcional de
+hasta 500 caracteres) desde "Mis películas" del perfil. Esa lista solo
+trae películas con una entrada pagada y no cancelada cuya función ya
+empezó, así que mostrar el formulario ahí ya cumple la condición de
+haberla visto, sin un control aparte. Guardar es un `upsert` de
+`ResenasService` sobre el `unique (pelicula_id, usuario_id)` de `resenas`:
+la primera vez inserta y después edita la misma fila, cubierto por las
+políticas `resenas_insert_propio` y `resenas_update_propio` del esquema
+inicial. El detalle de la película ya calculaba el promedio a partir de
+las reseñas, así que la nueva calificación aparece ahí sin más cambios.
+
 ### Reportes y estadísticas: agregación en el cliente
 
 La página de reportes del panel (`/administracion/reportes`) trae con una

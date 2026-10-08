@@ -46,7 +46,7 @@ export class ComprasService {
         .eq('ventas.usuario_id', usuarioId)
         .eq('ventas.estado', 'pagada')
         .lt('funciones.inicio', new Date().toISOString()),
-      this.supabase.from('resenas').select('pelicula_id, estrellas').eq('usuario_id', usuarioId),
+      this.supabase.from('resenas').select('pelicula_id, estrellas, comentario').eq('usuario_id', usuarioId),
     ]);
     if (entradas.error) throw entradas.error;
     if (calificaciones.error) throw calificaciones.error;
