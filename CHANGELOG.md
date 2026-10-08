@@ -3,6 +3,24 @@
 Todos los cambios relevantes de este proyecto se documentan en este archivo,
 entrega por entrega. Formato inspirado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [Fase 12] - 2026-10-07
+
+### Added
+- Migración `auditoria`: trigger genérico `registrar_actividad()` sobre
+  `peliculas`, `generos`, `salas`, `funciones`, `categorias_producto`,
+  `productos`, `combos`, `cupones` y `recompensas` (alta, modificación con
+  las columnas que cambiaron, baja), y sobre la cancelación de `ventas`.
+  Solo registra acciones de `admin`/`empleado` y no los `update` hechos por
+  otros triggers.
+- Trigger `registrar_validacion_qr()` sobre `usos_qr`: cada intento del
+  control de acceso queda como `validacion_entrada` o `entrega_candy`, con
+  el código y el resultado.
+- Sección "Auditoría" del panel (`/administracion/auditoria`): bitácora con
+  filtros por usuario del personal, entidad, acción y rango de fechas, y el
+  detalle de los cambios de cada registro.
+- `AuditoriaAdministracionService` y mapeos con las etiquetas de entidades y
+  acciones.
+
 ## [Fase 2.5] - 2026-10-07
 
 ### Added

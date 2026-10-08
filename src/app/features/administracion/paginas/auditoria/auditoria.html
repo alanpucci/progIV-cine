@@ -1,0 +1,92 @@
+<header class="auditoria">
+  <div class="auditoria__encabezado">
+    <p class="auditoria__etiqueta">Rollo 09</p>
+    <h2 class="auditoria__titulo">Auditoría</h2>
+    <p class="auditoria__bajada">
+      Bitácora de la cabina: altas, cambios y bajas del panel, cancelaciones de ventas y cada intento de validación en
+      el control de acceso. Se muestran los últimos 200 registros que coinciden con los filtros.
+    </p>
+  </div>
+</header>
+
+<form class="filtros" (ngSubmit)="filtrar()">
+  <label class="filtros__campo">
+    <span>Usuario</span>
+    <select name="usuario" [(ngModel)]="usuarioId">
+      <option value="">Todo el personal</option>
+      @for (persona of personal(); track persona.id) {
+        <option [value]="persona.id">{{ persona.nombre }}</option>
+      }
+    </select>
+  </label>
+  <label class="filtros__campo">
+    <span>Entidad</span>
+    <select name="entidad" [(ngModel)]="entidad">
+      <option value="">Todas</option>
+      @for (opcion of entidades; track opcion[0]) {
+        <option [value]="opcion[0]">{{ opcion[1] }}</option>
+      }
+    </select>
+  </label>
+  <label class="filtros__campo">
+    <span>Acción</span>
+    <select name="accion" [(ngModel)]="accion">
+      <option value="">Todas</option>
+      @for (opcion of acciones; track opcion[0]) {
+        <option [value]="opcion[0]">{{ opcion[1] }}</option>
+      }
+    </select>
+  </label>
+  <label class="filtros__campo">
+    <span>Desde</span>
+    <input type="date" name="desde" [(ngModel)]="desde" />
+  </label>
+  <label class="filtros__campo">
+    <span>Hasta</span>
+    <input type="date" name="hasta" [(ngModel)]="hasta" />
+  </label>
+  <div class="filtros__acciones">
+    <app-boton tipo="submit" variante="secundario" tamano="chico">Filtrar</app-boton>
+    <app-boton variante="fantasma" tamano="chico" (click)="limpiar()">Limpiar</app-boton>
+  </div>
+</form>
+
+@if (error(); as mensaje) {
+  <p class="auditoria__error">{{ mensaje }}</p>
+}
+
+@if (!cargaGlobal.visible() && registros().length === 0 && !error()) {
+  <p class="auditoria__vacio">No hay actividad registrada con estos filtros.</p>
+}
+
+<ol class="bitacora">
+  @for (registro of registros(); track registro.id) {
+    <li class="asiento" [attr.data-accion]="registro.accion" [attr.data-resultado]="registro.resultado">
+      <time class="asiento__fecha">{{ fecha(registro) }}</time>
+
+      <div class="asiento__cuerpo">
+        <p class="asiento__titulo">
+          <span class="asiento__accion">{{ etiquetaAccion(registro) }}</span>
+          <span class="asiento__entidad">{{ etiquetaEntidad(registro) }}</span>
+          @if (referencia(registro)) {
+            <span class="asiento__referencia">{{ referencia(registro) }}</span>
+          }
+          @if (registro.resultado) {
+            <span class="asiento__resultado">{{ registro.resultado === "validado" ? "Validado" : "Rechazado" }}</span>
+          }
+        </p>
+        @if (registro.cambios.length > 0) {
+          <ul class="asiento__cambios">
+            @for (cambio of registro.cambios; track cambio.campo) {
+              <li>
+                <span class="asiento__campo">{{ cambio.campo }}</span> {{ cambio.valor }}
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <p class="asiento__usuario">{{ registro.usuario ?? "—" }}</p>
+    </li>
+  }
+</ol>
