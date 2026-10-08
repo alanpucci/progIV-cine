@@ -19,6 +19,7 @@ import { ListadoRecompensas } from './paginas/listado-recompensas/listado-recomp
 import { FormularioRecompensa } from './paginas/formulario-recompensa/formulario-recompensa';
 import { ListadoVentas } from './paginas/listado-ventas/listado-ventas';
 import { Reportes } from './paginas/reportes/reportes';
+import { Auditoria } from './paginas/auditoria/auditoria';
 
 const RUTAS_ADMINISTRACION: Routes = [
   {
@@ -50,6 +51,7 @@ const RUTAS_ADMINISTRACION: Routes = [
       { path: 'recompensas/:id', component: FormularioRecompensa },
       { path: 'ventas', component: ListadoVentas },
       { path: 'reportes', component: Reportes },
+      { path: 'auditoria', component: Auditoria },
     ],
   },
 ];

@@ -1284,6 +1284,56 @@ aparte) y figura en `allowedCommonJsDependencies` porque se publica como
 UMD. La cámara exige HTTPS o `localhost`; si el navegador no da permiso,
 queda el ingreso manual.
 
+### Auditoría: `logs_actividad` se escribe con triggers, no desde los servicios
+
+Las acciones del personal quedan en `logs_actividad` (usuario, acción,
+entidad, fecha y hora) sin que ningún servicio del frontend lo pida. La
+migración `auditoria` agrega dos funciones `security definer`:
+
+- `registrar_actividad()`: trigger genérico `after insert or update or
+  delete` sobre las tablas del panel (`peliculas`, `generos`, `salas`,
+  `funciones`, `categorias_producto`, `productos`, `combos`, `cupones`,
+  `recompensas`). La acción sale de `TG_OP` (`alta`, `modificacion`,
+  `baja`) y la entidad de `TG_TABLE_NAME`. En `ventas` solo se engancha a
+  la cancelación, con la acción `cancelacion` como argumento del trigger.
+  En `detalle` guarda una referencia legible (`titulo`, `nombre` o
+  `codigo` de la fila) y, en las modificaciones, solo las columnas que
+  cambiaron.
+- `registrar_validacion_qr()`: `after insert` sobre `usos_qr`, así cada
+  intento del control de acceso (validado o rechazado) queda también como
+  `validacion_entrada` o `entrega_candy`, con el código leído.
+
+Se eligieron triggers en vez de una llamada de registro en cada servicio del
+panel por tres motivos: son dos funciones contra una línea extra en una
+docena de métodos que es fácil olvidar en un ABM nuevo; la bitácora no
+depende de que el frontend la escriba (no hay política de `insert` en
+`logs_actividad`, solo la de lectura del admin), y se registra lo que
+realmente cambió en la base, no lo que el formulario creyó mandar.
+
+`registrar_actividad()` descarta dos casos para que la bitácora muestre
+solo acciones del personal:
+
+- Si quien opera no es `admin` ni `empleado` (`rol_actual()`). Así no se
+  registran el descuento de stock de `productos` en una compra ni la
+  cancelación que hace un cliente desde su perfil.
+- Si el `update` viene de otro trigger (`pg_trigger_depth() > 1`), como el
+  contador `peliculas.entradas_vendidas` que se mueve al confirmar o
+  cancelar una venta.
+
+No se auditan las tablas hijas que se reescriben junto con su padre
+(`pelicula_genero`, `combo_items`, `butacas` al armar la sala): el cambio ya
+queda registrado en la fila de la película, el combo o la sala.
+
+La consulta está en `/administracion/auditoria` (`Auditoria`, en
+`AdministracionModule`): filtros por usuario del personal, entidad, acción
+y rango de fechas, que se aplican en la consulta a Supabase (`.eq`, `.gte`,
+`.lt`) sobre los últimos 200 registros.
+
+Esto se verificó aplicando todas las migraciones sobre PGlite: ABM del
+admin, cancelación del admin (un solo registro, sin los `update` anidados),
+compra y cancelación de un cliente (sin registros), validaciones del
+empleado, lectura solo para el admin y ningún `insert` directo.
+
 ### Contador cacheado para datos agregados públicos
 
 El destacado "3 más vendidas" del catálogo necesita un ranking de películas

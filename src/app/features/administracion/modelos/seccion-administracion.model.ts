@@ -54,4 +54,10 @@ export const SECCIONES_ADMINISTRACION: SeccionAdministracion[] = [
     descripcion: 'Facturación diaria, entradas vendidas y estadísticas.',
     disponible: true,
   },
+  {
+    ruta: 'auditoria',
+    titulo: 'Auditoría',
+    descripcion: 'Registro de cambios del panel y validaciones de acceso.',
+    disponible: true,
+  },
 ];
